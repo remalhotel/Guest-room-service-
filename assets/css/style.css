@@ -18,24 +18,24 @@
     --banner-overlay: linear-gradient(to bottom, rgba(10, 9, 8, 0.75) 0%, rgba(10, 9, 8, 0.45) 50%, rgba(10, 9, 8, 0.75) 100%);
 }
 
-/* Mode clair */
+/* ==================== MODE CLAIR OPTIMISÉ ==================== */
 .light-mode {
     --bg-dark: #f6f4f0;
-    --bg-card: rgba(255, 255, 255, 0.95);
-    --bg-card-hover: rgba(248, 246, 242, 0.98);
-    --bg-input: rgba(255, 255, 255, 0.95);
+    --bg-card: #ffffff;
+    --bg-card-hover: #f1ede6;
+    --bg-input: #ffffff;
     --text-gold: #b47a3e;
     --gold-gradient: linear-gradient(135deg, #cfa26d 0%, #b47a3e 50%, #8c5822 100%);
-    --border-gold: rgba(180, 122, 62, 0.3);
-    --border-gold-strong: rgba(180, 122, 62, 0.6);
-    --text-main: #1c1917;
-    --text-muted: #57514a;
-    --card-shadow: 0 25px 50px -12px rgba(180, 122, 62, 0.12);
-    --lock-screen-bg: linear-gradient(135deg, #f6f4f0 0%, #e8e4de 50%, #f6f4f0 100%);
+    --border-gold: rgba(180, 122, 62, 0.25);
+    --border-gold-strong: rgba(180, 122, 62, 0.45);
+    --text-main: #2b2621;
+    --text-muted: #6b635b;
+    --card-shadow: 0 15px 35px -5px rgba(180, 122, 62, 0.12);
+    --lock-screen-bg: linear-gradient(135deg, #f6f4f0 0%, #ece7e0 50%, #f6f4f0 100%);
     
     /* Image de fond pour la bannière REMAL */
     --banner-img: url('../images/remal-hotel-day.jpg');
-    --banner-overlay: linear-gradient(to bottom, rgba(246, 244, 240, 0.75) 0%, rgba(246, 244, 240, 0.45) 50%, rgba(246, 244, 240, 0.75) 100%);
+    --banner-overlay: linear-gradient(to bottom, rgba(246, 244, 240, 0.8) 0%, rgba(246, 244, 240, 0.5) 50%, rgba(246, 244, 240, 0.8) 100%);
 }
 
 * {
@@ -157,8 +157,8 @@ body {
 
 .badge-chef {
     background: rgba(220, 167, 115, 0.15);
-    color: #DCA773;
-    border: 1px solid rgba(220, 167, 115, 0.3);
+    color: var(--text-gold);
+    border: 1px solid var(--border-gold);
 }
 
 .badge-new {
@@ -188,7 +188,7 @@ body {
 
 .btn-green {
     background: #10b981;
-    color: #1c1917;
+    color: #ffffff;
     font-weight: 900;
     transition: all 0.3s ease;
 }
@@ -210,8 +210,9 @@ body {
 
 /* En-tête de catégorie du menu */
 .menu-category-header {
-    background: linear-gradient(135deg, rgba(220, 167, 115, 0.15) 0%, rgba(220, 167, 115, 0.05) 100%);
+    background: linear-gradient(135deg, rgba(220, 167, 115, 0.18) 0%, rgba(220, 167, 115, 0.05) 100%);
     border-left: 3px solid var(--text-gold);
+    color: var(--text-gold);
 }
 
 /* Statistiques */
@@ -240,18 +241,18 @@ body {
 
 /* Bouton de basculement de thème */
 .theme-toggle-btn {
-    background: var(--bg-card-hover);
+    background: var(--bg-card);
     color: var(--text-gold);
     border: 1px solid var(--border-gold-strong);
     width: 40px;
     height: 40px;
-    border-radius: 12px;
+    border-radius: 9999px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .theme-toggle-btn:hover {
@@ -277,13 +278,13 @@ body {
 }
 
 .order-progress-dot {
-    width: 35px;
-    height: 35px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 14px;
+    font-size: 12px;
     font-weight: bold;
     transition: all 0.5s ease;
     border: 2px solid var(--border-gold);
@@ -295,7 +296,7 @@ body {
     background: var(--text-gold);
     border-color: var(--text-gold);
     color: #1c1917;
-    box-shadow: 0 0 20px rgba(220, 167, 115, 0.5);
+    box-shadow: 0 0 15px rgba(220, 167, 115, 0.4);
 }
 
 .order-progress-dot.completed {
@@ -309,7 +310,7 @@ body {
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    margin-top: 5px;
+    margin-top: 6px;
     color: var(--text-muted);
 }
 
@@ -319,12 +320,12 @@ body {
 
 .order-progress-line {
     flex: 1;
-    height: 3px;
+    height: 2px;
     background: var(--border-gold);
     position: relative;
     z-index: 1;
-    margin: 0 -5px;
-    margin-bottom: 25px;
+    margin: 0 -4px;
+    margin-bottom: 22px;
     transition: all 0.5s ease;
 }
 
@@ -338,11 +339,11 @@ body {
     top: 20px;
     right: 20px;
     z-index: 999;
-    padding: 15px 20px;
+    padding: 14px 20px;
     border-radius: 16px;
     background: var(--bg-card);
     border: 1px solid var(--border-gold-strong);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    box-shadow: var(--card-shadow);
     display: flex;
     align-items: center;
     gap: 12px;
@@ -359,7 +360,7 @@ body {
 .favorite-heart {
     cursor: pointer;
     transition: all 0.3s ease;
-    font-size: 18px;
+    font-size: 16px;
     color: var(--text-muted);
 }
 
@@ -409,15 +410,75 @@ body {
     z-index: 2;
 }
 
+/* ==================== STYLES SPÉCIFIQUES MODE CLAIR (RACCORDS EN-TÊTE ET MODALE) ==================== */
+.light-mode .lang-btn {
+    border-color: rgba(180, 122, 62, 0.25) !important;
+}
+
+.light-mode .lang-btn.active {
+    background: var(--text-gold) !important;
+    color: #ffffff !important;
+}
+
+.light-mode .lang-btn:not(.active) {
+    background: #ffffff !important;
+    color: var(--text-muted) !important;
+}
+
+.light-mode .bg-stone-900\/80,
+.light-mode .bg-stone-900\/90,
+.light-mode .bg-stone-950\/60,
+.light-mode .bg-stone-950\/80 {
+    background-color: var(--bg-card) !important;
+    border-color: var(--border-gold) !important;
+}
+
+.light-mode .bg-stone-950 {
+    background-color: #f1ede6 !important;
+    color: var(--text-main) !important;
+}
+
+.light-mode .border-stone-800 {
+    border-color: var(--border-gold) !important;
+}
+
+.light-mode .text-stone-100,
+.light-mode .text-stone-200 {
+    color: var(--text-main) !important;
+}
+
+.light-mode .text-stone-300,
+.light-mode .text-stone-400 {
+    color: var(--text-muted) !important;
+}
+
+/* Modal Menu en Mode Clair */
+.light-mode #menuModal > div {
+    background-color: #ffffff !important;
+    border-color: var(--border-gold-strong) !important;
+    color: var(--text-main) !important;
+}
+
+.light-mode #menuModal input {
+    background-color: #f6f4f0 !important;
+    border-color: var(--border-gold) !important;
+    color: var(--text-main) !important;
+}
+
+.light-mode #menuModal .menu-category-header {
+    background: #f1ede6 !important;
+    color: var(--text-gold) !important;
+}
+
 /* Responsive */
 @media (max-width: 480px) {
     .order-progress-dot {
         width: 28px;
         height: 28px;
-        font-size: 12px;
+        font-size: 11px;
     }
     
     .order-progress-label {
-        font-size: 6px;
+        font-size: 7px;
     }
 }
