@@ -15,85 +15,88 @@
     <link rel="stylesheet" href="assets/css/style.css">
     
     <style>
-        @keyframes slideInRight {
-            from { opacity: 0; transform: translateX(100px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-        
+        @keyframes slideInRight { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
         .animate-slide-in { animation: slideInRight 0.3s ease forwards; }
         
         @keyframes pulse-ring {
             0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }
             100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
         }
-        
         .pulse-ring { animation: pulse-ring 2s infinite; }
-
-        .staff-tab-btn {
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
         
-        .staff-tab-btn.active {
-            background: var(--text-gold);
-            color: #1c1917;
-            font-weight: 900;
-            box-shadow: 0 5px 15px rgba(220, 167, 115, 0.3);
+        @keyframes shake-alert {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-3px); }
+            20%, 40%, 60%, 80% { transform: translateX(3px); }
         }
+        .shake-alert { animation: shake-alert 0.5s ease; }
         
-        .staff-tab-btn:not(.active) {
-            background: var(--bg-card-hover);
-            color: var(--text-muted);
-            border: 1px solid var(--border-gold);
+        @keyframes flash-bg {
+            0%, 100% { background: transparent; }
+            50% { background: rgba(239, 68, 68, 0.2); }
         }
+        .flash-alert { animation: flash-bg 1s ease 3; }
         
-        .staff-tab-btn:not(.active):hover {
-            color: var(--text-gold);
-            border-color: var(--text-gold);
-        }
-
-        .service-type-badge {
+        .staff-tab-btn { transition: all 0.3s ease; cursor: pointer; }
+        .staff-tab-btn.active { background: var(--text-gold); color: #1c1917; font-weight: 900; box-shadow: 0 5px 15px rgba(220, 167, 115, 0.3); }
+        .staff-tab-btn:not(.active) { background: var(--bg-card-hover); color: var(--text-muted); border: 1px solid var(--border-gold); }
+        .staff-tab-btn:not(.active):hover { color: var(--text-gold); border-color: var(--text-gold); }
+        
+        .service-type-badge { display: inline-block; padding: 3px 10px; border-radius: 9999px; font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; border: 1px solid; margin-right: 4px; }
+        
+        /* Badge de notification sur les onglets */
+        .tab-notification-badge {
             display: inline-block;
-            padding: 3px 10px;
+            background: #ef4444;
+            color: white;
+            font-size: 8px;
+            font-weight: 900;
+            padding: 2px 6px;
             border-radius: 9999px;
-            font-size: 9px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            border: 1px solid;
-            margin-right: 4px;
-        }
-
-        /* Zone de téléchargement */
-        .upload-zone {
-            border: 2px dashed var(--border-gold-strong);
-            border-radius: 1rem;
-            padding: 2rem;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background: var(--bg-card-hover);
+            margin-left: 4px;
+            animation: pulse-ring 1.5s infinite;
         }
         
-        .upload-zone:hover {
-            border-color: var(--text-gold);
+        /* Notification popup */
+        .notification-popup {
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            z-index: 200;
             background: var(--bg-card);
-            box-shadow: 0 5px 20px rgba(220, 167, 115, 0.2);
+            border: 2px solid #ef4444;
+            border-radius: 16px;
+            padding: 15px 20px;
+            box-shadow: 0 10px 40px rgba(239, 68, 68, 0.5);
+            animation: slideInRight 0.5s ease forwards;
+            max-width: 350px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
         
-        .upload-zone.dragover {
-            border-color: #10b981;
-            background: rgba(16, 185, 129, 0.1);
+        .notification-popup .icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #ef4444;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            animation: pulse-ring 1s infinite;
         }
-
-        /* Aperçu de l'image */
-        .offer-image-preview {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            border-radius: 1rem;
-            border: 1px solid var(--border-gold-strong);
+        
+        /* Bouton d'activation du son */
+        .sound-toggle-btn {
+            transition: all 0.3s ease;
+        }
+        .sound-toggle-btn.active {
+            background: #10b981;
+            color: white;
+            border-color: #10b981;
         }
     </style>
 </head>
@@ -117,8 +120,9 @@
                     <span class="w-2 h-2 bg-emerald-400 rounded-full pulse-notification"></span>
                     LIVE
                 </span>
-                <button onclick="enableSoundAlerts()" class="text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-3 py-2 rounded-xl font-bold hover:bg-amber-500/40 transition">
-                    🔊 Sound
+                <!-- Bouton son avec état visuel -->
+                <button onclick="enableSoundAlerts()" id="btnSoundToggle" class="sound-toggle-btn text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-3 py-2 rounded-xl font-bold hover:bg-amber-500/40 transition">
+                    🔊 Sound ON
                 </button>
                 <button onclick="toggleTheme()" class="theme-toggle-btn" title="Toggle Theme">
                     <i class="fas fa-sun text-sm" id="themeIconStaff"></i>
@@ -129,42 +133,41 @@
             </div>
         </div>
 
-        <!-- ONGLETS STAFF : 5 onglets -->
+        <!-- ONGLETS STAFF : 5 onglets avec badges de notification -->
         <div class="grid grid-cols-2 md:grid-cols-5 gap-2">
-            <button onclick="switchStaffTab('front_desk')" id="staffTabFrontDesk" class="staff-tab-btn active px-4 py-3 rounded-xl text-xs font-bold whitespace-nowrap">
+            <button onclick="switchStaffTab('front_desk')" id="staffTabFrontDesk" class="staff-tab-btn active px-4 py-3 rounded-xl text-xs font-bold whitespace-nowrap relative">
                 🛎️ Front Desk
+                <span id="badgeFrontDesk" class="tab-notification-badge hidden">0</span>
             </button>
-            <button onclick="switchStaffTab('food_beverage')" id="staffTabFoodBeverage" class="staff-tab-btn px-4 py-3 rounded-xl text-xs font-bold whitespace-nowrap">
+            <button onclick="switchStaffTab('food_beverage')" id="staffTabFoodBeverage" class="staff-tab-btn px-4 py-3 rounded-xl text-xs font-bold whitespace-nowrap relative">
                 🍽️ Food & Beverage
+                <span id="badgeFoodBeverage" class="tab-notification-badge hidden">0</span>
             </button>
-            <button onclick="switchStaffTab('housekeeping')" id="staffTabHousekeeping" class="staff-tab-btn px-4 py-3 rounded-xl text-xs font-bold whitespace-nowrap">
+            <button onclick="switchStaffTab('housekeeping')" id="staffTabHousekeeping" class="staff-tab-btn px-4 py-3 rounded-xl text-xs font-bold whitespace-nowrap relative">
                 🧹 Housekeeping
+                <span id="badgeHousekeeping" class="tab-notification-badge hidden">0</span>
             </button>
-            <button onclick="switchStaffTab('maintenance')" id="staffTabMaintenance" class="staff-tab-btn px-4 py-3 rounded-xl text-xs font-bold whitespace-nowrap">
+            <button onclick="switchStaffTab('maintenance')" id="staffTabMaintenance" class="staff-tab-btn px-4 py-3 rounded-xl text-xs font-bold whitespace-nowrap relative">
                 🔧 Maintenance
+                <span id="badgeMaintenance" class="tab-notification-badge hidden">0</span>
             </button>
-            <button onclick="switchStaffTab('offers')" id="staffTabOffers" class="staff-tab-btn px-4 py-3 rounded-xl text-xs font-bold whitespace-nowrap">
+            <button onclick="switchStaffTab('offers')" id="staffTabOffers" class="staff-tab-btn px-4 py-3 rounded-xl text-xs font-bold whitespace-nowrap relative">
                 🏷️ Offers
             </button>
         </div>
 
-        <!-- SECTION OFFRES (visible uniquement quand onglet Offers actif) -->
+        <!-- SECTION OFFRES -->
         <div id="offersManagementSection" class="hidden space-y-6">
-            
-            <!-- Formulaire de création d'offre -->
             <div class="remal-card rounded-2xl p-6 space-y-4">
                 <h2 class="text-sm font-serif-luxury font-bold text-[var(--text-gold)] border-b border-[var(--border-gold)] pb-3">
                     <i class="fas fa-plus-circle mr-2"></i> Create New Offer
                 </h2>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- Zone de téléchargement de photo -->
                     <div class="space-y-3">
                         <label class="block text-[10px] font-bold text-[var(--text-gold)] uppercase tracking-wider">
                             <i class="fas fa-image mr-1"></i> Offer Photo
                         </label>
-                        
-                        <!-- Zone de drop -->
                         <div id="uploadZone" class="upload-zone" onclick="document.getElementById('offerImageInput').click()">
                             <div id="uploadPlaceholder">
                                 <i class="fas fa-cloud-upload-alt text-3xl text-[var(--text-gold)] mb-2"></i>
@@ -173,11 +176,9 @@
                             </div>
                             <img id="offerImagePreview" class="offer-image-preview hidden" alt="Preview">
                         </div>
-                        
                         <input type="file" id="offerImageInput" accept="image/*" class="hidden" onchange="handleOfferImageSelect(event)">
                     </div>
                     
-                    <!-- Champs de l'offre -->
                     <div class="space-y-3">
                         <div>
                             <label class="block text-[10px] font-bold text-[var(--text-gold)] uppercase tracking-wider mb-1">
@@ -185,21 +186,18 @@
                             </label>
                             <input type="text" id="offerTitle" placeholder="e.g., Pool Day Pass Special" class="w-full remal-input rounded-xl p-3 text-xs font-bold">
                         </div>
-                        
                         <div>
                             <label class="block text-[10px] font-bold text-[var(--text-gold)] uppercase tracking-wider mb-1">
                                 <i class="fas fa-tag mr-1"></i> Price
                             </label>
                             <input type="text" id="offerPrice" placeholder="e.g., AED 75" class="w-full remal-input rounded-xl p-3 text-xs font-bold">
                         </div>
-                        
                         <div>
                             <label class="block text-[10px] font-bold text-[var(--text-gold)] uppercase tracking-wider mb-1">
                                 <i class="fas fa-align-left mr-1"></i> Description / Accroche
                             </label>
-                            <textarea id="offerDescription" rows="3" placeholder="e.g., Full day access to Al Waha Pool with complimentary towel service..." class="w-full remal-input rounded-xl p-3 text-xs"></textarea>
+                            <textarea id="offerDescription" rows="3" placeholder="e.g., Full day access to Al Waha Pool..." class="w-full remal-input rounded-xl p-3 text-xs"></textarea>
                         </div>
-                        
                         <div>
                             <label class="block text-[10px] font-bold text-[var(--text-gold)] uppercase tracking-wider mb-1">
                                 <i class="fas fa-folder mr-1"></i> Category
@@ -215,25 +213,20 @@
                     </div>
                 </div>
                 
-                <!-- Bouton de publication -->
                 <button onclick="publishOffer()" class="w-full bg-[#DCA773] hover:bg-[#ebd0b3] text-stone-950 font-black py-4 rounded-2xl text-xs uppercase tracking-widest transition-all shadow-lg hover:scale-[1.01]">
                     <i class="fas fa-rocket mr-2"></i> Publish Offer
                 </button>
             </div>
             
-            <!-- Liste des offres actives -->
             <div class="remal-card rounded-2xl p-6 space-y-4">
                 <h3 class="text-sm font-serif-luxury font-bold text-[var(--text-gold)] border-b border-[var(--border-gold)] pb-3">
                     <i class="fas fa-list mr-2"></i> Active Offers
                 </h3>
-                
-                <div id="offersListContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <!-- Offres injectées dynamiquement -->
-                </div>
+                <div id="offersListContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
             </div>
         </div>
 
-        <!-- SECTION REQUÊTES (visible pour les autres onglets) -->
+        <!-- SECTION REQUÊTES -->
         <div id="requestsSection" class="space-y-6">
             <!-- Statistiques -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -255,7 +248,7 @@
                 </div>
             </div>
 
-            <!-- Filtres par statut -->
+            <!-- Filtres -->
             <div class="flex gap-2 overflow-x-auto scrollbar-none">
                 <button onclick="filterStaffOrders('all')" id="filterAll" class="px-4 py-2 rounded-xl bg-[var(--text-gold)] text-stone-950 text-xs font-bold whitespace-nowrap">All</button>
                 <button onclick="filterStaffOrders('Pending')" id="filterPending" class="px-4 py-2 rounded-xl remal-card text-muted-custom text-xs font-bold whitespace-nowrap">🕐 Pending</button>
@@ -266,7 +259,7 @@
                 <button onclick="filterStaffOrders('In Progress')" id="filterInProgress" class="px-4 py-2 rounded-xl remal-card text-muted-custom text-xs font-bold whitespace-nowrap">👨‍💼 In Progress</button>
             </div>
 
-            <!-- Commandes et requêtes -->
+            <!-- Commandes -->
             <div id="staffOrdersContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
         </div>
     </div>
@@ -284,7 +277,6 @@
         let realtimeChannel = null;
         let audioContext = null;
         let soundEnabled = false;
-        let selectedOfferImage = null;
 
         // ==================== MAPPING DES SERVICES ====================
         const SERVICE_TAB_MAPPING = {
@@ -298,24 +290,6 @@
             'Maintenance / Technical Support': 'maintenance'
         };
 
-        // ==================== FONCTIONS THÈME ====================
-        function toggleTheme() {
-            document.body.classList.toggle('light-mode');
-            const isLight = document.body.classList.contains('light-mode');
-            const icon = document.getElementById('themeIconStaff');
-            if (icon) icon.className = isLight ? 'fas fa-moon text-sm' : 'fas fa-sun text-sm';
-            localStorage.setItem('remal_theme', isLight ? 'light' : 'dark');
-        }
-
-        function initTheme() {
-            const savedTheme = localStorage.getItem('remal_theme');
-            if (savedTheme === 'light') document.body.classList.add('light-mode');
-            else document.body.classList.remove('light-mode');
-            const isLight = document.body.classList.contains('light-mode');
-            const icon = document.getElementById('themeIconStaff');
-            if (icon) icon.className = isLight ? 'fas fa-moon text-sm' : 'fas fa-sun text-sm';
-        }
-
         // ==================== NOTIFICATION SONORE ====================
         function enableSoundAlerts() {
             try {
@@ -323,212 +297,92 @@
                 audioContext.resume().then(() => {
                     soundEnabled = true;
                     playNotificationSound();
-                    showToast('🔊 Sound alerts enabled', 'success');
+                    showNotificationPopup('🔊 Sound alerts enabled!');
+                    const btn = document.getElementById('btnSoundToggle');
+                    if (btn) {
+                        btn.className = 'sound-toggle-btn active text-[10px] px-3 py-2 rounded-xl font-bold transition';
+                        btn.innerText = '🔊 Sound ON';
+                    }
                 });
-            } catch (e) {}
+            } catch (e) {
+                console.error('Audio Error:', e);
+            }
         }
 
         function playNotificationSound() {
             if (!soundEnabled || !audioContext) return;
             try {
-                const osc = audioContext.createOscillator();
-                const gain = audioContext.createGain();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(587.33, audioContext.currentTime);
-                osc.frequency.setValueAtTime(880, audioContext.currentTime + 0.15);
-                gain.gain.setValueAtTime(0.3, audioContext.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-                osc.connect(gain);
-                gain.connect(audioContext.destination);
-                osc.start();
-                osc.stop(audioContext.currentTime + 0.5);
+                // Son principal
+                const osc1 = audioContext.createOscillator();
+                const gain1 = audioContext.createGain();
+                osc1.type = 'sine';
+                osc1.frequency.setValueAtTime(880, audioContext.currentTime);
+                osc1.frequency.setValueAtTime(1100, audioContext.currentTime + 0.1);
+                gain1.gain.setValueAtTime(0.4, audioContext.currentTime);
+                gain1.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.6);
+                osc1.connect(gain1);
+                gain1.connect(audioContext.destination);
+                osc1.start();
+                osc1.stop(audioContext.currentTime + 0.6);
+                
+                // Son secondaire (double bip)
+                setTimeout(() => {
+                    const osc2 = audioContext.createOscillator();
+                    const gain2 = audioContext.createGain();
+                    osc2.type = 'sine';
+                    osc2.frequency.setValueAtTime(880, audioContext.currentTime);
+                    gain2.gain.setValueAtTime(0.3, audioContext.currentTime);
+                    gain2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+                    osc2.connect(gain2);
+                    gain2.connect(audioContext.destination);
+                    osc2.start();
+                    osc2.stop(audioContext.currentTime + 0.4);
+                }, 300);
             } catch (e) {}
         }
 
-        // ==================== NOTIFICATION TOAST ====================
-        function showToast(message, type = 'info') {
-            const toast = document.createElement('div');
-            toast.className = 'toast-notification';
-            const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
-            toast.innerHTML = `<span>${icon}</span><span class="text-xs font-bold text-[var(--text-main)]">${message}</span>`;
-            document.body.appendChild(toast);
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transition = 'opacity 0.3s ease';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }
-
-        // ==================== GESTION DES OFFRES ====================
-        function handleOfferImageSelect(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            
-            // Vérifier la taille (max 5MB)
-            if (file.size > 5 * 1024 * 1024) {
-                showToast('Image too large. Max 5MB.', 'error');
-                return;
-            }
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                selectedOfferImage = e.target.result;
-                const preview = document.getElementById('offerImagePreview');
-                const placeholder = document.getElementById('uploadPlaceholder');
-                
-                preview.src = selectedOfferImage;
-                preview.classList.remove('hidden');
-                placeholder.classList.add('hidden');
-                
-                showToast('Image selected!', 'success');
-            };
-            reader.readAsDataURL(file);
-        }
-
-        // Drag & drop
-        document.addEventListener('DOMContentLoaded', () => {
-            const uploadZone = document.getElementById('uploadZone');
-            if (uploadZone) {
-                uploadZone.addEventListener('dragover', (e) => {
-                    e.preventDefault();
-                    uploadZone.classList.add('dragover');
-                });
-                
-                uploadZone.addEventListener('dragleave', () => {
-                    uploadZone.classList.remove('dragover');
-                });
-                
-                uploadZone.addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    uploadZone.classList.remove('dragover');
-                    
-                    const file = e.dataTransfer.files[0];
-                    if (file) {
-                        const input = document.getElementById('offerImageInput');
-                        const dt = new DataTransfer();
-                        dt.items.add(file);
-                        input.files = dt.files;
-                        handleOfferImageSelect({ target: { files: [file] } });
-                    }
-                });
-            }
-        });
-
-        async function publishOffer() {
-            const title = document.getElementById('offerTitle').value.trim();
-            const price = document.getElementById('offerPrice').value.trim();
-            const description = document.getElementById('offerDescription').value.trim();
-            const category = document.getElementById('offerCategory').value;
-            
-            if (!title) { showToast('Please enter a title', 'error'); return; }
-            if (!price) { showToast('Please enter a price', 'error'); return; }
-            if (!description) { showToast('Please enter a description', 'error'); return; }
-            if (!selectedOfferImage) { showToast('Please select an image', 'error'); return; }
-            
-            const offerData = {
-                title: title,
-                price: price,
-                description: description,
-                category: category,
-                image: selectedOfferImage,
-                is_active: true,
-                created_at: new Date().toISOString()
-            };
-            
-            const { data, error } = await supabaseClient
-                .from('offers')
-                .insert([offerData])
-                .select();
-            
-            if (error) {
-                console.error('Supabase Error:', error);
-                showToast('Error publishing offer', 'error');
-                return;
-            }
-            
-            showToast('✅ Offer published successfully!', 'success');
-            
-            // Réinitialiser le formulaire
-            document.getElementById('offerTitle').value = '';
-            document.getElementById('offerPrice').value = '';
-            document.getElementById('offerDescription').value = '';
-            document.getElementById('offerCategory').value = 'Pool & Beach';
-            selectedOfferImage = null;
-            document.getElementById('offerImagePreview').classList.add('hidden');
-            document.getElementById('uploadPlaceholder').classList.remove('hidden');
-            document.getElementById('offerImageInput').value = '';
-            
-            fetchOffers();
-        }
-
-        async function fetchOffers() {
-            const { data, error } = await supabaseClient
-                .from('offers')
-                .select('*')
-                .order('created_at', { ascending: false })
-                .limit(20);
-            
-            if (data) {
-                renderOffersList(data);
-            }
-        }
-
-        function renderOffersList(offers) {
-            const container = document.getElementById('offersListContainer');
-            
-            if (!offers || offers.length === 0) {
-                container.innerHTML = '<p class="text-center text-muted-custom col-span-full py-8">No offers published yet</p>';
-                return;
-            }
-            
-            container.innerHTML = offers.map(offer => `
-                <div class="order-card remal-card rounded-2xl overflow-hidden">
-                    <img src="${offer.image}" alt="${offer.title}" class="w-full h-40 object-cover" onerror="this.src='logo.png'">
-                    <div class="p-4 space-y-2">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <p class="font-bold text-[var(--text-gold)] text-xs">${offer.title}</p>
-                                <p class="text-[9px] text-muted-custom">${offer.category}</p>
-                            </div>
-                            <span class="font-bold text-[var(--text-gold)] text-sm">${offer.price}</span>
-                        </div>
-                        <p class="text-[10px] text-muted-custom">${offer.description}</p>
-                        <div class="flex gap-2 pt-2">
-                            <button onclick="toggleOfferActive(${offer.id}, ${!offer.is_active})" class="flex-1 ${offer.is_active ? 'bg-emerald-500/20 text-emerald-400' : 'bg-gray-500/20 text-gray-400'} py-2 rounded-xl text-xs font-bold transition">
-                                ${offer.is_active ? '✅ Active' : '❌ Inactive'}
-                            </button>
-                            <button onclick="deleteOffer(${offer.id})" class="bg-red-500/10 text-red-400 px-3 py-2 rounded-xl text-xs font-bold hover:bg-red-500/30 transition">
-                                🗑️
-                            </button>
-                        </div>
-                    </div>
+        // ==================== NOTIFICATION POPUP ====================
+        function showNotificationPopup(message) {
+            const popup = document.createElement('div');
+            popup.className = 'notification-popup';
+            popup.innerHTML = `
+                <div class="icon"><i class="fas fa-bell"></i></div>
+                <div>
+                    <p class="text-xs font-bold text-[var(--text-main)]">${message}</p>
+                    <p class="text-[9px] text-muted-custom">${new Date().toLocaleTimeString()}</p>
                 </div>
-            `).join('');
+            `;
+            document.body.appendChild(popup);
+            
+            // Animation de secousse
+            popup.classList.add('shake-alert');
+            
+            setTimeout(() => {
+                popup.style.opacity = '0';
+                popup.style.transition = 'opacity 0.5s ease';
+                setTimeout(() => popup.remove(), 500);
+            }, 5000);
         }
 
-        async function toggleOfferActive(offerId, isActive) {
-            const { error } = await supabaseClient
-                .from('offers')
-                .update({ is_active: isActive })
-                .eq('id', offerId);
+        // ==================== MISE À JOUR DES BADGES D'ONGLETS ====================
+        function updateTabBadges() {
+            const tabs = ['front_desk', 'food_beverage', 'housekeeping', 'maintenance'];
             
-            if (!error) {
-                showToast(`Offer ${isActive ? 'activated' : 'deactivated'}`, 'success');
-                fetchOffers();
-            }
-        }
-
-        async function deleteOffer(offerId) {
-            if (!confirm('Delete this offer?')) return;
-            const { error } = await supabaseClient
-                .from('offers')
-                .delete()
-                .eq('id', offerId);
-            
-            if (!error) {
-                showToast('Offer deleted', 'info');
-                fetchOffers();
-            }
+            tabs.forEach(tab => {
+                const pendingCount = allRequests.filter(r => 
+                    r.tabCategory === tab && (r.status === 'Pending' || !r.status)
+                ).length;
+                
+                const badge = document.getElementById(`badge${tab.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('')}`);
+                if (badge) {
+                    if (pendingCount > 0) {
+                        badge.innerText = pendingCount;
+                        badge.classList.remove('hidden');
+                    } else {
+                        badge.classList.add('hidden');
+                    }
+                }
+            });
         }
 
         // ==================== RÉCUPÉRATION DES DONNÉES ====================
@@ -552,7 +406,7 @@
                 );
                 if (newFoodOrders.length > 0) {
                     playNotificationSound();
-                    showToast(`🔔 ${newFoodOrders.length} new food order(s)!`, 'info');
+                    showNotificationPopup(`🔔 ${newFoodOrders.length} new food order(s) received!`);
                 }
                 foodOrders = foodData;
             }
@@ -564,26 +418,17 @@
                 );
                 if (newRequests.length > 0) {
                     playNotificationSound();
-                    showToast(`🔔 ${newRequests.length} new service request(s)!`, 'info');
+                    showNotificationPopup(`🔔 ${newRequests.length} new service request(s)!`);
                 }
                 guestRequests = requestData;
             }
 
             allRequests = [
-                ...foodOrders.map(o => ({ 
-                    ...o, 
-                    requestType: 'food', 
-                    serviceLabel: o.service_type || 'Room Service / Order Food',
-                    tabCategory: 'food_beverage'
-                })),
-                ...guestRequests.map(r => ({ 
-                    ...r, 
-                    requestType: 'other', 
-                    serviceLabel: r.service_type || 'Guest Request',
-                    tabCategory: SERVICE_TAB_MAPPING[r.service_type] || 'front_desk'
-                }))
+                ...foodOrders.map(o => ({ ...o, requestType: 'food', serviceLabel: o.service_type || 'Room Service / Order Food', tabCategory: 'food_beverage' })),
+                ...guestRequests.map(r => ({ ...r, requestType: 'other', serviceLabel: r.service_type || 'Guest Request', tabCategory: SERVICE_TAB_MAPPING[r.service_type] || 'front_desk' }))
             ].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
+            updateTabBadges();
             renderStaffOrders();
         }
 
@@ -593,10 +438,18 @@
             
             realtimeChannel = supabaseClient
                 .channel('guest-hub-realtime-staff')
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'food_orders' }, () => {
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'food_orders' }, (payload) => {
+                    if (payload.eventType === 'INSERT') {
+                        playNotificationSound();
+                        showNotificationPopup('🔔 New food order received!');
+                    }
                     fetchAllData();
                 })
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'guest_requests' }, () => {
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'guest_requests' }, (payload) => {
+                    if (payload.eventType === 'INSERT') {
+                        playNotificationSound();
+                        showNotificationPopup('🔔 New service request received!');
+                    }
                     fetchAllData();
                 })
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'offers' }, () => {
@@ -613,15 +466,10 @@
             tabs.forEach(t => {
                 const btn = document.getElementById(`staffTab${t.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('')}`);
                 if (btn) {
-                    if (t === tab) {
-                        btn.classList.add('active');
-                    } else {
-                        btn.classList.remove('active');
-                    }
+                    if (t === tab) { btn.classList.add('active'); } else { btn.classList.remove('active'); }
                 }
             });
             
-            // Afficher/masquer les sections
             if (tab === 'offers') {
                 document.getElementById('offersManagementSection').classList.remove('hidden');
                 document.getElementById('requestsSection').classList.add('hidden');
@@ -638,7 +486,6 @@
             const container = document.getElementById('staffOrdersContainer');
             
             let filteredRequests = allRequests.filter(r => r.tabCategory === currentStaffTab);
-            
             if (currentFilter !== 'all') {
                 filteredRequests = filteredRequests.filter(r => r.status === currentFilter);
             }
@@ -696,7 +543,7 @@
                                 `).join('')}
                             </div>
                             <div class="flex justify-between items-center text-xs border-t border-[var(--border-gold)] pt-2">
-                                <span class="font-bold text-[var(--text-gold)]">Total: AED ${request.total_amount || request.subtotal || 0}</span>
+                                <span class="font-bold text-[var(--text-gold)]">Total: AED ${request.total_amount || 0}</span>
                                 <span class="text-[10px] text-muted-custom">${timeAgo}</span>
                             </div>
                             ${request.details && request.details !== 'None' ? `
@@ -782,6 +629,113 @@
             const { error } = await supabaseClient.from('guest_requests').delete().eq('id', requestId);
             if (!error) { showToast('Request deleted', 'info'); fetchAllData(); }
         }
+
+        // ==================== OFFRES ====================
+        function handleOfferImageSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            if (file.size > 5 * 1024 * 1024) { showToast('Image too large. Max 5MB.', 'error'); return; }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const preview = document.getElementById('offerImagePreview');
+                const placeholder = document.getElementById('uploadPlaceholder');
+                preview.src = e.target.result;
+                preview.classList.remove('hidden');
+                placeholder.classList.add('hidden');
+                window.selectedOfferImage = e.target.result;
+                showToast('Image selected!', 'success');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function publishOffer() {
+            const title = document.getElementById('offerTitle').value.trim();
+            const price = document.getElementById('offerPrice').value.trim();
+            const description = document.getElementById('offerDescription').value.trim();
+            const category = document.getElementById('offerCategory').value;
+            
+            if (!title) { showToast('Please enter a title', 'error'); return; }
+            if (!price) { showToast('Please enter a price', 'error'); return; }
+            if (!description) { showToast('Please enter a description', 'error'); return; }
+            if (!window.selectedOfferImage) { showToast('Please select an image', 'error'); return; }
+            
+            const offerData = { title, price, description, category, image: window.selectedOfferImage, is_active: true, created_at: new Date().toISOString() };
+            const { error } = await supabaseClient.from('offers').insert([offerData]);
+            if (error) { showToast('Error publishing offer', 'error'); return; }
+            showToast('✅ Offer published successfully!', 'success');
+            document.getElementById('offerTitle').value = '';
+            document.getElementById('offerPrice').value = '';
+            document.getElementById('offerDescription').value = '';
+            document.getElementById('offerCategory').value = 'Pool & Beach';
+            window.selectedOfferImage = null;
+            document.getElementById('offerImagePreview').classList.add('hidden');
+            document.getElementById('uploadPlaceholder').classList.remove('hidden');
+            fetchOffers();
+        }
+
+        async function fetchOffers() {
+            const { data } = await supabaseClient.from('offers').select('*').order('created_at', { ascending: false }).limit(20);
+            if (data) renderOffersList(data);
+        }
+
+        function renderOffersList(offers) {
+            const container = document.getElementById('offersListContainer');
+            if (!offers || !offers.length) {
+                container.innerHTML = '<p class="text-center text-muted-custom col-span-full py-8">No offers published yet</p>';
+                return;
+            }
+            container.innerHTML = offers.map(offer => `
+                <div class="order-card remal-card rounded-2xl overflow-hidden">
+                    <img src="${offer.image}" alt="${offer.title}" class="w-full h-40 object-cover" onerror="this.src='logo.png'">
+                    <div class="p-4 space-y-2">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="font-bold text-[var(--text-gold)] text-xs">${offer.title}</p>
+                                <p class="text-[9px] text-muted-custom">${offer.category}</p>
+                            </div>
+                            <span class="font-bold text-[var(--text-gold)] text-sm">${offer.price}</span>
+                        </div>
+                        <p class="text-[10px] text-muted-custom">${offer.description}</p>
+                        <div class="flex gap-2 pt-2">
+                            <button onclick="toggleOfferActive(${offer.id}, ${!offer.is_active})" class="flex-1 ${offer.is_active ? 'bg-emerald-500/20 text-emerald-400' : 'bg-gray-500/20 text-gray-400'} py-2 rounded-xl text-xs font-bold transition">
+                                ${offer.is_active ? '✅ Active' : '❌ Inactive'}
+                            </button>
+                            <button onclick="deleteOffer(${offer.id})" class="bg-red-500/10 text-red-400 px-3 py-2 rounded-xl text-xs font-bold hover:bg-red-500/30 transition">🗑️</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function toggleOfferActive(offerId, isActive) {
+            const { error } = await supabaseClient.from('offers').update({ is_active: isActive }).eq('id', offerId);
+            if (!error) { showToast(`Offer ${isActive ? 'activated' : 'deactivated'}`, 'success'); fetchOffers(); }
+        }
+
+        async function deleteOffer(offerId) {
+            if (!confirm('Delete this offer?')) return;
+            const { error } = await supabaseClient.from('offers').delete().eq('id', offerId);
+            if (!error) { showToast('Offer deleted', 'info'); fetchOffers(); }
+        }
+
+        // ==================== THÈME ====================
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            const isLight = document.body.classList.contains('light-mode');
+            const icon = document.getElementById('themeIconStaff');
+            if (icon) icon.className = isLight ? 'fas fa-moon text-sm' : 'fas fa-sun text-sm';
+            localStorage.setItem('remal_theme', isLight ? 'light' : 'dark');
+        }
+
+        function initTheme() {
+            const saved = localStorage.getItem('remal_theme');
+            if (saved === 'light') document.body.classList.add('light-mode');
+            const isLight = document.body.classList.contains('light-mode');
+            const icon = document.getElementById('themeIconStaff');
+            if (icon) icon.className = isLight ? 'fas fa-moon text-sm' : 'fas fa-sun text-sm';
+        }
+
+        function showToast(msg, type = 'info') { const t = document.createElement('div'); t.className = 'toast-notification toast-in'; t.innerHTML = `<span>${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</span><span class="text-xs font-bold">${msg}</span>`; document.body.appendChild(t); setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 3000); }
 
         // ==================== TEMPS ÉCOULÉ ====================
         function getTimeAgo(timestamp) {
