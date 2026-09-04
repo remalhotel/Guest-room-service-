@@ -13,6 +13,9 @@
     --card-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.8);
     --lock-screen-bg: linear-gradient(135deg, #0a0908 0%, #1a1714 50%, #0a0908 100%);
     --header-bg: rgba(22, 20, 18, 0.95);
+    --header-img: url('../images/remal-hotel-night.jpg');
+    --header-overlay: linear-gradient(to bottom, rgba(10, 9, 8, 0.7) 0%, rgba(10, 9, 8, 0.3) 50%, rgba(10, 9, 8, 0.7) 100%);
+    --header-img-opacity: 0.5;
 }
 
 /* Mode clair */
@@ -30,6 +33,9 @@
     --card-shadow: 0 25px 50px -12px rgba(180, 122, 62, 0.12);
     --lock-screen-bg: linear-gradient(135deg, #f6f4f0 0%, #e8e4de 50%, #f6f4f0 100%);
     --header-bg: rgba(255, 255, 255, 0.95);
+    --header-img: url('../images/remal-hotel-day.jpg');
+    --header-overlay: linear-gradient(to bottom, rgba(246, 244, 240, 0.7) 0%, rgba(246, 244, 240, 0.3) 50%, rgba(246, 244, 240, 0.7) 100%);
+    --header-img-opacity: 0.6;
 }
 
 * {
@@ -190,25 +196,71 @@ body {
     transition: all 0.4s ease;
 }
 
-/* ==================== EN-TÊTE AVEC BOUTON THÈME ==================== */
+/* ==================== EN-TÊTE AVEC IMAGE D'HÔTEL ==================== */
 .app-header {
-    background: var(--header-bg);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--border-gold-strong);
-    padding: 12px 20px;
+    position: relative;
+    background-image: var(--header-img);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 20px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     position: sticky;
     top: 0;
     z-index: 50;
-    transition: all 0.4s ease;
+    transition: all 0.6s ease;
+    min-height: 80px;
+    border-bottom: 2px solid var(--border-gold-strong);
+}
+
+/* Overlay pour assombrir/éclaircir l'image selon le mode */
+.app-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--header-overlay);
+    z-index: 1;
+    transition: all 0.6s ease;
+}
+
+/* Contenu de l'en-tête au-dessus de l'overlay */
+.app-header > * {
+    position: relative;
+    z-index: 2;
+}
+
+/* Style du logo dans l'en-tête */
+.header-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.header-logo h1 {
+    font-family: 'Cinzel', serif;
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--text-gold);
+    letter-spacing: 0.15em;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.header-logo span {
+    font-size: 8px;
+    color: var(--text-main);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
 /* Bouton de basculement de thème élégant */
 .theme-toggle-btn {
-    background: var(--bg-card-hover);
+    background: var(--bg-card);
     color: var(--text-gold);
     border: 2px solid var(--border-gold-strong);
     width: 44px;
@@ -219,15 +271,15 @@ body {
     justify-content: center;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    position: relative;
-    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 }
 
 .theme-toggle-btn:hover {
     transform: scale(1.1) rotate(15deg);
     border-color: var(--text-gold);
-    box-shadow: 0 6px 20px rgba(220, 167, 115, 0.4);
+    box-shadow: 0 6px 20px rgba(220, 167, 115, 0.5);
 }
 
 .theme-toggle-btn:active {
@@ -237,23 +289,4 @@ body {
 .theme-toggle-btn i {
     font-size: 18px;
     transition: all 0.3s ease;
-}
-
-/* Animation du soleil/lune */
-.theme-toggle-btn .fa-sun {
-    animation: rotate-sun 0.5s ease;
-}
-
-.theme-toggle-btn .fa-moon {
-    animation: rotate-moon 0.5s ease;
-}
-
-@keyframes rotate-sun {
-    from { transform: rotate(-180deg) scale(0); }
-    to { transform: rotate(0) scale(1); }
-}
-
-@keyframes rotate-moon {
-    from { transform: rotate(180deg) scale(0); }
-    to { transform: rotate(0) scale(1); }
 }
