@@ -82,6 +82,70 @@
         
         .favorite-heart { color: #525252; transition: color 0.2s ease; }
         .favorite-heart.active { color: #ef4444; }
+
+        /* ==================== APPARENCE MODE CLAIR OPTIMISÉE ==================== */
+        body.light-mode {
+            background-color: #f8fafc !important;
+            color: #0f172a !important;
+        }
+        body.light-mode .lock-card,
+        body.light-mode .remal-card,
+        body.light-mode #menuModal > div {
+            background-color: #ffffff !important;
+            border-color: rgba(217, 119, 6, 0.2) !important;
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.08) !important;
+        }
+        body.light-mode .remal-banner {
+            background-color: #f1f5f9 !important;
+            border-color: rgba(217, 119, 6, 0.3) !important;
+        }
+        body.light-mode .service-card,
+        body.light-mode .offer-card,
+        body.light-mode #orderTrackingSection,
+        body.light-mode .p-4.bg-stone-950\/60,
+        body.light-mode .p-3\.5.bg-stone-950\/60 {
+            background-color: #f1f5f9 !important;
+            border-color: #e2e8f0 !important;
+        }
+        body.light-mode .text-stone-100,
+        body.light-mode .text-stone-200,
+        body.light-mode .text-stone-300 {
+            color: #1e293b !important;
+        }
+        body.light-mode .text-stone-400,
+        body.light-mode .text-stone-500 {
+            color: #64748b !important;
+        }
+        body.light-mode input,
+        body.light-mode select,
+        body.light-mode textarea {
+            background-color: #ffffff !important;
+            border-color: #cbd5e1 !important;
+            color: #0f172a !important;
+        }
+        body.light-mode .order-progress-dot {
+            background-color: #e2e8f0;
+            border-color: #cbd5e1;
+            color: #64748b;
+        }
+        body.light-mode .order-progress-line {
+            background-color: #cbd5e1;
+        }
+        body.light-mode .toast-notification {
+            background-color: #ffffff !important;
+            border-color: #d97706 !important;
+            color: #0f172a !important;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important;
+        }
+        body.light-mode .toast-notification .text-stone-100 {
+            color: #0f172a !important;
+        }
+        body.light-mode .lang-btn:not(.active),
+        body.light-mode .theme-toggle-btn {
+            background-color: #ffffff !important;
+            border-color: #cbd5e1 !important;
+            color: #334155 !important;
+        }
     </style>
 </head>
 <body class="min-h-screen lock-screen bg-stone-950 text-stone-100 font-sans">
@@ -1247,6 +1311,40 @@
             }
         }
 
+        async function verifierEtRestaurerCommandeEnCours() {
+            const savedOrderId = localStorage.getItem('remal_current_order_id');
+            if (!savedOrderId || !supabaseClient) return;
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('food_orders')
+                    .select('status, created_at')
+                    .eq('id', savedOrderId)
+                    .maybeSingle();
+
+                if (error || !data) {
+                    localStorage.removeItem('remal_current_order_id');
+                    return;
+                }
+
+                // Vérifier la limite de 20 min si déjà livré
+                if (data.status === 'Delivered' || data.status === 'Completed') {
+                    const updatedAt = new Date(data.created_at).getTime();
+                    const now = new Date().getTime();
+                    if (now - updatedAt > 20 * 60 * 1000) {
+                        localStorage.removeItem('remal_current_order_id');
+                        return;
+                    }
+                }
+
+                // Afficher le suivi de commande sur l'onglet Room Service si commande active
+                showService('room_service');
+                updateOrderTracking(data.status || 'Pending');
+            } catch (err) {
+                console.warn('Erreur lors de la vérification de la commande:', err);
+            }
+        }
+
         // ==================== THEME & UTILS ====================
         function toggleTheme() {
             document.body.classList.toggle('light-mode');
@@ -1354,6 +1452,7 @@
                     lockScreen.classList.add('hidden'); 
                     mainScreen.classList.remove('hidden'); 
                     mainScreen.classList.add('screen-enter'); 
+                    verifierEtRestaurerCommandeEnCours();
                 }, 400);
 
             } catch (error) { 
@@ -1404,6 +1503,7 @@
                     afficherPagePersonnalisee(parsedData, savedRoom);
                     document.getElementById('lockScreen').classList.add('hidden');
                     document.getElementById('mainScreen').classList.remove('hidden');
+                    verifierEtRestaurerCommandeEnCours();
                 } catch (e) {}
             }
         }
