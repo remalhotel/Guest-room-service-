@@ -1,14 +1,35 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kitchen Dashboard - Remal Hotel</title>
+    <title>Remal Hotel - Kitchen Dashboard</title>
+    
+    <!-- CDNs -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Fichiers locaux -->
     <link rel="stylesheet" href="assets/css/style.css">
+    
+    <style>
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(100px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .animate-slide-in { animation: slideInRight 0.3s ease forwards; }
+        
+        @keyframes pulse-ring {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+        
+        .pulse-ring { animation: pulse-ring 2s infinite; }
+    </style>
 </head>
 <body class="min-h-screen p-3 sm:p-6">
 
@@ -30,6 +51,9 @@
                     <span class="w-2 h-2 bg-emerald-400 rounded-full pulse-notification"></span>
                     LIVE
                 </span>
+                <button onclick="toggleTheme()" class="theme-toggle-btn" title="Toggle Theme">
+                    <i class="fas fa-sun text-sm" id="themeIconStaff"></i>
+                </button>
                 <button onclick="logoutStaff()" class="bg-red-500/20 text-red-400 border border-red-500/30 px-4 py-2 rounded-xl text-xs font-bold hover:bg-red-500/30 transition">
                     <i class="fas fa-sign-out-alt"></i> Exit
                 </button>
@@ -40,7 +64,7 @@
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div class="stat-card remal-card rounded-2xl p-4 text-center">
                 <div class="text-3xl font-serif-luxury font-bold text-[var(--text-gold)]" id="statTotalOrders">0</div>
-                <p class="text-[10px] text-muted-custom uppercase mt-1 font-bold">Total</p>
+                <p class="text-[10px] text-muted-custom uppercase mt-1 font-bold">Total Orders</p>
             </div>
             <div class="stat-card remal-card rounded-2xl p-4 text-center">
                 <div class="text-3xl font-serif-luxury font-bold text-amber-400" id="statPendingOrders">0</div>
@@ -70,20 +94,107 @@
     </div>
 
     <script src="assets/js/config.js"></script>
+    <script src="assets/js/menu.js"></script>
     <script>
-        // Vérification d'authentification
-        if (!sessionStorage.getItem('staff_authorized')) {
-            window.location.href = 'staff-login.html';
-        }
-
+        // ==================== INITIALISATION ====================
         const supabaseClient = initSupabaseClient();
         let staffOrders = [];
         let currentFilter = 'all';
+        let realtimeChannel = null;
+        let audioContext = null;
+        let soundEnabled = false;
 
-        // Initialisation
-        fetchAllOrders();
-        setupRealtime();
+        // ==================== FONCTIONS THÈME ====================
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            
+            const isLight = document.body.classList.contains('light-mode');
+            const icon = document.getElementById('themeIconStaff');
+            
+            if (icon) {
+                icon.className = isLight ? 'fas fa-moon text-sm' : 'fas fa-sun text-sm';
+            }
+            
+            localStorage.setItem('remal_theme', isLight ? 'light' : 'dark');
+        }
 
+        function initTheme() {
+            const savedTheme = localStorage.getItem('remal_theme');
+            
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-mode');
+            } else {
+                document.body.classList.remove('light-mode');
+            }
+            
+            const isLight = document.body.classList.contains('light-mode');
+            const icon = document.getElementById('themeIconStaff');
+            
+            if (icon) {
+                icon.className = isLight ? 'fas fa-moon text-sm' : 'fas fa-sun text-sm';
+            }
+        }
+
+        // ==================== NOTIFICATION SONORE ====================
+        function enableSoundAlerts() {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                audioContext.resume().then(() => {
+                    soundEnabled = true;
+                    playNotificationSound();
+                    showToast('🔊 Sound alerts enabled', 'success');
+                });
+            } catch (e) {
+                console.error('Audio Error:', e);
+            }
+        }
+
+        function playNotificationSound() {
+            if (!soundEnabled || !audioContext) return;
+            
+            try {
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(587.33, audioContext.currentTime);
+                osc.frequency.setValueAtTime(880, audioContext.currentTime + 0.15);
+                
+                gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+                
+                osc.start();
+                osc.stop(audioContext.currentTime + 0.5);
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        // ==================== NOTIFICATION TOAST ====================
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = 'toast-notification';
+            
+            const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
+            
+            toast.innerHTML = `
+                <span>${icon}</span>
+                <span class="text-xs font-bold text-[var(--text-main)]">${message}</span>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // ==================== RÉCUPÉRATION DES COMMANDES ====================
         async function fetchAllOrders() {
             const { data, error } = await supabaseClient
                 .from('food_orders')
@@ -92,21 +203,47 @@
                 .limit(50);
 
             if (data) {
+                // Détecter les nouvelles commandes
+                const newOrders = data.filter(order => 
+                    order.status === 'Pending' && 
+                    !staffOrders.some(existing => existing.id === order.id)
+                );
+                
+                if (newOrders.length > 0) {
+                    playNotificationSound();
+                    showToast(`🔔 ${newOrders.length} new order(s) received!`, 'info');
+                }
+                
                 staffOrders = data;
                 renderStaffOrders();
             }
         }
 
+        // ==================== TEMPS RÉEL ====================
         function setupRealtime() {
-            supabaseClient
-                .channel('food-orders-realtime')
+            if (realtimeChannel) {
+                supabaseClient.removeChannel(realtimeChannel);
+            }
+            
+            realtimeChannel = supabaseClient
+                .channel('food-orders-realtime-staff')
                 .on('postgres_changes', 
                     { event: '*', schema: 'public', table: 'food_orders' }, 
-                    () => { fetchAllOrders(); }
+                    (payload) => {
+                        console.log('Realtime update:', payload.eventType, payload.new);
+                        
+                        if (payload.eventType === 'INSERT') {
+                            playNotificationSound();
+                            showToast('🔔 New order received!', 'info');
+                        }
+                        
+                        fetchAllOrders();
+                    }
                 )
                 .subscribe();
         }
 
+        // ==================== AFFICHAGE DES COMMANDES ====================
         function renderStaffOrders() {
             const container = document.getElementById('staffOrdersContainer');
             const filteredOrders = currentFilter === 'all' 
@@ -134,48 +271,91 @@
                 const statusColor = statusColors[order.status] || statusColors['Pending'];
                 const timeAgo = getTimeAgo(order.created_at);
                 const items = Array.isArray(order.items) ? order.items : [];
+                const isPending = order.status === 'Pending';
 
                 return `
-                    <div class="order-card remal-card rounded-2xl p-4 space-y-3">
+                    <div class="order-card remal-card rounded-2xl p-4 space-y-3 ${isPending ? 'pulse-ring' : ''}">
                         <div class="flex justify-between items-start">
                             <div>
                                 <p class="font-bold text-[var(--text-gold)] text-sm">Room ${order.room_number}</p>
-                                <p class="text-[10px] text-muted-custom">${order.guest_name} • ${order.meal_type}</p>
+                                <p class="text-[10px] text-muted-custom uppercase">${order.guest_name}</p>
+                                <p class="text-[9px] text-muted-custom">${order.meal_type} • ${order.delivery_time}</p>
                             </div>
                             <span class="status-badge ${statusColor}">${order.status || 'Pending'}</span>
                         </div>
                         
-                        <div class="space-y-1 text-xs">
-                            ${items.map(item => `<p class="text-[var(--text-main)]">• ${item.quantity}x ${item.name} <span class="text-muted-custom">(AED ${item.total || item.price * item.quantity})</span></p>`).join('')}
+                        <div class="space-y-1.5 text-xs">
+                            ${items.map(item => {
+                                const badgesHTML = item.badges && item.badges.length > 0 
+                                    ? item.badges.map(b => {
+                                        const badgeMap = {
+                                            'vegetarian': '🌱',
+                                            'spicy': '🌶️',
+                                            'chef': '⭐',
+                                            'new': '🆕',
+                                            'popular': '🔥'
+                                        };
+                                        return badgeMap[b] || '';
+                                    }).join(' ')
+                                    : '';
+                                
+                                const allergensHTML = item.allergens && item.allergens.length > 0 
+                                    ? `<span class="text-[8px] text-red-400">⚠️ ${item.allergens.join(', ')}</span>`
+                                    : '';
+                                
+                                return `
+                                    <div class="flex justify-between items-start border-b border-[var(--border-gold)] pb-1.5">
+                                        <div>
+                                            <p class="font-bold text-[var(--text-main)]">
+                                                ${item.quantity}x ${item.name} ${badgesHTML}
+                                            </p>
+                                            ${item.prepTime ? `<p class="text-[9px] text-muted-custom">⏱️ ${item.prepTime}</p>` : ''}
+                                            ${allergensHTML}
+                                        </div>
+                                        <span class="font-bold text-[var(--text-gold)]">AED ${item.total || item.price * item.quantity}</span>
+                                    </div>
+                                `;
+                            }).join('')}
                         </div>
                         
                         <div class="flex justify-between items-center text-xs border-t border-[var(--border-gold)] pt-2">
-                            <span class="font-bold text-[var(--text-gold)]">AED ${order.total_amount}</span>
+                            <span class="font-bold text-[var(--text-gold)] text-sm">Total: AED ${order.total_amount}</span>
                             <span class="text-[10px] text-muted-custom">${timeAgo}</span>
                         </div>
                         
                         ${order.special_instructions && order.special_instructions !== 'None' 
-                            ? `<p class="text-[10px] text-amber-400 bg-amber-500/10 p-2 rounded-lg">📝 ${order.special_instructions}</p>`
+                            ? `<div class="bg-amber-500/10 border border-amber-500/20 p-2.5 rounded-xl">
+                                <p class="text-[10px] font-bold text-amber-400">📝 Special Instructions:</p>
+                                <p class="text-[10px] text-amber-300">${order.special_instructions}</p>
+                            </div>`
                             : ''
                         }
                         
-                        <p class="text-[10px] text-muted-custom">🕒 ${order.delivery_time}</p>
-                        
-                        <div class="flex gap-2">
+                        <div class="flex gap-2 pt-1">
                             ${order.status === 'Pending' 
-                                ? `<button onclick="updateOrderStatus(${order.id}, 'Preparing')" class="flex-1 bg-blue-500/20 text-blue-400 py-2 rounded-lg text-xs font-bold hover:bg-blue-500/30 transition">Start Preparing</button>`
+                                ? `<button onclick="updateOrderStatus(${order.id}, 'Preparing')" class="flex-1 bg-blue-500/20 text-blue-400 py-2.5 rounded-xl text-xs font-bold hover:bg-blue-500/40 transition">
+                                    👨‍🍳 Start Preparing
+                                </button>`
                                 : order.status === 'Preparing'
-                                ? `<button onclick="updateOrderStatus(${order.id}, 'Ready')" class="flex-1 bg-purple-500/20 text-purple-400 py-2 rounded-lg text-xs font-bold hover:bg-purple-500/30 transition">Mark Ready</button>`
+                                ? `<button onclick="updateOrderStatus(${order.id}, 'Ready')" class="flex-1 bg-purple-500/20 text-purple-400 py-2.5 rounded-xl text-xs font-bold hover:bg-purple-500/40 transition">
+                                    ✅ Mark Ready
+                                </button>`
                                 : order.status === 'Ready'
-                                ? `<button onclick="updateOrderStatus(${order.id}, 'Delivered')" class="flex-1 bg-emerald-500/20 text-emerald-400 py-2 rounded-lg text-xs font-bold hover:bg-emerald-500/30 transition">Mark Delivered</button>`
-                                : ''
+                                ? `<button onclick="updateOrderStatus(${order.id}, 'Delivered')" class="flex-1 bg-emerald-500/20 text-emerald-400 py-2.5 rounded-xl text-xs font-bold hover:bg-emerald-500/40 transition">
+                                    🚚 Mark Delivered
+                                </button>`
+                                : `<span class="flex-1 text-center text-[10px] text-emerald-400 font-bold py-2.5">✅ Completed</span>`
                             }
+                            <button onclick="deleteOrder(${order.id})" class="bg-red-500/10 text-red-400 px-3 py-2.5 rounded-xl text-xs font-bold hover:bg-red-500/30 transition">
+                                🗑️
+                            </button>
                         </div>
                     </div>
                 `;
             }).join('');
         }
 
+        // ==================== FILTRES ====================
         function filterStaffOrders(filter) {
             currentFilter = filter;
             
@@ -191,6 +371,7 @@
             renderStaffOrders();
         }
 
+        // ==================== MISE À JOUR DU STATUT ====================
         async function updateOrderStatus(orderId, newStatus) {
             const { error } = await supabaseClient
                 .from('food_orders')
@@ -198,10 +379,29 @@
                 .eq('id', orderId);
 
             if (!error) {
+                showToast(`Order #${orderId} → ${newStatus}`, 'success');
+                fetchAllOrders();
+            } else {
+                showToast('Error updating status', 'error');
+            }
+        }
+
+        // ==================== SUPPRESSION ====================
+        async function deleteOrder(orderId) {
+            if (!confirm('Delete this order?')) return;
+            
+            const { error } = await supabaseClient
+                .from('food_orders')
+                .delete()
+                .eq('id', orderId);
+
+            if (!error) {
+                showToast('Order deleted', 'info');
                 fetchAllOrders();
             }
         }
 
+        // ==================== TEMPS ÉCOULÉ ====================
         function getTimeAgo(timestamp) {
             const now = new Date();
             const then = new Date(timestamp);
@@ -210,13 +410,23 @@
             if (diffMins < 1) return 'Just now';
             if (diffMins < 60) return `${diffMins} min ago`;
             const diffHours = Math.floor(diffMins / 60);
-            return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+            if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+            const diffDays = Math.floor(diffHours / 24);
+            return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
         }
 
+        // ==================== DÉCONNEXION ====================
         function logoutStaff() {
-            sessionStorage.removeItem('staff_authorized');
+            if (realtimeChannel) {
+                supabaseClient.removeChannel(realtimeChannel);
+            }
             window.location.href = 'staff-login.html';
         }
+
+        // ==================== INITIALISATION ====================
+        initTheme();
+        fetchAllOrders();
+        setupRealtime();
     </script>
 </body>
 </html>
