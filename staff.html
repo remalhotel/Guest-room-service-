@@ -2,7 +2,7 @@
 <html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Remal Hotel - Guest Hub Staff Dashboard</title>
     
     <!-- CDNs -->
@@ -11,13 +11,20 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- jsPDF pour générer le PDF -->
+    <!-- jsPDF pour les PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
+    <!-- JsBarcode pour les codes-barres -->
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    
+    <!-- Chart.js pour les graphiques -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     
     <!-- Fichiers locaux -->
     <link rel="stylesheet" href="assets/css/style.css">
     
     <style>
+        /* ==================== ANIMATIONS ==================== */
         @keyframes slideInRight { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
         .animate-slide-in { animation: slideInRight 0.3s ease forwards; }
         
@@ -35,6 +42,7 @@
         }
         .shake-alert { animation: shake-alert 0.5s ease; }
         
+        /* ==================== STYLES GÉNÉRAUX ==================== */
         .staff-tab-btn { transition: all 0.3s ease; cursor: pointer; }
         .staff-tab-btn.active { background: var(--text-gold); color: #1c1917; font-weight: 900; box-shadow: 0 5px 15px rgba(220, 167, 115, 0.3); }
         .staff-tab-btn:not(.active) { background: var(--bg-card-hover); color: var(--text-muted); border: 1px solid var(--border-gold); }
@@ -94,13 +102,56 @@
             padding: 0.75rem;
             text-align: center;
         }
+        
+        /* ==================== MODE CLAIR ==================== */
+        body.light-mode {
+            background-color: #f8fafc !important;
+            color: #0f172a !important;
+        }
+        body.light-mode .remal-card,
+        body.light-mode .mini-stat-card {
+            background-color: #ffffff !important;
+            border-color: rgba(217, 119, 6, 0.2) !important;
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.08) !important;
+        }
+        body.light-mode .text-muted-custom {
+            color: #64748b !important;
+        }
+        
+        /* ==================== ZONE DE RECHERCHE ==================== */
+        .search-input {
+            background: var(--bg-input);
+            border: 1px solid var(--border-gold-strong);
+            color: var(--text-main);
+            border-radius: 12px;
+            padding: 10px 14px;
+            font-size: 11px;
+            outline: none;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        .search-input:focus {
+            border-color: var(--text-gold);
+            box-shadow: 0 0 15px rgba(220, 167, 115, 0.3);
+        }
+        
+        /* ==================== CHAT ==================== */
+        .chat-message {
+            padding: 8px 12px;
+            border-radius: 12px;
+            margin-bottom: 6px;
+            max-width: 80%;
+            font-size: 11px;
+        }
+        .chat-message.staff { background: var(--text-gold); color: #1c1917; margin-left: auto; }
+        .chat-message.guest { background: var(--bg-card-hover); color: var(--text-main); margin-right: auto; }
     </style>
 </head>
 <body class="min-h-screen p-3 sm:p-6">
 
     <div class="max-w-7xl mx-auto space-y-6">
         
-        <!-- En-tête -->
+        <!-- ==================== EN-TÊTE ==================== -->
         <div class="flex justify-between items-center remal-card p-4 rounded-2xl shadow-lg">
             <div class="flex items-center gap-3">
                 <div class="w-12 h-12 rounded-2xl bg-[var(--text-gold)] text-stone-950 flex items-center justify-center text-xl">
@@ -110,6 +161,7 @@
                     <h1 class="text-lg font-serif-luxury font-bold text-[var(--text-gold)]">GUEST HUB DASHBOARD</h1>
                     <p class="text-[10px] text-muted-custom uppercase">Remal Hotel & Villas • All Services</p>
                     <p class="text-[10px] text-muted-custom font-mono" id="currentDateTimeDisplay"></p>
+                    <p class="text-[10px] font-mono" id="tabTitleNotification">Guest Hub Dashboard</p>
                 </div>
             </div>
             <div class="flex items-center gap-3">
@@ -129,14 +181,14 @@
             </div>
         </div>
 
-        <!-- ONGLETS STAFF -->
-        <div class="grid grid-cols-2 md:grid-cols-5 gap-2">
+        <!-- ==================== ONGLETS STAFF ==================== -->
+        <div class="grid grid-cols-2 md:grid-cols-6 gap-2">
             <button onclick="switchStaffTab('front_desk')" id="staffTabFrontDesk" class="staff-tab-btn active px-4 py-3 rounded-xl text-xs font-bold whitespace-nowrap relative">
                 🛎️ Front Desk
                 <span id="badgeFrontDesk" class="tab-notification-badge hidden">0</span>
             </button>
             <button onclick="switchStaffTab('food_beverage')" id="staffTabFoodBeverage" class="staff-tab-btn px-4 py-3 rounded-xl text-xs font-bold whitespace-nowrap relative">
-                🍽️ Food & Beverage
+                🍽️ F&B
                 <span id="badgeFoodBeverage" class="tab-notification-badge hidden">0</span>
             </button>
             <button onclick="switchStaffTab('housekeeping')" id="staffTabHousekeeping" class="staff-tab-btn px-4 py-3 rounded-xl text-xs font-bold whitespace-nowrap relative">
@@ -150,9 +202,71 @@
             <button onclick="switchStaffTab('offers')" id="staffTabOffers" class="staff-tab-btn px-4 py-3 rounded-xl text-xs font-bold whitespace-nowrap relative">
                 🏷️ Offers
             </button>
+            <button onclick="switchStaffTab('analytics')" id="staffTabAnalytics" class="staff-tab-btn px-4 py-3 rounded-xl text-xs font-bold whitespace-nowrap relative">
+                📊 Analytics
+            </button>
         </div>
 
-        <!-- SECTION OFFRES -->
+        <!-- ==================== SECTION ANALYTICS ==================== -->
+        <div id="analyticsSection" class="hidden space-y-6">
+            <!-- Filtres de période -->
+            <div class="flex gap-2 overflow-x-auto scrollbar-none">
+                <button onclick="setAnalyticsPeriod('today')" id="periodToday" class="px-4 py-2 rounded-xl bg-[var(--text-gold)] text-stone-950 text-xs font-bold whitespace-nowrap">Aujourd'hui</button>
+                <button onclick="setAnalyticsPeriod('week')" id="periodWeek" class="px-4 py-2 rounded-xl remal-card text-muted-custom text-xs font-bold whitespace-nowrap">Cette semaine</button>
+                <button onclick="setAnalyticsPeriod('month')" id="periodMonth" class="px-4 py-2 rounded-xl remal-card text-muted-custom text-xs font-bold whitespace-nowrap">Ce mois</button>
+                <button onclick="setAnalyticsPeriod('all')" id="periodAll" class="px-4 py-2 rounded-xl remal-card text-muted-custom text-xs font-bold whitespace-nowrap">Tout</button>
+            </div>
+            
+            <!-- Statistiques principales -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="mini-stat-card">
+                    <div class="text-2xl font-serif-luxury font-bold text-[var(--text-gold)]" id="analyticsTotalOrders">0</div>
+                    <p class="text-[9px] text-muted-custom uppercase font-bold">Commandes totales</p>
+                </div>
+                <div class="mini-stat-card">
+                    <div class="text-2xl font-serif-luxury font-bold text-green-400" id="analyticsTotalRevenue">AED 0</div>
+                    <p class="text-[9px] text-muted-custom uppercase font-bold">Revenu total</p>
+                </div>
+                <div class="mini-stat-card">
+                    <div class="text-2xl font-serif-luxury font-bold text-blue-400" id="analyticsAvgTime">0 min</div>
+                    <p class="text-[9px] text-muted-custom uppercase font-bold">Temps moyen</p>
+                </div>
+                <div class="mini-stat-card">
+                    <div class="text-2xl font-serif-luxury font-bold text-purple-400" id="analyticsResolutionRate">0%</div>
+                    <p class="text-[9px] text-muted-custom uppercase font-bold">Taux résolution</p>
+                </div>
+            </div>
+            
+            <!-- Graphiques -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="remal-card rounded-2xl p-4">
+                    <h3 class="text-xs font-bold text-[var(--text-gold)] uppercase tracking-wider mb-3">Commandes par heure</h3>
+                    <canvas id="chartOrdersByHour" width="400" height="200"></canvas>
+                </div>
+                <div class="remal-card rounded-2xl p-4">
+                    <h3 class="text-xs font-bold text-[var(--text-gold)] uppercase tracking-wider mb-3">Répartition par service</h3>
+                    <canvas id="chartServiceBreakdown" width="400" height="200"></canvas>
+                </div>
+            </div>
+            
+            <!-- Performance -->
+            <div class="remal-card rounded-2xl p-4">
+                <h3 class="text-xs font-bold text-[var(--text-gold)] uppercase tracking-wider mb-3">Performance par statut</h3>
+                <canvas id="chartStatusBreakdown" width="400" height="150"></canvas>
+            </div>
+            
+            <!-- Bouton export -->
+            <div class="flex gap-2">
+                <button onclick="exportAnalyticsCSV()" class="flex-1 bg-emerald-500/20 text-emerald-400 py-3 rounded-xl text-xs font-bold hover:bg-emerald-500/40 transition">
+                    📥 Export CSV
+                </button>
+                <button onclick="exportAnalyticsPDF()" class="flex-1 bg-blue-500/20 text-blue-400 py-3 rounded-xl text-xs font-bold hover:bg-blue-500/40 transition">
+                    📄 Export PDF
+                </button>
+            </div>
+        </div>
+
+        <!-- ==================== SECTION OFFRES ==================== -->
         <div id="offersManagementSection" class="hidden space-y-6">
             <div class="remal-card rounded-2xl p-6 space-y-4">
                 <h2 class="text-sm font-serif-luxury font-bold text-[var(--text-gold)] border-b border-[var(--border-gold)] pb-3">
@@ -164,7 +278,7 @@
                         <label class="block text-[10px] font-bold text-[var(--text-gold)] uppercase tracking-wider">
                             <i class="fas fa-image mr-1"></i> Offer Photo
                         </label>
-                        <div id="uploadZone" class="upload-zone" onclick="document.getElementById('offerImageInput').click()" style="border:2px dashed var(--border-gold-strong);border-radius:1rem;padding:2rem;text-align:center;cursor:pointer;">
+                        <div id="uploadZone" onclick="document.getElementById('offerImageInput').click()" style="border:2px dashed var(--border-gold-strong);border-radius:1rem;padding:2rem;text-align:center;cursor:pointer;">
                             <div id="uploadPlaceholder">
                                 <i class="fas fa-cloud-upload-alt text-3xl text-[var(--text-gold)] mb-2"></i>
                                 <p class="text-xs font-bold text-[var(--text-main)]">Click to upload or drag & drop</p>
@@ -222,7 +336,7 @@
             </div>
         </div>
 
-        <!-- SECTION REQUÊTES -->
+        <!-- ==================== SECTION REQUÊTES ==================== -->
         <div id="requestsSection" class="space-y-6">
             
             <!-- STATISTIQUES PRINCIPALES -->
@@ -265,6 +379,12 @@
                 </div>
             </div>
 
+            <!-- RECHERCHE -->
+            <div class="relative">
+                <i class="fas fa-search absolute left-3.5 top-3 text-muted-custom text-xs"></i>
+                <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Rechercher par chambre, nom, article..." class="search-input pl-9">
+            </div>
+
             <!-- Filtres -->
             <div class="flex gap-2 overflow-x-auto scrollbar-none">
                 <button onclick="filterStaffOrders('all')" id="filterAll" class="px-4 py-2 rounded-xl bg-[var(--text-gold)] text-stone-950 text-xs font-bold whitespace-nowrap">All</button>
@@ -278,6 +398,23 @@
 
             <!-- Commandes -->
             <div id="staffOrdersContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        </div>
+
+        <!-- ==================== MODALE CHAT ==================== -->
+        <div id="chatModal" class="hidden fixed inset-0 bg-black/90 z-[300] flex items-center justify-center p-4">
+            <div class="bg-[var(--bg-card)] border border-[var(--border-gold-strong)] w-full max-w-md rounded-3xl p-6 space-y-4 max-h-[80vh] flex flex-col">
+                <div class="flex justify-between items-center border-b border-[var(--border-gold)] pb-3">
+                    <h3 class="text-sm font-serif-luxury font-bold text-[var(--text-gold)]">
+                        💬 Chat avec <span id="chatGuestName">---</span>
+                    </h3>
+                    <button onclick="closeChatModal()" class="text-muted-custom hover:text-[var(--text-main)] text-xl">✕</button>
+                </div>
+                <div id="chatMessagesContainer" class="flex-1 overflow-y-auto space-y-2 pr-2"></div>
+                <div class="flex gap-2 pt-2 border-t border-[var(--border-gold)]">
+                    <input type="text" id="chatInput" placeholder="Écrire un message..." class="flex-1 remal-input rounded-xl px-3 py-2 text-xs" onkeypress="if(event.key==='Enter') sendChatMessage()">
+                    <button onclick="sendChatMessage()" class="bg-[#DCA773] text-stone-950 font-bold px-4 py-2 rounded-xl text-xs">Envoyer</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -294,28 +431,51 @@
         let realtimeChannel = null;
         let audioContext = null;
         let soundEnabled = false;
+        let analyticsPeriod = 'today';
+        let searchQuery = '';
+        let analyticsCharts = {};
+        let currentChatRoom = null;
+        let currentChatGuest = null;
+        let chatMessages = [];
 
         // ==================== HEURE DE L'APPAREIL ====================
         function updateDateTimeDisplay() {
             const now = new Date();
-            const options = { 
-                year: 'numeric', 
-                month: 'short', 
-                day: 'numeric', 
-                hour: '2-digit', 
-                minute: '2-digit', 
-                second: '2-digit',
-                hour12: false 
-            };
+            const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
             const dateTimeStr = now.toLocaleString(undefined, options);
             const displayEl = document.getElementById('currentDateTimeDisplay');
-            if (displayEl) {
-                displayEl.innerText = '🕒 ' + dateTimeStr;
-            }
+            if (displayEl) displayEl.innerText = '🕒 ' + dateTimeStr;
         }
-        
         setInterval(updateDateTimeDisplay, 1000);
         updateDateTimeDisplay();
+
+        // ==================== NOTIFICATIONS NAVIGATEUR ====================
+        function requestNotificationPermission() {
+            if ('Notification' in window) {
+                Notification.requestPermission().then(permission => {
+                    if (permission === 'granted') {
+                        showToast('✅ Notifications activées !', 'success');
+                    }
+                });
+            }
+        }
+
+        function sendBrowserNotification(title, body) {
+            if ('Notification' in window && Notification.permission === 'granted') {
+                new Notification(title, { body: body, icon: 'logo.png' });
+                // Vibration sur mobile
+                if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+            }
+        }
+
+        function updateTabTitle(count) {
+            const title = document.getElementById('tabTitleNotification');
+            if (count > 0) {
+                title.innerText = `🔴 (${count}) Guest Hub Dashboard`;
+            } else {
+                title.innerText = 'Guest Hub Dashboard';
+            }
+        }
 
         // ==================== MAPPING DES SERVICES ====================
         const SERVICE_TAB_MAPPING = {
@@ -343,9 +503,7 @@
                         btn.innerText = '🔊 Sound ON';
                     }
                 });
-            } catch (e) {
-                console.error('Audio Error:', e);
-            }
+            } catch (e) {}
         }
 
         function playNotificationSound() {
@@ -362,7 +520,6 @@
                 gain1.connect(audioContext.destination);
                 osc1.start();
                 osc1.stop(audioContext.currentTime + 0.6);
-                
                 setTimeout(() => {
                     const osc2 = audioContext.createOscillator();
                     const gain2 = audioContext.createGain();
@@ -378,33 +535,22 @@
             } catch (e) {}
         }
 
-        // ==================== NOTIFICATION POPUP ====================
         function showNotificationPopup(message) {
             const popup = document.createElement('div');
             popup.className = 'notification-popup';
-            popup.innerHTML = `
-                <div class="icon"><i class="fas fa-bell"></i></div>
-                <div>
-                    <p class="text-xs font-bold text-[var(--text-main)]">${message}</p>
-                    <p class="text-[9px] text-muted-custom">${new Date().toLocaleTimeString()}</p>
-                </div>
-            `;
+            popup.innerHTML = `<div class="icon"><i class="fas fa-bell"></i></div><div><p class="text-xs font-bold text-[var(--text-main)]">${message}</p><p class="text-[9px] text-muted-custom">${new Date().toLocaleTimeString()}</p></div>`;
             document.body.appendChild(popup);
             popup.classList.add('shake-alert');
-            setTimeout(() => {
-                popup.style.opacity = '0';
-                popup.style.transition = 'opacity 0.5s ease';
-                setTimeout(() => popup.remove(), 500);
-            }, 5000);
+            setTimeout(() => { popup.style.opacity = '0'; popup.style.transition = 'opacity 0.5s ease'; setTimeout(() => popup.remove(), 500); }, 5000);
         }
 
-        // ==================== MISE À JOUR DES BADGES ====================
+        // ==================== BADGES D'ONGLETS ====================
         function updateTabBadges() {
             const tabs = ['front_desk', 'food_beverage', 'housekeeping', 'maintenance'];
+            let totalPending = 0;
             tabs.forEach(tab => {
-                const pendingCount = allRequests.filter(r => 
-                    r.tabCategory === tab && (r.status === 'Pending' || !r.status)
-                ).length;
+                const pendingCount = allRequests.filter(r => r.tabCategory === tab && (r.status === 'Pending' || !r.status)).length;
+                totalPending += pendingCount;
                 const badge = document.getElementById(`badge${tab.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('')}`);
                 if (badge) {
                     if (pendingCount > 0) {
@@ -415,24 +561,36 @@
                     }
                 }
             });
+            updateTabTitle(totalPending);
+        }
+
+        // ==================== RECHERCHE ====================
+        function handleSearch() {
+            searchQuery = document.getElementById('searchInput').value.toLowerCase().trim();
+            renderStaffOrders();
+        }
+
+        function filterBySearch(requests) {
+            if (!searchQuery) return requests;
+            return requests.filter(r => {
+                const roomMatch = String(r.room_number || '').toLowerCase().includes(searchQuery);
+                const guestMatch = String(r.guest_name || '').toLowerCase().includes(searchQuery);
+                const serviceMatch = String(r.serviceLabel || '').toLowerCase().includes(searchQuery);
+                const itemsMatch = r.requestType === 'food' && Array.isArray(r.items) ? r.items.some(i => String(i.name || '').toLowerCase().includes(searchQuery)) : false;
+                return roomMatch || guestMatch || serviceMatch || itemsMatch;
+            });
         }
 
         // ==================== STATISTIQUES F&B ====================
         function updateFoodBeverageStats() {
             const fbOrders = allRequests.filter(r => r.tabCategory === 'food_beverage' && r.requestType === 'food');
             const statsContainer = document.getElementById('foodBeverageStats');
-            
-            if (currentStaffTab === 'food_beverage') {
-                statsContainer.classList.remove('hidden');
-            } else {
-                statsContainer.classList.add('hidden');
-                return;
-            }
+            if (currentStaffTab === 'food_beverage') statsContainer.classList.remove('hidden');
+            else { statsContainer.classList.add('hidden'); return; }
             
             const totalOrders = fbOrders.length;
             const totalRevenue = fbOrders.reduce((sum, o) => sum + (parseFloat(o.total_amount) || 0), 0);
             const avgOrder = totalOrders > 0 ? totalRevenue / totalOrders : 0;
-            
             const itemCounts = {};
             fbOrders.forEach(order => {
                 const items = Array.isArray(order.items) ? order.items : [];
@@ -442,313 +600,351 @@
                     itemCounts[itemName] = (itemCounts[itemName] || 0) + qty;
                 });
             });
-            
             let topItem = '---';
             let topCount = 0;
             for (const [name, count] of Object.entries(itemCounts)) {
-                if (count > topCount) {
-                    topCount = count;
-                    topItem = name;
-                }
+                if (count > topCount) { topCount = count; topItem = name; }
             }
-            
             document.getElementById('fbStatTotalOrders').innerText = totalOrders;
             document.getElementById('fbStatRevenue').innerText = 'AED ' + totalRevenue.toFixed(2);
             document.getElementById('fbStatAvgOrder').innerText = 'AED ' + avgOrder.toFixed(2);
             document.getElementById('fbStatTopItem').innerText = topItem.length > 15 ? topItem.substring(0, 15) + '...' : topItem;
         }
 
-        // ==================== GÉNÉRATION PDF TICKET ====================
+        // ==================== ANALYTICS ====================
+        function setAnalyticsPeriod(period) {
+            analyticsPeriod = period;
+            ['today', 'week', 'month', 'all'].forEach(p => {
+                const btn = document.getElementById(`period${p.charAt(0).toUpperCase() + p.slice(1)}`);
+                if (btn) {
+                    if (p === period) btn.className = 'px-4 py-2 rounded-xl bg-[var(--text-gold)] text-stone-950 text-xs font-bold whitespace-nowrap';
+                    else btn.className = 'px-4 py-2 rounded-xl remal-card text-muted-custom text-xs font-bold whitespace-nowrap';
+                }
+            });
+            renderAnalytics();
+        }
+
+        function getFilteredByPeriod(requests) {
+            const now = new Date();
+            const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+            const weekStart = todayStart - (now.getDay() * 24 * 60 * 60 * 1000);
+            const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+            
+            return requests.filter(r => {
+                const created = new Date(r.created_at).getTime();
+                if (analyticsPeriod === 'today') return created >= todayStart;
+                if (analyticsPeriod === 'week') return created >= weekStart;
+                if (analyticsPeriod === 'month') return created >= monthStart;
+                return true;
+            });
+        }
+
+        function renderAnalytics() {
+            const filteredRequests = getFilteredByPeriod(allRequests);
+            const foodOrdersFiltered = filteredRequests.filter(r => r.requestType === 'food');
+            const totalRevenue = foodOrdersFiltered.reduce((sum, o) => sum + (parseFloat(o.total_amount) || 0), 0);
+            const completedRequests = filteredRequests.filter(r => r.status === 'Completed' || r.status === 'Delivered');
+            const resolutionRate = filteredRequests.length > 0 ? Math.round((completedRequests.length / filteredRequests.length) * 100) : 0;
+            
+            document.getElementById('analyticsTotalOrders').innerText = filteredRequests.length;
+            document.getElementById('analyticsTotalRevenue').innerText = 'AED ' + totalRevenue.toFixed(2);
+            document.getElementById('analyticsResolutionRate').innerText = resolutionRate + '%';
+            
+            // Temps moyen de résolution
+            let totalTime = 0;
+            let timeCount = 0;
+            completedRequests.forEach(r => {
+                if (r.created_at && r.updated_at) {
+                    const diff = (new Date(r.updated_at) - new Date(r.created_at)) / 60000;
+                    if (diff > 0) { totalTime += diff; timeCount++; }
+                }
+            });
+            const avgTime = timeCount > 0 ? Math.round(totalTime / timeCount) : 0;
+            document.getElementById('analyticsAvgTime').innerText = avgTime + ' min';
+            
+            // Graphique commandes par heure
+            const hourCounts = Array(24).fill(0);
+            filteredRequests.forEach(r => {
+                const hour = new Date(r.created_at).getHours();
+                hourCounts[hour]++;
+            });
+            
+            if (analyticsCharts.hourly) analyticsCharts.hourly.destroy();
+            analyticsCharts.hourly = new Chart(document.getElementById('chartOrdersByHour'), {
+                type: 'bar',
+                data: {
+                    labels: Array.from({length: 24}, (_, i) => i + 'h'),
+                    datasets: [{ label: 'Commandes', data: hourCounts, backgroundColor: '#DCA773' }]
+                },
+                options: { responsive: true, plugins: { legend: { display: false } } }
+            });
+            
+            // Graphique par service
+            const serviceCounts = {};
+            filteredRequests.forEach(r => {
+                const key = r.serviceLabel || 'Other';
+                serviceCounts[key] = (serviceCounts[key] || 0) + 1;
+            });
+            
+            if (analyticsCharts.service) analyticsCharts.service.destroy();
+            analyticsCharts.service = new Chart(document.getElementById('chartServiceBreakdown'), {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(serviceCounts),
+                    datasets: [{ data: Object.values(serviceCounts), backgroundColor: ['#DCA773', '#10b981', '#3b82f6', '#ef4444', '#f59e0b', '#8b5cf6'] }]
+                },
+                options: { responsive: true }
+            });
+            
+            // Graphique par statut
+            const statusCounts = { 'Pending': 0, 'In Progress': 0, 'Completed': 0 };
+            filteredRequests.forEach(r => {
+                if (r.status === 'Pending') statusCounts['Pending']++;
+                else if (r.status === 'Preparing' || r.status === 'Ready' || r.status === 'In Progress') statusCounts['In Progress']++;
+                else if (r.status === 'Completed' || r.status === 'Delivered') statusCounts['Completed']++;
+            });
+            
+            if (analyticsCharts.status) analyticsCharts.status.destroy();
+            analyticsCharts.status = new Chart(document.getElementById('chartStatusBreakdown'), {
+                type: 'bar',
+                data: {
+                    labels: ['Pending', 'In Progress', 'Completed'],
+                    datasets: [{ data: [statusCounts['Pending'], statusCounts['In Progress'], statusCounts['Completed']], backgroundColor: ['#f59e0b', '#3b82f6', '#10b981'] }]
+                },
+                options: { responsive: true, plugins: { legend: { display: false } } }
+            });
+        }
+
+        function exportAnalyticsCSV() {
+            const filteredRequests = getFilteredByPeriod(allRequests);
+            let csv = 'ID,Room,Guest,Service,Status,Date,Total\n';
+            filteredRequests.forEach(r => {
+                csv += `${r.id},${r.room_number},${r.guest_name},${r.serviceLabel},${r.status},${r.created_at},${r.total_amount || 0}\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'analytics_export.csv';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function exportAnalyticsPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const filteredRequests = getFilteredByPeriod(allRequests);
+            const totalRevenue = filteredRequests.filter(r => r.requestType === 'food').reduce((sum, o) => sum + (parseFloat(o.total_amount) || 0), 0);
+            
+            doc.setFontSize(16);
+            doc.text('Remal Hotel & Villas - Analytics Report', 105, 20, { align: 'center' });
+            doc.setFontSize(10);
+            doc.text('Period: ' + analyticsPeriod, 105, 30, { align: 'center' });
+            doc.text('Generated: ' + new Date().toLocaleString(), 105, 36, { align: 'center' });
+            
+            doc.setFontSize(12);
+            doc.text('Total Requests: ' + filteredRequests.length, 20, 50);
+            doc.text('Total Revenue: AED ' + totalRevenue.toFixed(2), 20, 58);
+            
+            doc.save('analytics_report.pdf');
+        }
+
+        // ==================== PDF TICKETS ====================
         function generateFoodOrderPDF(orderId) {
             const order = allRequests.find(r => r.id == orderId && r.requestType === 'food');
             if (!order) return;
-            
-            const items = Array.isArray(order.items) ? order.items : [];
-            const now = new Date();
-            const dateStr = now.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
-            const timeStr = now.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
-            
-            // Utiliser jsPDF
             const { jsPDF } = window.jspdf;
-            const doc = new jsPDF({
-                orientation: 'portrait',
-                unit: 'mm',
-                format: 'a5'
-            });
-            
+            const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a5' });
             const pageWidth = doc.internal.pageSize.getWidth();
             const pageHeight = doc.internal.pageSize.getHeight();
             const margin = 10;
             let y = margin;
+            const items = Array.isArray(order.items) ? order.items : [];
             
-            // ===== EN-TÊTE =====
             doc.setFont('helvetica', 'bold');
-            doc.setFontSize(16);
-            doc.text('REMAL HOTEL & VILLAS', pageWidth / 2, y + 5, { align: 'center' });
-            
+            doc.setFontSize(14);
+            doc.text('REMAL HOTEL & VILLAS', pageWidth / 2, y, { align: 'center' });
             doc.setFont('helvetica', 'normal');
+            doc.setFontSize(8);
+            doc.text('Room Service Ticket', pageWidth / 2, y + 6, { align: 'center' });
+            y += 14;
+            
             doc.setFontSize(9);
-            doc.text('Al Dhannah City', pageWidth / 2, y + 11, { align: 'center' });
+            doc.text('Room: ' + (order.room_number || 'N/A'), margin, y);
+            doc.text('Ticket #: ' + order.id, pageWidth - margin, y, { align: 'right' });
+            y += 5;
+            doc.text('Guest: ' + (order.guest_name || 'Guest'), margin, y);
+            y += 8;
             
-            doc.setFont('helvetica', 'bold');
-            doc.setFontSize(11);
-            doc.text('ROOM SERVICE TICKET', pageWidth / 2, y + 17, { align: 'center' });
-            
-            // Ligne séparatrice
-            y += 22;
-            doc.setDrawColor(0, 0, 0);
+            doc.setDrawColor(0);
             doc.setLineWidth(0.3);
             doc.line(margin, y, pageWidth - margin, y);
-            
-            // ===== INFOS =====
-            y += 8;
-            doc.setFont('helvetica', 'normal');
-            doc.setFontSize(9);
-            
-            doc.text('Ticket #:', margin, y);
-            doc.text(String(order.id), pageWidth - margin, y, { align: 'right' });
-            y += 5;
-            
-            doc.text('Date:', margin, y);
-            doc.text(dateStr + ' ' + timeStr, pageWidth - margin, y, { align: 'right' });
-            y += 5;
-            
-            doc.text('Room:', margin, y);
-            doc.setFont('helvetica', 'bold');
-            doc.text(String(order.room_number || 'N/A'), pageWidth - margin, y, { align: 'right' });
-            doc.setFont('helvetica', 'normal');
-            y += 5;
-            
-            doc.text('Guest:', margin, y);
-            doc.text(String(order.guest_name || 'Guest'), pageWidth - margin, y, { align: 'right' });
-            
-            // Ligne séparatrice
             y += 6;
-            doc.setDrawColor(0, 0, 0);
-            doc.setLineWidth(0.1);
-            doc.setLineDashPattern([1, 1], 0);
-            doc.line(margin, y, pageWidth - margin, y);
-            doc.setLineDashPattern([], 0);
             
-            // ===== ITEMS =====
-            y += 8;
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(8);
             doc.text('ITEMS', margin, y);
             y += 4;
-            
             doc.setFont('helvetica', 'normal');
-            doc.setFontSize(8);
             
             items.forEach(item => {
-                const itemName = `${item.quantity}x ${item.name}`;
-                const itemPrice = `AED ${(item.total || item.price * item.quantity || 0).toFixed(2)}`;
-                
-                doc.text(itemName, margin, y);
-                doc.text(itemPrice, pageWidth - margin, y, { align: 'right' });
+                doc.text(`${item.quantity}x ${item.name}`, margin, y);
+                doc.text(`AED ${(item.total || item.price * item.quantity || 0).toFixed(2)}`, pageWidth - margin, y, { align: 'right' });
                 y += 5;
-                
-                // Vérifier si on dépasse la page
-                if (y > pageHeight - 30) {
-                    doc.addPage();
-                    y = margin;
-                }
             });
             
-            // Ligne séparatrice
-            y += 2;
-            doc.setDrawColor(0, 0, 0);
+            y += 3;
+            doc.setDrawColor(0);
             doc.setLineWidth(0.3);
             doc.line(margin, y, pageWidth - margin, y);
+            y += 7;
             
-            // ===== TOTAL =====
-            y += 8;
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(11);
-            doc.text('TOTAL:', margin, y);
-            doc.text(`AED ${(parseFloat(order.total_amount) || 0).toFixed(2)}`, pageWidth - margin, y, { align: 'right' });
+            doc.text('TOTAL: AED ' + (parseFloat(order.total_amount) || 0).toFixed(2), pageWidth - margin, y, { align: 'right' });
             
-            // ===== NOTES =====
-            if (order.details && order.details !== 'None') {
-                y += 8;
-                doc.setFontSize(8);
-                doc.setFont('helvetica', 'italic');
-                doc.text('Notes: ' + order.details, margin, y);
-                doc.setFont('helvetica', 'normal');
-            }
-            
-            // ===== PIED DE PAGE =====
-            doc.setDrawColor(0, 0, 0);
-            doc.setLineWidth(0.3);
-            doc.line(margin, pageHeight - 20, pageWidth - margin, pageHeight - 20);
-            
-            doc.setFont('helvetica', 'normal');
-            doc.setFontSize(8);
-            doc.text('Merci de votre visite !', pageWidth / 2, pageHeight - 13, { align: 'center' });
-            doc.text('Remal Hotel & Villas', pageWidth / 2, pageHeight - 8, { align: 'center' });
-            
-            // Sauvegarder le PDF
-            doc.save(`Remal_Ticket_Room${order.room_number}_${order.id}.pdf`);
+            doc.save(`Remal_Ticket_${order.room_number}_${order.id}.pdf`);
         }
 
-        // ==================== IMPRESSION PDF TICKET ====================
         function printFoodOrderPDF(orderId) {
             const order = allRequests.find(r => r.id == orderId && r.requestType === 'food');
             if (!order) return;
-            
-            const items = Array.isArray(order.items) ? order.items : [];
-            const now = new Date();
-            const dateStr = now.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
-            const timeStr = now.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
-            
             const { jsPDF } = window.jspdf;
-            const doc = new jsPDF({
-                orientation: 'portrait',
-                unit: 'mm',
-                format: 'a5'
-            });
-            
+            const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a5' });
             const pageWidth = doc.internal.pageSize.getWidth();
             const pageHeight = doc.internal.pageSize.getHeight();
             const margin = 10;
             let y = margin;
+            const items = Array.isArray(order.items) ? order.items : [];
             
             doc.setFont('helvetica', 'bold');
-            doc.setFontSize(16);
-            doc.text('REMAL HOTEL & VILLAS', pageWidth / 2, y + 5, { align: 'center' });
-            
+            doc.setFontSize(14);
+            doc.text('REMAL HOTEL & VILLAS', pageWidth / 2, y, { align: 'center' });
             doc.setFont('helvetica', 'normal');
+            doc.setFontSize(8);
+            doc.text('Room Service Ticket', pageWidth / 2, y + 6, { align: 'center' });
+            y += 14;
+            
             doc.setFontSize(9);
-            doc.text('Al Dhannah City', pageWidth / 2, y + 11, { align: 'center' });
+            doc.text('Room: ' + (order.room_number || 'N/A'), margin, y);
+            doc.text('Ticket #: ' + order.id, pageWidth - margin, y, { align: 'right' });
+            y += 5;
+            doc.text('Guest: ' + (order.guest_name || 'Guest'), margin, y);
+            y += 8;
             
-            doc.setFont('helvetica', 'bold');
-            doc.setFontSize(11);
-            doc.text('ROOM SERVICE TICKET', pageWidth / 2, y + 17, { align: 'center' });
-            
-            y += 22;
-            doc.setDrawColor(0, 0, 0);
+            doc.setDrawColor(0);
             doc.setLineWidth(0.3);
             doc.line(margin, y, pageWidth - margin, y);
-            
-            y += 8;
-            doc.setFont('helvetica', 'normal');
-            doc.setFontSize(9);
-            
-            doc.text('Ticket #:', margin, y);
-            doc.text(String(order.id), pageWidth - margin, y, { align: 'right' });
-            y += 5;
-            
-            doc.text('Date:', margin, y);
-            doc.text(dateStr + ' ' + timeStr, pageWidth - margin, y, { align: 'right' });
-            y += 5;
-            
-            doc.text('Room:', margin, y);
-            doc.setFont('helvetica', 'bold');
-            doc.text(String(order.room_number || 'N/A'), pageWidth - margin, y, { align: 'right' });
-            doc.setFont('helvetica', 'normal');
-            y += 5;
-            
-            doc.text('Guest:', margin, y);
-            doc.text(String(order.guest_name || 'Guest'), pageWidth - margin, y, { align: 'right' });
-            
             y += 6;
-            doc.setDrawColor(0, 0, 0);
-            doc.setLineWidth(0.1);
-            doc.setLineDashPattern([1, 1], 0);
-            doc.line(margin, y, pageWidth - margin, y);
-            doc.setLineDashPattern([], 0);
             
-            y += 8;
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(8);
             doc.text('ITEMS', margin, y);
             y += 4;
-            
             doc.setFont('helvetica', 'normal');
-            doc.setFontSize(8);
             
             items.forEach(item => {
-                const itemName = `${item.quantity}x ${item.name}`;
-                const itemPrice = `AED ${(item.total || item.price * item.quantity || 0).toFixed(2)}`;
-                
-                doc.text(itemName, margin, y);
-                doc.text(itemPrice, pageWidth - margin, y, { align: 'right' });
+                doc.text(`${item.quantity}x ${item.name}`, margin, y);
+                doc.text(`AED ${(item.total || item.price * item.quantity || 0).toFixed(2)}`, pageWidth - margin, y, { align: 'right' });
                 y += 5;
-                
-                if (y > pageHeight - 30) {
-                    doc.addPage();
-                    y = margin;
-                }
             });
             
-            y += 2;
-            doc.setDrawColor(0, 0, 0);
+            y += 3;
+            doc.setDrawColor(0);
             doc.setLineWidth(0.3);
             doc.line(margin, y, pageWidth - margin, y);
+            y += 7;
             
-            y += 8;
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(11);
-            doc.text('TOTAL:', margin, y);
-            doc.text(`AED ${(parseFloat(order.total_amount) || 0).toFixed(2)}`, pageWidth - margin, y, { align: 'right' });
+            doc.text('TOTAL: AED ' + (parseFloat(order.total_amount) || 0).toFixed(2), pageWidth - margin, y, { align: 'right' });
             
-            if (order.details && order.details !== 'None') {
-                y += 8;
-                doc.setFontSize(8);
-                doc.setFont('helvetica', 'italic');
-                doc.text('Notes: ' + order.details, margin, y);
-                doc.setFont('helvetica', 'normal');
-            }
-            
-            doc.setDrawColor(0, 0, 0);
-            doc.setLineWidth(0.3);
-            doc.line(margin, pageHeight - 20, pageWidth - margin, pageHeight - 20);
-            
-            doc.setFont('helvetica', 'normal');
-            doc.setFontSize(8);
-            doc.text('Merci de votre visite !', pageWidth / 2, pageHeight - 13, { align: 'center' });
-            doc.text('Remal Hotel & Villas', pageWidth / 2, pageHeight - 8, { align: 'center' });
-            
-            // Ouvrir dans une nouvelle fenêtre pour impression
             const pdfBlob = doc.output('blob');
             const pdfUrl = URL.createObjectURL(pdfBlob);
             window.open(pdfUrl, '_blank');
         }
 
+        // ==================== CHAT ====================
+        function openChatModal(roomNumber, guestName) {
+            currentChatRoom = roomNumber;
+            currentChatGuest = guestName;
+            document.getElementById('chatGuestName').innerText = guestName + ' (Room ' + roomNumber + ')';
+            document.getElementById('chatMessagesContainer').innerHTML = '';
+            document.getElementById('chatModal').classList.remove('hidden');
+            loadChatMessages();
+        }
+
+        function closeChatModal() {
+            document.getElementById('chatModal').classList.add('hidden');
+            currentChatRoom = null;
+        }
+
+        async function loadChatMessages() {
+            if (!currentChatRoom || !supabaseClient) return;
+            const { data } = await supabaseClient
+                .from('chat_messages')
+                .select('*')
+                .or(`room_number.eq.${currentChatRoom},guest_room.eq.${currentChatRoom}`)
+                .order('created_at', { ascending: true })
+                .limit(50);
+            if (data) {
+                chatMessages = data;
+                renderChatMessages();
+            }
+        }
+
+        function renderChatMessages() {
+            const container = document.getElementById('chatMessagesContainer');
+            container.innerHTML = chatMessages.map(msg => `
+                <div class="chat-message ${msg.sender === 'staff' ? 'staff' : 'guest'}">
+                    <p>${msg.message}</p>
+                    <p class="text-[8px] opacity-60">${new Date(msg.created_at).toLocaleTimeString()}</p>
+                </div>
+            `).join('');
+        }
+
+        async function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if (!message || !currentChatRoom) return;
+            
+            const newMessage = {
+                room_number: currentChatRoom,
+                sender: 'staff',
+                message: message,
+                created_at: new Date().toISOString()
+            };
+            
+            if (supabaseClient) {
+                await supabaseClient.from('chat_messages').insert([newMessage]);
+            }
+            
+            chatMessages.push(newMessage);
+            renderChatMessages();
+            input.value = '';
+        }
+
         // ==================== RÉCUPÉRATION DES DONNÉES ====================
         async function fetchAllData() {
-            const { data: foodData } = await supabaseClient
-                .from('food_orders')
-                .select('*')
-                .order('created_at', { ascending: false })
-                .limit(100);
-
-            const { data: requestData } = await supabaseClient
-                .from('guest_requests')
-                .select('*')
-                .order('created_at', { ascending: false })
-                .limit(100);
+            const { data: foodData } = await supabaseClient.from('food_orders').select('*').order('created_at', { ascending: false }).limit(200);
+            const { data: requestData } = await supabaseClient.from('guest_requests').select('*').order('created_at', { ascending: false }).limit(200);
 
             if (foodData) {
-                const newFoodOrders = foodData.filter(o => 
-                    o.status === 'Pending' && 
-                    !foodOrders.some(existing => existing.id === o.id)
-                );
+                const newFoodOrders = foodData.filter(o => o.status === 'Pending' && !foodOrders.some(e => e.id === o.id));
                 if (newFoodOrders.length > 0) {
                     playNotificationSound();
-                    showNotificationPopup(`🔔 ${newFoodOrders.length} new food order(s) received!`);
+                    showNotificationPopup(`🔔 ${newFoodOrders.length} new food order(s)!`);
+                    sendBrowserNotification('Nouvelle commande !', `${newFoodOrders.length} commande(s) de nourriture reçue(s)`);
                 }
                 foodOrders = foodData;
             }
 
             if (requestData) {
-                const newRequests = requestData.filter(r => 
-                    r.status === 'Pending' && 
-                    !guestRequests.some(existing => existing.id === r.id)
-                );
+                const newRequests = requestData.filter(r => r.status === 'Pending' && !guestRequests.some(e => e.id === r.id));
                 if (newRequests.length > 0) {
                     playNotificationSound();
                     showNotificationPopup(`🔔 ${newRequests.length} new service request(s)!`);
+                    sendBrowserNotification('Nouvelle demande !', `${newRequests.length} demande(s) de service reçue(s)`);
                 }
                 guestRequests = requestData;
             }
@@ -761,12 +957,12 @@
             updateTabBadges();
             updateFoodBeverageStats();
             renderStaffOrders();
+            if (currentStaffTab === 'analytics') renderAnalytics();
         }
 
         // ==================== TEMPS RÉEL ====================
         function setupRealtime() {
             if (realtimeChannel) supabaseClient.removeChannel(realtimeChannel);
-            
             realtimeChannel = supabaseClient
                 .channel('guest-hub-realtime-staff')
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'food_orders' }, (payload) => {
@@ -783,8 +979,11 @@
                     }
                     fetchAllData();
                 })
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'offers' }, () => {
-                    fetchOffers();
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'offers' }, () => { fetchOffers(); })
+                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages' }, (payload) => {
+                    if (currentChatRoom && payload.new && payload.new.room_number == currentChatRoom) {
+                        loadChatMessages();
+                    }
                 })
                 .subscribe();
         }
@@ -792,22 +991,26 @@
         // ==================== ONGLETS ====================
         function switchStaffTab(tab) {
             currentStaffTab = tab;
-            
-            const tabs = ['front_desk', 'food_beverage', 'housekeeping', 'maintenance', 'offers'];
+            const tabs = ['front_desk', 'food_beverage', 'housekeeping', 'maintenance', 'offers', 'analytics'];
             tabs.forEach(t => {
                 const btn = document.getElementById(`staffTab${t.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('')}`);
                 if (btn) {
-                    if (t === tab) { btn.classList.add('active'); } else { btn.classList.remove('active'); }
+                    if (t === tab) btn.classList.add('active');
+                    else btn.classList.remove('active');
                 }
             });
             
+            document.getElementById('offersManagementSection').classList.add('hidden');
+            document.getElementById('requestsSection').classList.add('hidden');
+            document.getElementById('analyticsSection').classList.add('hidden');
+            
             if (tab === 'offers') {
                 document.getElementById('offersManagementSection').classList.remove('hidden');
-                document.getElementById('requestsSection').classList.add('hidden');
-                document.getElementById('foodBeverageStats').classList.add('hidden');
                 fetchOffers();
+            } else if (tab === 'analytics') {
+                document.getElementById('analyticsSection').classList.remove('hidden');
+                renderAnalytics();
             } else {
-                document.getElementById('offersManagementSection').classList.add('hidden');
                 document.getElementById('requestsSection').classList.remove('hidden');
                 updateFoodBeverageStats();
                 renderStaffOrders();
@@ -817,11 +1020,9 @@
         // ==================== AFFICHAGE DES REQUÊTES ====================
         function renderStaffOrders() {
             const container = document.getElementById('staffOrdersContainer');
-            
             let filteredRequests = allRequests.filter(r => r.tabCategory === currentStaffTab);
-            if (currentFilter !== 'all') {
-                filteredRequests = filteredRequests.filter(r => r.status === currentFilter);
-            }
+            if (currentFilter !== 'all') filteredRequests = filteredRequests.filter(r => r.status === currentFilter);
+            filteredRequests = filterBySearch(filteredRequests);
 
             const tabRequests = allRequests.filter(r => r.tabCategory === currentStaffTab);
             document.getElementById('statTotalOrders').innerText = tabRequests.length;
@@ -847,7 +1048,6 @@
                 const statusColor = statusColors[request.status] || statusColors['Pending'];
                 const timeAgo = getTimeAgo(request.created_at);
                 const isPending = request.status === 'Pending';
-                
                 const serviceTypeBadge = isFood 
                     ? '<span class="service-type-badge bg-orange-500/15 text-orange-400 border-orange-500/30">🍽️ Room Service</span>'
                     : `<span class="service-type-badge bg-blue-500/15 text-blue-400 border-blue-500/30">${request.serviceLabel}</span>`;
@@ -867,10 +1067,7 @@
                             <div class="space-y-1.5 text-xs">
                                 ${items.map(item => `
                                     <div class="flex justify-between items-start border-b border-[var(--border-gold)] pb-1.5">
-                                        <div>
-                                            <p class="font-bold text-[var(--text-main)]">${item.quantity}x ${item.name}</p>
-                                            ${item.prepTime ? `<p class="text-[9px] text-muted-custom">⏱️ ${item.prepTime}</p>` : ''}
-                                        </div>
+                                        <div><p class="font-bold text-[var(--text-main)]">${item.quantity}x ${item.name}</p></div>
                                         <span class="font-bold text-[var(--text-gold)]">AED ${item.total || item.price * item.quantity}</span>
                                     </div>
                                 `).join('')}
@@ -879,30 +1076,17 @@
                                 <span class="font-bold text-[var(--text-gold)]">Total: AED ${request.total_amount || 0}</span>
                                 <span class="text-[10px] text-muted-custom">${timeAgo}</span>
                             </div>
-                            ${request.details && request.details !== 'None' ? `
-                                <div class="bg-amber-500/10 border border-amber-500/20 p-2.5 rounded-xl">
-                                    <p class="text-[10px] font-bold text-amber-400">📝 Notes:</p>
-                                    <p class="text-[10px] text-amber-300">${request.details}</p>
-                                </div>
-                            ` : ''}
+                            ${request.details && request.details !== 'None' ? `<div class="bg-amber-500/10 border border-amber-500/20 p-2.5 rounded-xl"><p class="text-[10px] font-bold text-amber-400">📝 Notes:</p><p class="text-[10px] text-amber-300">${request.details}</p></div>` : ''}
                             <div class="flex gap-2 pt-1">
-                                ${request.status === 'Pending' ? 
-                                    `<button onclick="updateFoodOrderStatus(${request.id}, 'Preparing')" class="flex-1 bg-blue-500/20 text-blue-400 py-2.5 rounded-xl text-xs font-bold hover:bg-blue-500/40 transition">👨‍🍳 Start Preparing</button>` :
-                                    request.status === 'Preparing' ?
-                                    `<button onclick="updateFoodOrderStatus(${request.id}, 'Ready')" class="flex-1 bg-purple-500/20 text-purple-400 py-2.5 rounded-xl text-xs font-bold hover:bg-purple-500/40 transition">✅ Mark Ready</button>` :
-                                    request.status === 'Ready' ?
-                                    `<button onclick="updateFoodOrderStatus(${request.id}, 'Delivered')" class="flex-1 bg-emerald-500/20 text-emerald-400 py-2.5 rounded-xl text-xs font-bold hover:bg-emerald-500/40 transition">🚚 Mark Delivered</button>` :
-                                    `<span class="flex-1 text-center text-[10px] text-emerald-400 font-bold py-2.5">✅ Completed</span>`
-                                }
+                                ${request.status === 'Pending' ? `<button onclick="updateFoodOrderStatus(${request.id}, 'Preparing')" class="flex-1 bg-blue-500/20 text-blue-400 py-2.5 rounded-xl text-xs font-bold hover:bg-blue-500/40 transition">👨‍🍳 Start</button>` :
+                                request.status === 'Preparing' ? `<button onclick="updateFoodOrderStatus(${request.id}, 'Ready')" class="flex-1 bg-purple-500/20 text-purple-400 py-2.5 rounded-xl text-xs font-bold hover:bg-purple-500/40 transition">✅ Ready</button>` :
+                                request.status === 'Ready' ? `<button onclick="updateFoodOrderStatus(${request.id}, 'Delivered')" class="flex-1 bg-emerald-500/20 text-emerald-400 py-2.5 rounded-xl text-xs font-bold hover:bg-emerald-500/40 transition">🚚 Deliver</button>` :
+                                `<span class="flex-1 text-center text-[10px] text-emerald-400 font-bold py-2.5">✅ Completed</span>`}
                             </div>
-                            <!-- Boutons PDF -->
                             <div class="flex gap-2 pt-1">
-                                <button onclick="printFoodOrderPDF(${request.id})" class="flex-1 bg-blue-500/20 text-blue-400 py-2 rounded-xl text-[10px] font-bold hover:bg-blue-500/40 transition">
-                                    🖨️ Print PDF
-                                </button>
-                                <button onclick="generateFoodOrderPDF(${request.id})" class="flex-1 bg-emerald-500/20 text-emerald-400 py-2 rounded-xl text-[10px] font-bold hover:bg-emerald-500/40 transition">
-                                    ⬇️ Download PDF
-                                </button>
+                                <button onclick="printFoodOrderPDF(${request.id})" class="flex-1 bg-blue-500/20 text-blue-400 py-2 rounded-xl text-[10px] font-bold hover:bg-blue-500/40 transition">🖨️ PDF</button>
+                                <button onclick="generateFoodOrderPDF(${request.id})" class="flex-1 bg-emerald-500/20 text-emerald-400 py-2 rounded-xl text-[10px] font-bold hover:bg-emerald-500/40 transition">⬇️ Download</button>
+                                <button onclick="openChatModal('${request.room_number}', '${request.guest_name}')" class="flex-1 bg-purple-500/20 text-purple-400 py-2 rounded-xl text-[10px] font-bold hover:bg-purple-500/40 transition">💬 Chat</button>
                                 <button onclick="deleteFoodOrder(${request.id})" class="bg-red-500/10 text-red-400 px-3 py-2 rounded-xl text-xs font-bold hover:bg-red-500/30 transition">🗑️</button>
                             </div>
                         </div>
@@ -919,21 +1103,13 @@
                             </div>
                             ${serviceTypeBadge}
                             <p class="text-xs font-bold text-[var(--text-main)]">${request.serviceLabel}</p>
-                            ${request.details ? `
-                                <div class="bg-[var(--bg-dark)] p-3 rounded-xl text-[10px] text-muted-custom whitespace-pre-line">
-                                    ${request.details}
-                                </div>
-                            ` : ''}
-                            <div class="flex justify-between items-center text-xs">
-                                <span class="text-[10px] text-muted-custom">${timeAgo}</span>
-                            </div>
+                            ${request.details ? `<div class="bg-[var(--bg-dark)] p-3 rounded-xl text-[10px] text-muted-custom whitespace-pre-line">${request.details}</div>` : ''}
+                            <div class="flex justify-between items-center text-xs"><span class="text-[10px] text-muted-custom">${timeAgo}</span></div>
                             <div class="flex gap-2 pt-1">
-                                ${request.status === 'Pending' ? 
-                                    `<button onclick="updateGuestRequestStatus(${request.id}, 'In Progress')" class="flex-1 bg-blue-500/20 text-blue-400 py-2.5 rounded-xl text-xs font-bold hover:bg-blue-500/40 transition">👨‍💼 Start Handling</button>` :
-                                    request.status === 'In Progress' ?
-                                    `<button onclick="updateGuestRequestStatus(${request.id}, 'Completed')" class="flex-1 bg-emerald-500/20 text-emerald-400 py-2.5 rounded-xl text-xs font-bold hover:bg-emerald-500/40 transition">✔️ Mark Completed</button>` :
-                                    `<span class="flex-1 text-center text-[10px] text-emerald-400 font-bold py-2.5">✅ Completed</span>`
-                                }
+                                ${request.status === 'Pending' ? `<button onclick="updateGuestRequestStatus(${request.id}, 'In Progress')" class="flex-1 bg-blue-500/20 text-blue-400 py-2.5 rounded-xl text-xs font-bold hover:bg-blue-500/40 transition">👨‍💼 Handle</button>` :
+                                request.status === 'In Progress' ? `<button onclick="updateGuestRequestStatus(${request.id}, 'Completed')" class="flex-1 bg-emerald-500/20 text-emerald-400 py-2.5 rounded-xl text-xs font-bold hover:bg-emerald-500/40 transition">✔️ Complete</button>` :
+                                `<span class="flex-1 text-center text-[10px] text-emerald-400 font-bold py-2.5">✅ Completed</span>`}
+                                <button onclick="openChatModal('${request.room_number}', '${request.guest_name}')" class="bg-purple-500/20 text-purple-400 px-3 py-2.5 rounded-xl text-xs font-bold hover:bg-purple-500/40 transition">💬</button>
                                 <button onclick="deleteGuestRequest(${request.id})" class="bg-red-500/10 text-red-400 px-3 py-2.5 rounded-xl text-xs font-bold hover:bg-red-500/30 transition">🗑️</button>
                             </div>
                         </div>
@@ -952,12 +1128,12 @@
 
         // ==================== MISE À JOUR DES STATUTS ====================
         async function updateFoodOrderStatus(orderId, newStatus) {
-            const { error } = await supabaseClient.from('food_orders').update({ status: newStatus }).eq('id', orderId);
+            const { error } = await supabaseClient.from('food_orders').update({ status: newStatus, updated_at: new Date().toISOString() }).eq('id', orderId);
             if (!error) { showToast(`Order #${orderId} → ${newStatus}`, 'success'); fetchAllData(); }
         }
 
         async function updateGuestRequestStatus(requestId, newStatus) {
-            const { error } = await supabaseClient.from('guest_requests').update({ status: newStatus }).eq('id', requestId);
+            const { error } = await supabaseClient.from('guest_requests').update({ status: newStatus, updated_at: new Date().toISOString() }).eq('id', requestId);
             if (!error) { showToast(`Request #${requestId} → ${newStatus}`, 'success'); fetchAllData(); }
         }
 
@@ -979,15 +1155,34 @@
             const file = event.target.files[0];
             if (!file) return;
             if (file.size > 5 * 1024 * 1024) { showToast('Image too large. Max 5MB.', 'error'); return; }
+            
+            // Compression d'image
             const reader = new FileReader();
             reader.onload = function(e) {
-                const preview = document.getElementById('offerImagePreview');
-                const placeholder = document.getElementById('uploadPlaceholder');
-                preview.src = e.target.result;
-                preview.classList.remove('hidden');
-                placeholder.classList.add('hidden');
-                window.selectedOfferImage = e.target.result;
-                showToast('Image selected!', 'success');
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const maxWidth = 800;
+                    const ratio = maxWidth / img.width;
+                    canvas.width = maxWidth;
+                    canvas.height = img.height * ratio;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    canvas.toBlob(function(blob) {
+                        const compressedReader = new FileReader();
+                        compressedReader.onload = function(ce) {
+                            const preview = document.getElementById('offerImagePreview');
+                            const placeholder = document.getElementById('uploadPlaceholder');
+                            preview.src = ce.target.result;
+                            preview.classList.remove('hidden');
+                            placeholder.classList.add('hidden');
+                            window.selectedOfferImage = ce.target.result;
+                            showToast('Image compressée et sélectionnée !', 'success');
+                        };
+                        compressedReader.readAsDataURL(blob);
+                    }, 'image/jpeg', 0.7);
+                };
+                img.src = e.target.result;
             };
             reader.readAsDataURL(file);
         }
@@ -997,7 +1192,6 @@
             const price = document.getElementById('offerPrice').value.trim();
             const description = document.getElementById('offerDescription').value.trim();
             const category = document.getElementById('offerCategory').value;
-            
             if (!title) { showToast('Please enter a title', 'error'); return; }
             if (!price) { showToast('Please enter a price', 'error'); return; }
             if (!description) { showToast('Please enter a description', 'error'); return; }
@@ -1033,17 +1227,12 @@
                     <img src="${offer.image}" alt="${offer.title}" class="w-full h-40 object-cover" onerror="this.src='logo.png'">
                     <div class="p-4 space-y-2">
                         <div class="flex justify-between items-start">
-                            <div>
-                                <p class="font-bold text-[var(--text-gold)] text-xs">${offer.title}</p>
-                                <p class="text-[9px] text-muted-custom">${offer.category}</p>
-                            </div>
+                            <div><p class="font-bold text-[var(--text-gold)] text-xs">${offer.title}</p><p class="text-[9px] text-muted-custom">${offer.category}</p></div>
                             <span class="font-bold text-[var(--text-gold)] text-sm">${offer.price}</span>
                         </div>
                         <p class="text-[10px] text-muted-custom">${offer.description}</p>
                         <div class="flex gap-2 pt-2">
-                            <button onclick="toggleOfferActive(${offer.id}, ${!offer.is_active})" class="flex-1 ${offer.is_active ? 'bg-emerald-500/20 text-emerald-400' : 'bg-gray-500/20 text-gray-400'} py-2 rounded-xl text-xs font-bold transition">
-                                ${offer.is_active ? '✅ Active' : '❌ Inactive'}
-                            </button>
+                            <button onclick="toggleOfferActive(${offer.id}, ${!offer.is_active})" class="flex-1 ${offer.is_active ? 'bg-emerald-500/20 text-emerald-400' : 'bg-gray-500/20 text-gray-400'} py-2 rounded-xl text-xs font-bold transition">${offer.is_active ? '✅ Active' : '❌ Inactive'}</button>
                             <button onclick="deleteOffer(${offer.id})" class="bg-red-500/10 text-red-400 px-3 py-2 rounded-xl text-xs font-bold hover:bg-red-500/30 transition">🗑️</button>
                         </div>
                     </div>
@@ -1105,10 +1294,7 @@
         // ==================== VÉRIFICATION DE SESSION ====================
         document.addEventListener('DOMContentLoaded', () => {
             const isAuthorized = sessionStorage.getItem('staff_authorized');
-            if (!isAuthorized) {
-                window.location.href = 'staff-login.html';
-                return;
-            }
+            if (!isAuthorized) { window.location.href = 'staff-login.html'; return; }
             
             const loginTime = sessionStorage.getItem('staff_login_time');
             if (loginTime) {
@@ -1124,6 +1310,7 @@
             
             initTheme();
             updateDateTimeDisplay();
+            requestNotificationPermission();
             fetchAllData();
             fetchOffers();
             setupRealtime();
