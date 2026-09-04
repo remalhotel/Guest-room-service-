@@ -146,6 +146,55 @@
             border-color: #cbd5e1 !important;
             color: #334155 !important;
         }
+
+        /* ==================== SUIVI DES AUTRES SERVICES ==================== */
+        .service-tracking-card {
+            background-color: rgba(28, 25, 23, 0.8);
+            border: 1px solid rgba(220, 167, 115, 0.3);
+            border-radius: 1rem;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+        }
+        body.light-mode .service-tracking-card {
+            background-color: #f1f5f9;
+            border-color: #e2e8f0;
+        }
+        .service-tracking-dot {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #262626;
+            border: 2px solid #525252;
+            color: #a8a29e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            transition: all 0.3s;
+        }
+        .service-tracking-dot.active {
+            background: #DCA773;
+            border-color: #DCA773;
+            color: #0c0a09;
+        }
+        .service-tracking-dot.completed {
+            background: #10b981;
+            border-color: #10b981;
+            color: #ffffff;
+        }
+        .service-tracking-line {
+            flex: 1;
+            height: 2px;
+            background: #525252;
+            margin: 0 -2px;
+            position: relative;
+            top: -10px;
+            z-index: 1;
+            transition: background 0.3s;
+        }
+        .service-tracking-line.completed {
+            background: #10b981;
+        }
     </style>
 </head>
 <body class="min-h-screen lock-screen bg-stone-950 text-stone-100 font-sans">
@@ -278,6 +327,9 @@
                     <i class="fas fa-sign-out-alt mr-1"></i> <span data-i18n="logout">Change Room / Logout</span>
                 </button>
             </div>
+
+            <!-- ==================== SUIVI DES AUTRES SERVICES ==================== -->
+            <div id="servicesTrackingContainer" class="hidden space-y-3"></div>
 
             <!-- TABS -->
             <div class="flex gap-2">
@@ -546,6 +598,7 @@
         let currentOffers = [];
         let currentLanguage = localStorage.getItem('remal_language') || 'en';
         let trackingTimeout = null;
+        let serviceRequestsTimeout = null;
 
         const SALUTATIONS_REGEX = /\b(mr|mrs|ms|miss|mme|mlle|dr|prof|eng|sir|madam|lady|lord|sheikh|sheikha)\.?\b/gi;
 
@@ -611,7 +664,13 @@
                 readyForDelivery: 'Ready for Delivery',
                 orderDelivered: 'Delivered',
                 noOffers: 'No offers available at the moment',
-                featured: 'Featured'
+                featured: 'Featured',
+                serviceRequestsTracking: 'Service Requests Tracking',
+                pendingStatus: 'Pending',
+                inProgressStatus: 'In Progress',
+                completedStatus: 'Completed',
+                submittedAt: 'Submitted',
+                noActiveRequests: 'No active service requests'
             },
             fr: {
                 hotelName: 'Remal Hotel & Villas',
@@ -673,7 +732,13 @@
                 readyForDelivery: 'Prête pour livraison',
                 orderDelivered: 'Livrée',
                 noOffers: 'Aucune offre disponible',
-                featured: 'En vedette'
+                featured: 'En vedette',
+                serviceRequestsTracking: 'Suivi des demandes de service',
+                pendingStatus: 'En attente',
+                inProgressStatus: 'En cours',
+                completedStatus: 'Terminé',
+                submittedAt: 'Soumis',
+                noActiveRequests: 'Aucune demande de service active'
             },
             ar: {
                 hotelName: 'فندق وفلل رمال',
@@ -735,7 +800,13 @@
                 readyForDelivery: 'جاهز للتسليم',
                 orderDelivered: 'تم التسليم',
                 noOffers: 'لا توجد عروض متاحة',
-                featured: 'مميز'
+                featured: 'مميز',
+                serviceRequestsTracking: 'تتبع طلبات الخدمة',
+                pendingStatus: 'قيد الانتظار',
+                inProgressStatus: 'قيد التنفيذ',
+                completedStatus: 'مكتمل',
+                submittedAt: 'تم الإرسال',
+                noActiveRequests: 'لا توجد طلبات خدمة نشطة'
             },
             hi: {
                 hotelName: 'रेमल होटल और विला',
@@ -797,7 +868,13 @@
                 readyForDelivery: 'डिलीवरी के लिए तैयार',
                 orderDelivered: 'वितरित',
                 noOffers: 'कोई ऑफ़र उपलब्ध नहीं',
-                featured: 'विशेष'
+                featured: 'विशेष',
+                serviceRequestsTracking: 'सेवा अनुरोध ट्रैकिंग',
+                pendingStatus: 'लंबित',
+                inProgressStatus: 'प्रगति में',
+                completedStatus: 'पूर्ण',
+                submittedAt: 'प्रस्तुत',
+                noActiveRequests: 'कोई सक्रिय सेवा अनुरोध नहीं'
             }
         };
 
@@ -856,6 +933,7 @@
             
             renderFaqList();
             updateGreeting();
+            renderServiceRequestsTracking();
         }
 
         function updateGreeting() {
@@ -1019,6 +1097,7 @@
             if (tab === 'services') {
                 document.getElementById('servicesSection').classList.remove('hidden');
                 document.getElementById('tabServices').classList.add('active');
+                renderServiceRequestsTracking();
             } else if (tab === 'offers') {
                 document.getElementById('offersSection').classList.remove('hidden');
                 document.getElementById('tabOffers').classList.add('active');
@@ -1056,6 +1135,7 @@
             document.getElementById('roomServiceSection').classList.add('hidden');
             document.getElementById('otherServiceSection').classList.add('hidden');
             currentService = null;
+            renderServiceRequestsTracking();
         }
 
         function renderServiceFields(fields) {
@@ -1103,6 +1183,7 @@
                 showToast('✅ Request submitted!', 'success');
                 document.getElementById('otherServiceNotes').value = '';
                 backToServices();
+                renderServiceRequestsTracking();
             } catch (err) { showToast('Error: ' + err.message, 'error'); }
         }
 
@@ -1158,6 +1239,90 @@
                 document.getElementById('guestSpecialInstructions').value = '';
                 renderMenuItems();
             } catch (err) { showToast('Error: ' + err.message, 'error'); }
+        }
+
+        // ==================== SERVICE REQUESTS TRACKING ====================
+        async function fetchServiceRequestsTracking() {
+            const room = cachedGuestData?.room || localStorage.getItem('remal_guest_room');
+            if (!room || !supabaseClient) return;
+            
+            try {
+                const { data, error } = await supabaseClient
+                    .from('guest_requests')
+                    .select('*')
+                    .eq('room_number', room)
+                    .order('created_at', { ascending: false })
+                    .limit(10);
+                
+                if (!error && data && data.length > 0) {
+                    window.activeServiceRequests = data.filter(r => r.status === 'Pending' || r.status === 'In Progress');
+                } else {
+                    window.activeServiceRequests = [];
+                }
+            } catch (err) {
+                window.activeServiceRequests = [];
+            }
+            renderServiceRequestsTracking();
+        }
+
+        function renderServiceRequestsTracking() {
+            const container = document.getElementById('servicesTrackingContainer');
+            if (!container) return;
+            
+            const requests = window.activeServiceRequests || [];
+            
+            if (requests.length === 0) {
+                container.classList.add('hidden');
+                container.innerHTML = '';
+                return;
+            }
+            
+            container.classList.remove('hidden');
+            
+            container.innerHTML = `
+                <div class="p-4 bg-stone-950/60 border border-amber-500/20 rounded-2xl space-y-3">
+                    <span class="text-[10px] font-bold text-[var(--text-gold,#DCA773)] uppercase tracking-wider">
+                        <i class="fas fa-clipboard-list mr-1"></i> ${TRANSLATIONS[currentLanguage].serviceRequestsTracking}
+                    </span>
+                    ${requests.map(request => {
+                        const statusColors = {
+                            'Pending': { bg: 'bg-amber-500/20', text: 'text-amber-400', border: 'border-amber-500/30', label: TRANSLATIONS[currentLanguage].pendingStatus },
+                            'In Progress': { bg: 'bg-blue-500/20', text: 'text-blue-400', border: 'border-blue-500/30', label: TRANSLATIONS[currentLanguage].inProgressStatus },
+                            'Completed': { bg: 'bg-emerald-500/20', text: 'text-emerald-400', border: 'border-emerald-500/30', label: TRANSLATIONS[currentLanguage].completedStatus }
+                        };
+                        const sc = statusColors[request.status] || statusColors['Pending'];
+                        const timeAgo = getTimeAgo(request.created_at);
+                        
+                        const stepIndex = request.status === 'Pending' ? 0 : request.status === 'In Progress' ? 1 : 2;
+                        
+                        return `
+                            <div class="service-tracking-card">
+                                <div class="flex justify-between items-center mb-2">
+                                    <p class="font-bold text-stone-100 text-xs">${request.service_type}</p>
+                                    <span class="text-[9px] font-bold px-2 py-0.5 rounded-full ${sc.bg} ${sc.text} border ${sc.border}">${sc.label}</span>
+                                </div>
+                                <div class="order-progress">
+                                    <div class="order-progress-step">
+                                        <div class="service-tracking-dot ${stepIndex >= 0 ? 'active completed' : ''}"><i class="fas fa-check"></i></div>
+                                        <span class="order-progress-label ${stepIndex >= 0 ? 'active' : ''}">${TRANSLATIONS[currentLanguage].pendingStatus}</span>
+                                    </div>
+                                    <div class="service-tracking-line ${stepIndex >= 1 ? 'completed' : ''}"></div>
+                                    <div class="order-progress-step">
+                                        <div class="service-tracking-dot ${stepIndex >= 1 ? 'active completed' : ''}"><i class="fas fa-cog"></i></div>
+                                        <span class="order-progress-label ${stepIndex >= 1 ? 'active' : ''}">${TRANSLATIONS[currentLanguage].inProgressStatus}</span>
+                                    </div>
+                                    <div class="service-tracking-line ${stepIndex >= 2 ? 'completed' : ''}"></div>
+                                    <div class="order-progress-step">
+                                        <div class="service-tracking-dot ${stepIndex >= 2 ? 'active completed' : ''}"><i class="fas fa-check-double"></i></div>
+                                        <span class="order-progress-label ${stepIndex >= 2 ? 'active' : ''}">${TRANSLATIONS[currentLanguage].completedStatus}</span>
+                                    </div>
+                                </div>
+                                <p class="text-[9px] text-stone-400 mt-2">${TRANSLATIONS[currentLanguage].submittedAt}: ${timeAgo}</p>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
         }
 
         // ==================== MENU MODAL & RENDER ====================
@@ -1301,13 +1466,12 @@
                 }
             });
             
-            // Masquer le suivi de commande après 20 minutes en statut Delivered / Completed
             if (status === 'Delivered' || status === 'Completed') {
                 trackingTimeout = setTimeout(() => {
                     trackingSection.classList.add('hidden');
                     localStorage.removeItem('remal_current_order_id');
                     currentOrderId = null;
-                }, 20 * 60 * 1000); // 20 minutes
+                }, 20 * 60 * 1000);
             }
         }
 
@@ -1327,7 +1491,6 @@
                     return;
                 }
 
-                // Vérifier la limite de 20 min si déjà livré
                 if (data.status === 'Delivered' || data.status === 'Completed') {
                     const updatedAt = new Date(data.created_at).getTime();
                     const now = new Date().getTime();
@@ -1337,7 +1500,6 @@
                     }
                 }
 
-                // Afficher le suivi de commande sur l'onglet Room Service si commande active
                 showService('room_service');
                 updateOrderTracking(data.status || 'Pending');
             } catch (err) {
@@ -1385,6 +1547,18 @@
             if (hour < 12) return { text: 'Good Morning', emoji: '🌅' };
             if (hour < 18) return { text: 'Good Afternoon', emoji: '☀️' };
             return { text: 'Good Evening', emoji: '🌙' };
+        }
+
+        function getTimeAgo(timestamp) {
+            const now = new Date();
+            const then = new Date(timestamp);
+            const diffMins = Math.floor((now - then) / 60000);
+            if (diffMins < 1) return 'Just now';
+            if (diffMins < 60) return `${diffMins} min ago`;
+            const diffHours = Math.floor(diffMins / 60);
+            if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+            const diffDays = Math.floor(diffHours / 24);
+            return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
         }
 
         // ==================== IDENTITY VERIFICATION ====================
@@ -1453,6 +1627,7 @@
                     mainScreen.classList.remove('hidden'); 
                     mainScreen.classList.add('screen-enter'); 
                     verifierEtRestaurerCommandeEnCours();
+                    fetchServiceRequestsTracking();
                 }, 400);
 
             } catch (error) { 
@@ -1476,6 +1651,7 @@
             cachedGuestData = null;
             currentOrderId = null;
             if (trackingTimeout) clearTimeout(trackingTimeout);
+            if (serviceRequestsTimeout) clearTimeout(serviceRequestsTimeout);
             
             localStorage.removeItem('remal_guest_room');
             localStorage.removeItem('remal_guest_data');
@@ -1484,6 +1660,7 @@
             document.getElementById('lockRoomInput').value = '';
             document.getElementById('lockNameInput').value = '';
             menuCart = {};
+            window.activeServiceRequests = [];
             
             const lockScreen = document.getElementById('lockScreen');
             const mainScreen = document.getElementById('mainScreen');
@@ -1504,6 +1681,7 @@
                     document.getElementById('lockScreen').classList.add('hidden');
                     document.getElementById('mainScreen').classList.remove('hidden');
                     verifierEtRestaurerCommandeEnCours();
+                    fetchServiceRequestsTracking();
                 } catch (e) {}
             }
         }
