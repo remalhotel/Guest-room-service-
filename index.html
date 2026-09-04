@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en" dir="ltr" id="htmlRoot">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -35,23 +35,18 @@
         }
         
         .shake-error { animation: shake 0.5s ease; }
-        
-        .lock-screen {
-            background: linear-gradient(135deg, #0a0908 0%, #1a1714 50%, #0a0908 100%);
-        }
-        
-        .lock-card {
-            background: rgba(22, 20, 18, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(220, 167, 115, 0.4);
-            box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.9);
-        }
     </style>
 </head>
 <body class="min-h-screen lock-screen">
 
     <!-- ==================== ÉCRAN 1 : IDENTIFICATION ==================== -->
-    <div id="lockScreen" class="min-h-screen flex items-center justify-center p-4">
+    <div id="lockScreen" class="min-h-screen flex items-center justify-center p-4 relative">
+        
+        <!-- Bouton de basculement de thème (lock screen) -->
+        <button onclick="toggleTheme()" id="themeToggleLock" class="theme-toggle-btn fixed top-4 right-4 z-50" title="Toggle Dark/Light Mode">
+            <i class="fas fa-sun text-sm" id="themeIconLock"></i>
+        </button>
+        
         <div class="w-full max-w-md lock-card p-8 rounded-[2rem] space-y-6">
             
             <!-- Logo et titre -->
@@ -108,9 +103,6 @@
                     ❌ Room number or name not found. Please try again.
                 </div>
 
-                <!-- Message de diagnostic (pour débogage) -->
-                <div id="diagnosticMsg" class="hidden text-center text-[9px] text-amber-400 font-mono py-2 bg-amber-500/10 rounded-xl p-2"></div>
-
                 <!-- Bouton -->
                 <button onclick="verifierIdentiteClient()" 
                         class="w-full bg-[#DCA773] hover:bg-[#ebd0b3] text-stone-950 font-black py-4 rounded-2xl text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2.5 shadow-lg hover:scale-[1.02] active:scale-[0.98]">
@@ -125,7 +117,13 @@
     </div>
 
     <!-- ==================== ÉCRAN 2 : PAGE PERSONNALISÉE ==================== -->
-    <div id="mainScreen" class="hidden min-h-screen p-3 sm:p-6 flex items-center justify-center pb-24">
+    <div id="mainScreen" class="hidden min-h-screen p-3 sm:p-6 flex items-center justify-center pb-24 relative">
+        
+        <!-- Bouton de basculement de thème (main screen) -->
+        <button onclick="toggleTheme()" id="themeToggleMain" class="theme-toggle-btn fixed top-4 right-4 z-50" title="Toggle Dark/Light Mode">
+            <i class="fas fa-sun text-sm" id="themeIconMain"></i>
+        </button>
+        
         <div class="w-full max-w-md remal-card p-6 sm:p-8 rounded-[2rem] space-y-6">
             
             <!-- Bannière personnalisée -->
@@ -260,6 +258,48 @@
 
         const SALUTATIONS_REGEX = /\b(mr|mrs|ms|miss|mme|mlle|dr|prof|eng|sir|madam|lady|lord|sheikh|sheikha)\.?\b/gi;
 
+        // ==================== FONCTIONS THÈME ====================
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            
+            const isLight = document.body.classList.contains('light-mode');
+            
+            // Mettre à jour les icônes
+            const iconLock = document.getElementById('themeIconLock');
+            const iconMain = document.getElementById('themeIconMain');
+            
+            if (iconLock) {
+                iconLock.className = isLight ? 'fas fa-moon text-sm' : 'fas fa-sun text-sm';
+            }
+            if (iconMain) {
+                iconMain.className = isLight ? 'fas fa-moon text-sm' : 'fas fa-sun text-sm';
+            }
+            
+            // Sauvegarder la préférence
+            localStorage.setItem('remal_theme', isLight ? 'light' : 'dark');
+        }
+
+        function initTheme() {
+            const savedTheme = localStorage.getItem('remal_theme');
+            
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-mode');
+            } else {
+                document.body.classList.remove('light-mode');
+            }
+            
+            const isLight = document.body.classList.contains('light-mode');
+            const iconLock = document.getElementById('themeIconLock');
+            const iconMain = document.getElementById('themeIconMain');
+            
+            if (iconLock) {
+                iconLock.className = isLight ? 'fas fa-moon text-sm' : 'fas fa-sun text-sm';
+            }
+            if (iconMain) {
+                iconMain.className = isLight ? 'fas fa-moon text-sm' : 'fas fa-sun text-sm';
+            }
+        }
+
         // ==================== FONCTIONS MENU ====================
         function openMenuModal() {
             document.getElementById('menuModal').classList.remove('hidden');
@@ -333,10 +373,8 @@
             
             const errorMsg = document.getElementById('lockErrorMsg');
             const loadingIndicator = document.getElementById('lockLoadingIndicator');
-            const diagnosticMsg = document.getElementById('diagnosticMsg');
 
             errorMsg.classList.add('hidden');
-            diagnosticMsg.classList.add('hidden');
             
             if (!roomNum) {
                 errorMsg.innerText = '⚠️ Please enter your room number';
@@ -353,52 +391,20 @@
             loadingIndicator.classList.remove('hidden');
 
             try {
-                // TEST : Afficher les données PMS pour diagnostic
-                console.log('🔍 Testing PMS connection...');
-                
-                // 1. D'abord, testons la connexion
-                const { data: testData, error: testError } = await pmsSupabaseClient
-                    .from('pms_guests')
-                    .select('*')
-                    .limit(3);
-
-                if (testError) {
-                    console.error('❌ PMS Error:', testError);
-                    diagnosticMsg.innerText = `PMS Error: ${testError.message}`;
-                    diagnosticMsg.classList.remove('hidden');
-                    errorMsg.innerText = '❌ Cannot connect to hotel records. Please try again.';
-                    errorMsg.classList.remove('hidden');
-                    return;
-                }
-
-                console.log('✅ PMS Connected! Sample data:', testData);
-                
-                // 2. Rechercher la chambre
+                // Rechercher la chambre dans le PMS
                 const { data: pmsData, error: pmsError } = await pmsSupabaseClient
                     .from('pms_guests')
                     .select('*')
                     .ilike('room', `%${roomNum}%`)
                     .maybeSingle();
 
-                if (pmsError) {
-                    console.error('❌ Room search error:', pmsError);
-                    diagnosticMsg.innerText = `Room search error: ${pmsError.message}`;
-                    diagnosticMsg.classList.remove('hidden');
-                    errorMsg.innerText = '❌ Error searching for room.';
-                    errorMsg.classList.remove('hidden');
-                    return;
-                }
-
-                if (!pmsData) {
-                    console.log('❌ Room not found:', roomNum);
+                if (pmsError || !pmsData) {
                     errorMsg.innerText = '❌ Room number not found in hotel records';
                     errorMsg.classList.remove('hidden');
                     return;
                 }
 
-                console.log('✅ Room found:', pmsData);
-                
-                // 3. Vérifier le nom
+                // Vérifier le nom
                 const cleanInputName = nameInput.toLowerCase()
                     .replace(SALUTATIONS_REGEX, '')
                     .normalize("NFD")
@@ -417,8 +423,6 @@
                     .map(w => w.replace(/[^a-z0-9]/g, ""))
                     .filter(w => w.length > 1);
 
-                console.log('🔍 Comparing:', cleanInputName, 'vs', pmsWords);
-
                 const isMatch = pmsWords.some(word => {
                     if (cleanInputName.length <= 3) {
                         return word === cleanInputName;
@@ -429,15 +433,12 @@
                 });
 
                 if (!isMatch) {
-                    console.log('❌ Name mismatch');
                     errorMsg.innerText = '❌ Name does not match our records for this room';
                     errorMsg.classList.remove('hidden');
                     return;
                 }
 
-                console.log('✅ Match found!');
-                
-                // 4. SUCCÈS
+                // SUCCÈS
                 cachedGuestData = pmsData;
                 isGuestVerified = true;
 
@@ -458,9 +459,7 @@
                 }, 400);
 
             } catch (error) {
-                console.error('❌ Fatal error:', error);
-                diagnosticMsg.innerText = `Error: ${error.message}`;
-                diagnosticMsg.classList.remove('hidden');
+                console.error('Error:', error);
                 errorMsg.innerText = '❌ System error. Please try again.';
                 errorMsg.classList.remove('hidden');
             } finally {
@@ -578,6 +577,7 @@
         }
 
         // ==================== INITIALISATION ====================
+        initTheme();
         renderMenuItems();
         restaurerSession();
     </script>
