@@ -40,176 +40,194 @@
 <body class="min-h-screen lock-screen">
 
     <!-- ==================== ÉCRAN 1 : IDENTIFICATION ==================== -->
-    <div id="lockScreen" class="min-h-screen flex items-center justify-center p-4 relative">
+    <div id="lockScreen" class="min-h-screen">
         
-        <!-- Bouton de basculement de thème (lock screen) -->
-        <button onclick="toggleTheme()" id="themeToggleLock" class="theme-toggle-btn fixed top-4 right-4 z-50" title="Toggle Dark/Light Mode">
-            <i class="fas fa-sun text-sm" id="themeIconLock"></i>
-        </button>
-        
-        <div class="w-full max-w-md lock-card p-8 rounded-[2rem] space-y-6">
-            
-            <!-- Logo et titre -->
-            <div class="text-center space-y-2">
-                <div class="w-20 h-20 mx-auto rounded-full bg-[var(--text-gold)] flex items-center justify-center shadow-2xl">
-                    <i class="fas fa-key text-2xl text-stone-950"></i>
-                </div>
-                <h1 class="text-2xl font-serif-luxury font-bold text-gold-gradient tracking-[0.2em]">REMAL</h1>
-                <p class="text-[10px] text-muted-custom uppercase tracking-[0.3em] font-bold">Hotel & Villas</p>
-                <div class="pt-2">
-                    <span class="inline-block text-[9px] bg-[var(--bg-card)] text-[var(--text-gold)] border border-[var(--border-gold-strong)] font-extrabold px-4 py-1.5 rounded-full uppercase tracking-[0.15em]">
-                        🔒 Guest Identification
-                    </span>
-                </div>
+        <!-- EN-TÊTE AVEC BOUTON THÈME -->
+        <header class="app-header">
+            <div class="flex items-center gap-2">
+                <h1 class="text-sm font-serif-luxury font-bold text-[var(--text-gold)] tracking-widest">REMAL</h1>
+                <span class="text-[9px] text-muted-custom uppercase tracking-wider">Hotel & Villas</span>
             </div>
+            <button onclick="toggleTheme()" class="theme-toggle-btn" title="Toggle Dark/Light Mode">
+                <i class="fas fa-sun" id="themeIconLock"></i>
+            </button>
+        </header>
 
-            <!-- Message -->
-            <div class="text-center space-y-1">
-                <h2 class="text-sm font-bold text-[var(--text-main)]">Welcome to In-Room Dining</h2>
-                <p class="text-[10px] text-muted-custom">Please verify your identity to access the menu</p>
-            </div>
-
-            <!-- Formulaire -->
-            <div class="space-y-4">
+        <!-- Contenu de l'écran de verrouillage -->
+        <div class="flex items-center justify-center p-4 min-h-[calc(100vh-70px)]">
+            <div class="w-full max-w-md lock-card p-8 rounded-[2rem] space-y-6">
                 
-                <!-- Numéro de chambre -->
-                <div>
-                    <label class="block font-bold text-[var(--text-gold)] uppercase tracking-wider text-[10px] mb-1.5">
-                        <i class="fas fa-door-open mr-1"></i> Room Number
-                    </label>
-                    <input type="text" id="lockRoomInput" placeholder="Enter your room number (e.g., 103)" 
-                           class="w-full remal-input rounded-2xl p-4 font-bold text-xl text-[var(--text-gold)] tracking-wide text-center"
-                           onkeypress="if(event.key==='Enter') verifierIdentiteClient()">
+                <!-- Logo et titre -->
+                <div class="text-center space-y-2">
+                    <div class="w-20 h-20 mx-auto rounded-full bg-[var(--text-gold)] flex items-center justify-center shadow-2xl">
+                        <i class="fas fa-key text-2xl text-stone-950"></i>
+                    </div>
+                    <h1 class="text-2xl font-serif-luxury font-bold text-gold-gradient tracking-[0.2em]">REMAL</h1>
+                    <p class="text-[10px] text-muted-custom uppercase tracking-[0.3em] font-bold">Hotel & Villas</p>
+                    <div class="pt-2">
+                        <span class="inline-block text-[9px] bg-[var(--bg-card)] text-[var(--text-gold)] border border-[var(--border-gold-strong)] font-extrabold px-4 py-1.5 rounded-full uppercase tracking-[0.15em]">
+                            🔒 Guest Identification
+                        </span>
+                    </div>
                 </div>
 
-                <!-- Nom -->
-                <div>
-                    <label class="block font-bold text-[var(--text-gold)] uppercase tracking-wider text-[10px] mb-1.5">
-                        <i class="fas fa-user mr-1"></i> Your Name
-                    </label>
-                    <input type="text" id="lockNameInput" placeholder="e.g., SANGARE or ZIDANE" 
-                           class="w-full remal-input rounded-2xl p-4 font-semibold text-sm text-center"
-                           onkeypress="if(event.key==='Enter') verifierIdentiteClient()">
-                    <p class="text-[9px] text-muted-custom text-center mt-1">Enter any name on your reservation</p>
+                <!-- Message -->
+                <div class="text-center space-y-1">
+                    <h2 class="text-sm font-bold text-[var(--text-main)]">Welcome to In-Room Dining</h2>
+                    <p class="text-[10px] text-muted-custom">Please verify your identity to access the menu</p>
                 </div>
 
-                <!-- Indicateur de chargement -->
-                <div id="lockLoadingIndicator" class="hidden text-center text-[10px] text-[var(--text-gold)] py-2">
-                    <i class="fas fa-spinner fa-spin mr-1"></i> Verifying with hotel records...
+                <!-- Formulaire -->
+                <div class="space-y-4">
+                    
+                    <!-- Numéro de chambre -->
+                    <div>
+                        <label class="block font-bold text-[var(--text-gold)] uppercase tracking-wider text-[10px] mb-1.5">
+                            <i class="fas fa-door-open mr-1"></i> Room Number
+                        </label>
+                        <input type="text" id="lockRoomInput" placeholder="Enter your room number (e.g., 103)" 
+                               class="w-full remal-input rounded-2xl p-4 font-bold text-xl text-[var(--text-gold)] tracking-wide text-center"
+                               onkeypress="if(event.key==='Enter') verifierIdentiteClient()">
+                    </div>
+
+                    <!-- Nom -->
+                    <div>
+                        <label class="block font-bold text-[var(--text-gold)] uppercase tracking-wider text-[10px] mb-1.5">
+                            <i class="fas fa-user mr-1"></i> Your Name
+                        </label>
+                        <input type="text" id="lockNameInput" placeholder="e.g., SANGARE or ZIDANE" 
+                               class="w-full remal-input rounded-2xl p-4 font-semibold text-sm text-center"
+                               onkeypress="if(event.key==='Enter') verifierIdentiteClient()">
+                        <p class="text-[9px] text-muted-custom text-center mt-1">Enter any name on your reservation</p>
+                    </div>
+
+                    <!-- Indicateur de chargement -->
+                    <div id="lockLoadingIndicator" class="hidden text-center text-[10px] text-[var(--text-gold)] py-2">
+                        <i class="fas fa-spinner fa-spin mr-1"></i> Verifying with hotel records...
+                    </div>
+
+                    <!-- Message d'erreur -->
+                    <div id="lockErrorMsg" class="hidden text-center text-[10px] text-red-400 font-bold py-2">
+                        ❌ Room number or name not found. Please try again.
+                    </div>
+
+                    <!-- Bouton -->
+                    <button onclick="verifierIdentiteClient()" 
+                            class="w-full bg-[#DCA773] hover:bg-[#ebd0b3] text-stone-950 font-black py-4 rounded-2xl text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2.5 shadow-lg hover:scale-[1.02] active:scale-[0.98]">
+                        <i class="fas fa-unlock"></i> Verify & Access
+                    </button>
                 </div>
 
-                <!-- Message d'erreur -->
-                <div id="lockErrorMsg" class="hidden text-center text-[10px] text-red-400 font-bold py-2">
-                    ❌ Room number or name not found. Please try again.
+                <div class="text-center text-[8px] text-muted-custom opacity-60 tracking-widest uppercase">
+                    Remal Hotel & Villas • Digital Guest Services
                 </div>
-
-                <!-- Bouton -->
-                <button onclick="verifierIdentiteClient()" 
-                        class="w-full bg-[#DCA773] hover:bg-[#ebd0b3] text-stone-950 font-black py-4 rounded-2xl text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2.5 shadow-lg hover:scale-[1.02] active:scale-[0.98]">
-                    <i class="fas fa-unlock"></i> Verify & Access
-                </button>
-            </div>
-
-            <div class="text-center text-[8px] text-muted-custom opacity-60 tracking-widest uppercase">
-                Remal Hotel & Villas • Digital Guest Services
             </div>
         </div>
     </div>
 
     <!-- ==================== ÉCRAN 2 : PAGE PERSONNALISÉE ==================== -->
-    <div id="mainScreen" class="hidden min-h-screen p-3 sm:p-6 flex items-center justify-center pb-24 relative">
+    <div id="mainScreen" class="hidden min-h-screen">
         
-        <!-- Bouton de basculement de thème (main screen) -->
-        <button onclick="toggleTheme()" id="themeToggleMain" class="theme-toggle-btn fixed top-4 right-4 z-50" title="Toggle Dark/Light Mode">
-            <i class="fas fa-sun text-sm" id="themeIconMain"></i>
-        </button>
-        
-        <div class="w-full max-w-md remal-card p-6 sm:p-8 rounded-[2rem] space-y-6">
-            
-            <!-- Bannière personnalisée -->
-            <div class="relative text-center border border-[var(--border-gold-strong)] pb-6 pt-7 rounded-2xl overflow-hidden">
-                <div class="relative z-10 space-y-2">
-                    <h1 class="text-2xl font-serif-luxury font-bold text-gold-gradient tracking-[0.15em]">REMAL</h1>
-                    <p class="text-[9px] text-muted-custom uppercase tracking-[0.2em] font-bold">Hotel & Villas • Al Dhannah City</p>
-                    
-                    <div class="pt-3">
-                        <p class="text-[10px] text-muted-custom uppercase tracking-wider">Welcome</p>
-                        <h2 id="welcomeGuestName" class="text-lg font-serif-luxury font-bold text-[var(--text-gold)] tracking-wide">---</h2>
+        <!-- EN-TÊTE AVEC BOUTON THÈME -->
+        <header class="app-header">
+            <div class="flex items-center gap-2">
+                <h1 class="text-sm font-serif-luxury font-bold text-[var(--text-gold)] tracking-widest">REMAL</h1>
+                <span class="text-[9px] text-muted-custom uppercase tracking-wider">Hotel & Villas</span>
+            </div>
+            <button onclick="toggleTheme()" class="theme-toggle-btn" title="Toggle Dark/Light Mode">
+                <i class="fas fa-sun" id="themeIconMain"></i>
+            </button>
+        </header>
+
+        <!-- Contenu de la page principale -->
+        <div class="p-3 sm:p-6 flex items-center justify-center pb-24">
+            <div class="w-full max-w-md remal-card p-6 sm:p-8 rounded-[2rem] space-y-6">
+                
+                <!-- Bannière personnalisée -->
+                <div class="relative text-center border border-[var(--border-gold-strong)] pb-6 pt-7 rounded-2xl overflow-hidden">
+                    <div class="relative z-10 space-y-2">
+                        <h1 class="text-2xl font-serif-luxury font-bold text-gold-gradient tracking-[0.15em]">REMAL</h1>
+                        <p class="text-[9px] text-muted-custom uppercase tracking-[0.2em] font-bold">Hotel & Villas • Al Dhannah City</p>
+                        
+                        <div class="pt-3">
+                            <p class="text-[10px] text-muted-custom uppercase tracking-wider">Welcome</p>
+                            <h2 id="welcomeGuestName" class="text-lg font-serif-luxury font-bold text-[var(--text-gold)] tracking-wide">---</h2>
+                        </div>
+                        
+                        <div class="pt-2">
+                            <span id="roomTypeBadge" class="inline-block text-[9px] bg-[var(--bg-card)] text-[var(--text-gold)] border border-[var(--border-gold-strong)] font-extrabold px-4 py-1.5 rounded-full uppercase tracking-[0.15em]">
+                                🍽️ In-Room Dining
+                            </span>
+                        </div>
                     </div>
-                    
-                    <div class="pt-2">
-                        <span id="roomTypeBadge" class="inline-block text-[9px] bg-[var(--bg-card)] text-[var(--text-gold)] border border-[var(--border-gold-strong)] font-extrabold px-4 py-1.5 rounded-full uppercase tracking-[0.15em]">
-                            🍽️ In-Room Dining
+                </div>
+
+                <!-- Infos client -->
+                <div class="p-4 bg-[var(--bg-card-hover)] border border-[var(--border-gold-strong)] rounded-2xl space-y-2 animate-fade-in">
+                    <div class="flex justify-between font-semibold">
+                        <span class="text-muted-custom text-[11px]">Room:</span> 
+                        <span id="displayRoomNumber" class="text-[var(--text-gold)] font-bold">---</span>
+                    </div>
+                    <div class="flex justify-between font-semibold border-t border-[var(--border-gold)] pt-2">
+                        <span class="text-muted-custom text-[11px]">Room Type:</span> 
+                        <span id="displayRoomType" class="text-[var(--text-gold)] font-bold">---</span>
+                    </div>
+                    <div class="flex justify-between font-semibold border-t border-[var(--border-gold)] pt-2">
+                        <span class="text-muted-custom text-[11px]">Departure:</span> 
+                        <span id="displayDeparture" class="text-[var(--text-gold)] font-bold">---</span>
+                    </div>
+                    <button onclick="changerDeChambre()" class="w-full text-center text-[10px] text-muted-custom hover:text-[var(--text-gold)] font-bold uppercase tracking-wider transition">
+                        <i class="fas fa-sign-out-alt mr-1"></i> Change Room / Logout
+                    </button>
+                </div>
+
+                <!-- Période de repas -->
+                <div>
+                    <label class="block font-bold text-[var(--text-gold)] mb-1.5 uppercase tracking-wider text-[10px]">Meal Period</label>
+                    <select id="guestMealType" class="w-full remal-input rounded-2xl p-3.5 font-bold cursor-pointer text-xs">
+                        <option value="Breakfast">🌅 Breakfast (6:00 - 11:00)</option>
+                        <option value="Lunch">☀️ Lunch (12:00 - 15:00)</option>
+                        <option value="Dinner">🌙 Dinner (18:00 - 23:00)</option>
+                        <option value="All Day">🕐 All Day Dining</option>
+                        <option value="Late Night">🌃 Late Night (23:00 - 6:00)</option>
+                    </select>
+                </div>
+
+                <!-- Bouton menu -->
+                <div>
+                    <button onclick="openMenuModal()" class="w-full bg-[var(--bg-card-hover)] hover:border-[var(--text-gold)] text-[var(--text-gold)] border border-[var(--border-gold-strong)] font-bold py-4 px-4 rounded-2xl transition flex items-center justify-between shadow-md">
+                        <span class="flex items-center gap-3">
+                            <i class="fas fa-utensils"></i> Browse Menu & Select Items
                         </span>
-                    </div>
+                        <span id="selectedBadgeCount" class="bg-[var(--text-gold)] text-stone-950 px-3.5 py-1 rounded-full text-[11px] font-black">0 items</span>
+                    </button>
                 </div>
-            </div>
 
-            <!-- Infos client -->
-            <div class="p-4 bg-[var(--bg-card-hover)] border border-[var(--border-gold-strong)] rounded-2xl space-y-2 animate-fade-in">
-                <div class="flex justify-between font-semibold">
-                    <span class="text-muted-custom text-[11px]">Room:</span> 
-                    <span id="displayRoomNumber" class="text-[var(--text-gold)] font-bold">---</span>
+                <!-- Instructions -->
+                <div>
+                    <label class="block font-bold text-[var(--text-gold)] mb-1.5 uppercase tracking-wider text-[10px]">Special Instructions / Allergies</label>
+                    <textarea id="guestSpecialInstructions" placeholder="e.g., No onions, gluten allergy, extra spicy..." class="w-full h-20 remal-input rounded-2xl p-3.5 outline-none resize-none text-xs"></textarea>
                 </div>
-                <div class="flex justify-between font-semibold border-t border-[var(--border-gold)] pt-2">
-                    <span class="text-muted-custom text-[11px]">Room Type:</span> 
-                    <span id="displayRoomType" class="text-[var(--text-gold)] font-bold">---</span>
+
+                <!-- Temps de livraison -->
+                <div>
+                    <label class="block font-bold text-[var(--text-gold)] mb-1.5 uppercase tracking-wider text-[10px]">Delivery Time</label>
+                    <select id="deliveryTime" class="w-full remal-input rounded-2xl p-3.5 font-bold cursor-pointer text-xs">
+                        <option value="As soon as possible">⚡ As soon as possible (~30 min)</option>
+                        <option value="In 45 minutes">🕒 In 45 minutes</option>
+                        <option value="In 1 hour">🕒 In 1 hour</option>
+                    </select>
                 </div>
-                <div class="flex justify-between font-semibold border-t border-[var(--border-gold)] pt-2">
-                    <span class="text-muted-custom text-[11px]">Departure:</span> 
-                    <span id="displayDeparture" class="text-[var(--text-gold)] font-bold">---</span>
+
+                <!-- Boutons -->
+                <div class="space-y-3 pt-2">
+                    <button onclick="submitOrder('direct')" class="w-full bg-[#DCA773] hover:bg-[#ebd0b3] text-stone-950 font-black py-4 rounded-2xl text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2.5 shadow-lg">
+                        <i class="fas fa-concierge-bell"></i> Direct Order to Kitchen
+                    </button>
+                    <button onclick="submitOrder('whatsapp')" class="w-full bg-[#10b981] hover:bg-[#34d399] text-stone-950 font-black py-3.5 rounded-2xl text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2.5 shadow-lg">
+                        <i class="fab fa-whatsapp text-lg"></i> Send via WhatsApp
+                    </button>
                 </div>
-                <button onclick="changerDeChambre()" class="w-full text-center text-[10px] text-muted-custom hover:text-[var(--text-gold)] font-bold uppercase tracking-wider transition">
-                    <i class="fas fa-sign-out-alt mr-1"></i> Change Room / Logout
-                </button>
-            </div>
-
-            <!-- Période de repas -->
-            <div>
-                <label class="block font-bold text-[var(--text-gold)] mb-1.5 uppercase tracking-wider text-[10px]">Meal Period</label>
-                <select id="guestMealType" class="w-full remal-input rounded-2xl p-3.5 font-bold cursor-pointer text-xs">
-                    <option value="Breakfast">🌅 Breakfast (6:00 - 11:00)</option>
-                    <option value="Lunch">☀️ Lunch (12:00 - 15:00)</option>
-                    <option value="Dinner">🌙 Dinner (18:00 - 23:00)</option>
-                    <option value="All Day">🕐 All Day Dining</option>
-                    <option value="Late Night">🌃 Late Night (23:00 - 6:00)</option>
-                </select>
-            </div>
-
-            <!-- Bouton menu -->
-            <div>
-                <button onclick="openMenuModal()" class="w-full bg-[var(--bg-card-hover)] hover:border-[var(--text-gold)] text-[var(--text-gold)] border border-[var(--border-gold-strong)] font-bold py-4 px-4 rounded-2xl transition flex items-center justify-between shadow-md">
-                    <span class="flex items-center gap-3">
-                        <i class="fas fa-utensils"></i> Browse Menu & Select Items
-                    </span>
-                    <span id="selectedBadgeCount" class="bg-[var(--text-gold)] text-stone-950 px-3.5 py-1 rounded-full text-[11px] font-black">0 items</span>
-                </button>
-            </div>
-
-            <!-- Instructions -->
-            <div>
-                <label class="block font-bold text-[var(--text-gold)] mb-1.5 uppercase tracking-wider text-[10px]">Special Instructions / Allergies</label>
-                <textarea id="guestSpecialInstructions" placeholder="e.g., No onions, gluten allergy, extra spicy..." class="w-full h-20 remal-input rounded-2xl p-3.5 outline-none resize-none text-xs"></textarea>
-            </div>
-
-            <!-- Temps de livraison -->
-            <div>
-                <label class="block font-bold text-[var(--text-gold)] mb-1.5 uppercase tracking-wider text-[10px]">Delivery Time</label>
-                <select id="deliveryTime" class="w-full remal-input rounded-2xl p-3.5 font-bold cursor-pointer text-xs">
-                    <option value="As soon as possible">⚡ As soon as possible (~30 min)</option>
-                    <option value="In 45 minutes">🕒 In 45 minutes</option>
-                    <option value="In 1 hour">🕒 In 1 hour</option>
-                </select>
-            </div>
-
-            <!-- Boutons -->
-            <div class="space-y-3 pt-2">
-                <button onclick="submitOrder('direct')" class="w-full bg-[#DCA773] hover:bg-[#ebd0b3] text-stone-950 font-black py-4 rounded-2xl text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2.5 shadow-lg">
-                    <i class="fas fa-concierge-bell"></i> Direct Order to Kitchen
-                </button>
-                <button onclick="submitOrder('whatsapp')" class="w-full bg-[#10b981] hover:bg-[#34d399] text-stone-950 font-black py-3.5 rounded-2xl text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2.5 shadow-lg">
-                    <i class="fab fa-whatsapp text-lg"></i> Send via WhatsApp
-                </button>
             </div>
         </div>
     </div>
@@ -269,10 +287,10 @@
             const iconMain = document.getElementById('themeIconMain');
             
             if (iconLock) {
-                iconLock.className = isLight ? 'fas fa-moon text-sm' : 'fas fa-sun text-sm';
+                iconLock.className = isLight ? 'fas fa-moon' : 'fas fa-sun';
             }
             if (iconMain) {
-                iconMain.className = isLight ? 'fas fa-moon text-sm' : 'fas fa-sun text-sm';
+                iconMain.className = isLight ? 'fas fa-moon' : 'fas fa-sun';
             }
             
             // Sauvegarder la préférence
@@ -293,10 +311,10 @@
             const iconMain = document.getElementById('themeIconMain');
             
             if (iconLock) {
-                iconLock.className = isLight ? 'fas fa-moon text-sm' : 'fas fa-sun text-sm';
+                iconLock.className = isLight ? 'fas fa-moon' : 'fas fa-sun';
             }
             if (iconMain) {
-                iconMain.className = isLight ? 'fas fa-moon text-sm' : 'fas fa-sun text-sm';
+                iconMain.className = isLight ? 'fas fa-moon' : 'fas fa-sun';
             }
         }
 
@@ -391,7 +409,6 @@
             loadingIndicator.classList.remove('hidden');
 
             try {
-                // Rechercher la chambre dans le PMS
                 const { data: pmsData, error: pmsError } = await pmsSupabaseClient
                     .from('pms_guests')
                     .select('*')
@@ -404,7 +421,6 @@
                     return;
                 }
 
-                // Vérifier le nom
                 const cleanInputName = nameInput.toLowerCase()
                     .replace(SALUTATIONS_REGEX, '')
                     .normalize("NFD")
@@ -438,7 +454,6 @@
                     return;
                 }
 
-                // SUCCÈS
                 cachedGuestData = pmsData;
                 isGuestVerified = true;
 
