@@ -43,11 +43,23 @@
     <div id="lockScreen" class="min-h-screen flex items-center justify-center p-4">
         <div class="w-full max-w-md lock-card p-6 sm:p-8 rounded-[2rem] space-y-6">
             
-            <!-- BANNIÈRE REMAL AVEC IMAGE D'HÔTEL -->
-            <div class="remal-banner">
-                <h1>REMAL</h1>
-                <p class="hotel-subtitle">Hotel & Villas • Al Dhannah City</p>
-                <span class="badge">🔒 Guest Identification</span>
+            <!-- BANNIÈRE ORIGINALE AVEC IMAGE EN FOND -->
+            <div class="relative text-center border border-[var(--border-gold-strong)] pb-6 pt-7 rounded-2xl overflow-hidden shadow-inner">
+                <!-- Image de fond -->
+                <div class="absolute inset-0 bg-cover bg-center transition-all duration-500" style="background-image: var(--banner-img);"></div>
+                <!-- Overlay pour lisibilité -->
+                <div class="absolute inset-0" style="background: var(--banner-overlay);"></div>
+                
+                <!-- Contenu original -->
+                <div class="relative z-10 space-y-1.5">
+                    <h1 class="text-3xl font-serif-luxury font-bold text-gold-gradient tracking-[0.25em] drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">REMAL</h1>
+                    <p class="text-[10px] text-[var(--text-main)] tracking-[0.2em] font-bold uppercase drop-shadow-md">Hotel & Villas • Al Dhannah City</p>
+                    <div class="pt-2">
+                        <span class="inline-block text-[9px] bg-[var(--bg-card)] text-[var(--text-gold)] border border-[var(--border-gold-strong)] font-extrabold px-4 py-1.5 rounded-full uppercase tracking-[0.15em] shadow-lg backdrop-blur-md">
+                            🔒 Guest Identification
+                        </span>
+                    </div>
+                </div>
             </div>
 
             <!-- Bouton thème -->
@@ -114,17 +126,29 @@
     <div id="mainScreen" class="hidden min-h-screen p-3 sm:p-6 flex items-center justify-center pb-24">
         <div class="w-full max-w-md remal-card p-6 sm:p-8 rounded-[2rem] space-y-6">
             
-            <!-- BANNIÈRE REMAL AVEC IMAGE D'HÔTEL -->
-            <div class="remal-banner">
-                <h1>REMAL</h1>
-                <p class="hotel-subtitle">Hotel & Villas • Al Dhannah City</p>
+            <!-- BANNIÈRE ORIGINALE AVEC IMAGE EN FOND -->
+            <div class="relative text-center border border-[var(--border-gold-strong)] pb-6 pt-7 rounded-2xl overflow-hidden shadow-inner">
+                <!-- Image de fond -->
+                <div class="absolute inset-0 bg-cover bg-center transition-all duration-500" style="background-image: var(--banner-img);"></div>
+                <!-- Overlay pour lisibilité -->
+                <div class="absolute inset-0" style="background: var(--banner-overlay);"></div>
                 
-                <div class="pt-2">
-                    <p class="text-[10px] text-muted-custom uppercase tracking-wider" style="position: relative; z-index: 3;">Welcome</p>
-                    <h2 id="welcomeGuestName" class="text-lg font-serif-luxury font-bold text-[var(--text-gold)] tracking-wide" style="position: relative; z-index: 3;">---</h2>
+                <!-- Contenu original -->
+                <div class="relative z-10 space-y-1.5">
+                    <h1 class="text-3xl font-serif-luxury font-bold text-gold-gradient tracking-[0.25em] drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">REMAL</h1>
+                    <p class="text-[10px] text-[var(--text-main)] tracking-[0.2em] font-bold uppercase drop-shadow-md">Hotel & Villas • Al Dhannah City</p>
+                    
+                    <div class="pt-2">
+                        <p class="text-[10px] text-muted-custom uppercase tracking-wider drop-shadow-md">Welcome</p>
+                        <h2 id="welcomeGuestName" class="text-lg font-serif-luxury font-bold text-[var(--text-gold)] tracking-wide drop-shadow-md">---</h2>
+                    </div>
+                    
+                    <div class="pt-2">
+                        <span id="roomTypeBadge" class="inline-block text-[9px] bg-[var(--bg-card)] text-[var(--text-gold)] border border-[var(--border-gold-strong)] font-extrabold px-4 py-1.5 rounded-full uppercase tracking-[0.15em] shadow-lg backdrop-blur-md">
+                            🍽️ In-Room Dining
+                        </span>
+                    </div>
                 </div>
-                
-                <span id="roomTypeBadge" class="badge">🍽️ In-Room Dining</span>
             </div>
 
             <!-- Bouton thème -->
