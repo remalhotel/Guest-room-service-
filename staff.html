@@ -11,6 +11,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- jsPDF pour générer le PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
     <!-- Fichiers locaux -->
     <link rel="stylesheet" href="assets/css/style.css">
     
@@ -84,26 +87,6 @@
         .sound-toggle-btn { transition: all 0.3s ease; }
         .sound-toggle-btn.active { background: #10b981; color: white; border-color: #10b981; }
         
-        /* Section Impression */
-        #printTicketSection { display: none; }
-        
-        @media print {
-            body * { visibility: hidden !important; }
-            #printTicketSection, #printTicketSection * { visibility: visible !important; }
-            #printTicketSection {
-                display: block !important;
-                position: absolute !important;
-                left: 0 !important;
-                top: 0 !important;
-                width: 100% !important;
-                padding: 20px !important;
-                box-sizing: border-box !important;
-                background: #ffffff !important;
-                color: #000000 !important;
-            }
-        }
-        
-        /* Statistiques supplémentaires */
         .mini-stat-card {
             background: var(--bg-card);
             border: 1px solid var(--border-gold);
@@ -114,8 +97,6 @@
     </style>
 </head>
 <body class="min-h-screen p-3 sm:p-6">
-
-    <div id="printTicketSection"></div>
 
     <div class="max-w-7xl mx-auto space-y-6">
         
@@ -264,7 +245,7 @@
                 </div>
             </div>
 
-            <!-- STATISTIQUES SUPPLÉMENTAIRES F&B -->
+            <!-- STATISTIQUES F&B -->
             <div id="foodBeverageStats" class="hidden grid grid-cols-2 md:grid-cols-4 gap-3">
                 <div class="mini-stat-card">
                     <div class="text-lg font-serif-luxury font-bold text-[var(--text-gold)]" id="fbStatTotalOrders">0</div>
@@ -452,7 +433,6 @@
             const totalRevenue = fbOrders.reduce((sum, o) => sum + (parseFloat(o.total_amount) || 0), 0);
             const avgOrder = totalOrders > 0 ? totalRevenue / totalOrders : 0;
             
-            // Trouver l'article le plus commandé
             const itemCounts = {};
             fbOrders.forEach(order => {
                 const items = Array.isArray(order.items) ? order.items : [];
@@ -478,8 +458,8 @@
             document.getElementById('fbStatTopItem').innerText = topItem.length > 15 ? topItem.substring(0, 15) + '...' : topItem;
         }
 
-        // ==================== IMPRESSION TICKET ====================
-        function printFoodOrderTicket(orderId) {
+        // ==================== GÉNÉRATION PDF TICKET ====================
+        function generateFoodOrderPDF(orderId) {
             const order = allRequests.find(r => r.id == orderId && r.requestType === 'food');
             if (!order) return;
             
@@ -488,113 +468,251 @@
             const dateStr = now.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
             const timeStr = now.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
             
-            const printSection = document.getElementById('printTicketSection');
-            
-            printSection.innerHTML = `
-                <div style="font-family: 'Courier New', monospace; max-width: 320px; margin: 0 auto; border: 2px dashed #333; padding: 20px; background: #fff; color: #000;">
-                    <div style="text-align: center; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 10px;">
-                        <h2 style="margin: 0; font-size: 18px; font-weight: bold; letter-spacing: 2px;">REMAL HOTEL</h2>
-                        <p style="margin: 2px 0; font-size: 10px;">Al Dhannah City</p>
-                        <p style="margin: 2px 0; font-size: 10px; font-weight: bold;">ROOM SERVICE TICKET</p>
-                    </div>
-                    
-                    <div style="margin-bottom: 10px; font-size: 11px;">
-                        <div style="display: flex; justify-content: space-between;">
-                            <span>Ticket #:</span><span style="font-weight: bold;">${order.id}</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between;">
-                            <span>Date:</span><span>${dateStr} ${timeStr}</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between;">
-                            <span>Room:</span><span style="font-weight: bold;">${order.room_number || 'N/A'}</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between;">
-                            <span>Guest:</span><span>${order.guest_name || 'Guest'}</span>
-                        </div>
-                    </div>
-                    
-                    <div style="border-top: 1px dashed #333; border-bottom: 1px dashed #333; padding: 10px 0; margin-bottom: 10px; font-size: 11px;">
-                        ${items.map(item => `
-                            <div style="display: flex; justify-content: space-between; margin: 3px 0;">
-                                <span>${item.quantity}x ${item.name}</span>
-                                <span>AED ${(item.total || item.price * item.quantity || 0).toFixed(2)}</span>
-                            </div>
-                        `).join('')}
-                    </div>
-                    
-                    <div style="font-size: 12px; font-weight: bold; display: flex; justify-content: space-between; margin-bottom: 10px;">
-                        <span>TOTAL:</span>
-                        <span>AED ${(parseFloat(order.total_amount) || 0).toFixed(2)}</span>
-                    </div>
-                    
-                    ${order.details && order.details !== 'None' ? `
-                        <div style="font-size: 10px; background: #f5f5f5; padding: 8px; border-radius: 4px; margin-bottom: 10px;">
-                            <strong>Notes:</strong> ${order.details}
-                        </div>
-                    ` : ''}
-                    
-                    <div style="text-align: center; font-size: 9px; border-top: 1px solid #333; padding-top: 10px; margin-top: 10px;">
-                        <p style="margin: 0;">Merci de votre visite !</p>
-                        <p style="margin: 2px 0;">Remal Hotel & Villas</p>
-                    </div>
-                </div>
-            `;
-            
-            setTimeout(() => {
-                window.print();
-            }, 300);
-        }
-
-        // ==================== TÉLÉCHARGEMENT TICKET ====================
-        function downloadFoodOrderTicket(orderId) {
-            const order = allRequests.find(r => r.id == orderId && r.requestType === 'food');
-            if (!order) return;
-            
-            const items = Array.isArray(order.items) ? order.items : [];
-            const now = new Date();
-            const dateStr = now.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
-            const timeStr = now.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
-            
-            let ticketText = '═══════════════════════════════════════\n';
-            ticketText += '         REMAL HOTEL & VILLAS\n';
-            ticketText += '         Al Dhannah City\n';
-            ticketText += '       ROOM SERVICE TICKET\n';
-            ticketText += '═══════════════════════════════════════\n\n';
-            ticketText += 'Ticket #: ' + order.id + '\n';
-            ticketText += 'Date: ' + dateStr + ' ' + timeStr + '\n';
-            ticketText += 'Room: ' + (order.room_number || 'N/A') + '\n';
-            ticketText += 'Guest: ' + (order.guest_name || 'Guest') + '\n';
-            ticketText += '\n───────────────────────────────────────\n';
-            ticketText += 'ITEMS:\n';
-            ticketText += '───────────────────────────────────────\n';
-            
-            items.forEach(item => {
-                const line = `${item.quantity}x ${item.name}`;
-                const price = `AED ${(item.total || item.price * item.quantity || 0).toFixed(2)}`;
-                const dots = '.'.repeat(Math.max(1, 40 - line.length - price.length));
-                ticketText += line + dots + price + '\n';
+            // Utiliser jsPDF
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a5'
             });
             
-            ticketText += '───────────────────────────────────────\n';
-            ticketText += 'TOTAL: AED ' + (parseFloat(order.total_amount) || 0).toFixed(2) + '\n';
-            ticketText += '═══════════════════════════════════════\n';
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const pageHeight = doc.internal.pageSize.getHeight();
+            const margin = 10;
+            let y = margin;
             
+            // ===== EN-TÊTE =====
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(16);
+            doc.text('REMAL HOTEL & VILLAS', pageWidth / 2, y + 5, { align: 'center' });
+            
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(9);
+            doc.text('Al Dhannah City', pageWidth / 2, y + 11, { align: 'center' });
+            
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(11);
+            doc.text('ROOM SERVICE TICKET', pageWidth / 2, y + 17, { align: 'center' });
+            
+            // Ligne séparatrice
+            y += 22;
+            doc.setDrawColor(0, 0, 0);
+            doc.setLineWidth(0.3);
+            doc.line(margin, y, pageWidth - margin, y);
+            
+            // ===== INFOS =====
+            y += 8;
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(9);
+            
+            doc.text('Ticket #:', margin, y);
+            doc.text(String(order.id), pageWidth - margin, y, { align: 'right' });
+            y += 5;
+            
+            doc.text('Date:', margin, y);
+            doc.text(dateStr + ' ' + timeStr, pageWidth - margin, y, { align: 'right' });
+            y += 5;
+            
+            doc.text('Room:', margin, y);
+            doc.setFont('helvetica', 'bold');
+            doc.text(String(order.room_number || 'N/A'), pageWidth - margin, y, { align: 'right' });
+            doc.setFont('helvetica', 'normal');
+            y += 5;
+            
+            doc.text('Guest:', margin, y);
+            doc.text(String(order.guest_name || 'Guest'), pageWidth - margin, y, { align: 'right' });
+            
+            // Ligne séparatrice
+            y += 6;
+            doc.setDrawColor(0, 0, 0);
+            doc.setLineWidth(0.1);
+            doc.setLineDashPattern([1, 1], 0);
+            doc.line(margin, y, pageWidth - margin, y);
+            doc.setLineDashPattern([], 0);
+            
+            // ===== ITEMS =====
+            y += 8;
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(8);
+            doc.text('ITEMS', margin, y);
+            y += 4;
+            
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(8);
+            
+            items.forEach(item => {
+                const itemName = `${item.quantity}x ${item.name}`;
+                const itemPrice = `AED ${(item.total || item.price * item.quantity || 0).toFixed(2)}`;
+                
+                doc.text(itemName, margin, y);
+                doc.text(itemPrice, pageWidth - margin, y, { align: 'right' });
+                y += 5;
+                
+                // Vérifier si on dépasse la page
+                if (y > pageHeight - 30) {
+                    doc.addPage();
+                    y = margin;
+                }
+            });
+            
+            // Ligne séparatrice
+            y += 2;
+            doc.setDrawColor(0, 0, 0);
+            doc.setLineWidth(0.3);
+            doc.line(margin, y, pageWidth - margin, y);
+            
+            // ===== TOTAL =====
+            y += 8;
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(11);
+            doc.text('TOTAL:', margin, y);
+            doc.text(`AED ${(parseFloat(order.total_amount) || 0).toFixed(2)}`, pageWidth - margin, y, { align: 'right' });
+            
+            // ===== NOTES =====
             if (order.details && order.details !== 'None') {
-                ticketText += 'Notes: ' + order.details + '\n';
+                y += 8;
+                doc.setFontSize(8);
+                doc.setFont('helvetica', 'italic');
+                doc.text('Notes: ' + order.details, margin, y);
+                doc.setFont('helvetica', 'normal');
             }
             
-            ticketText += 'Merci de votre visite !\n';
-            ticketText += 'Remal Hotel & Villas\n';
+            // ===== PIED DE PAGE =====
+            doc.setDrawColor(0, 0, 0);
+            doc.setLineWidth(0.3);
+            doc.line(margin, pageHeight - 20, pageWidth - margin, pageHeight - 20);
             
-            const blob = new Blob([ticketText], { type: 'text/plain;charset=utf-8' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `Remal_Ticket_${order.room_number}_${order.id}.txt`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(8);
+            doc.text('Merci de votre visite !', pageWidth / 2, pageHeight - 13, { align: 'center' });
+            doc.text('Remal Hotel & Villas', pageWidth / 2, pageHeight - 8, { align: 'center' });
+            
+            // Sauvegarder le PDF
+            doc.save(`Remal_Ticket_Room${order.room_number}_${order.id}.pdf`);
+        }
+
+        // ==================== IMPRESSION PDF TICKET ====================
+        function printFoodOrderPDF(orderId) {
+            const order = allRequests.find(r => r.id == orderId && r.requestType === 'food');
+            if (!order) return;
+            
+            const items = Array.isArray(order.items) ? order.items : [];
+            const now = new Date();
+            const dateStr = now.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+            const timeStr = now.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+            
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a5'
+            });
+            
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const pageHeight = doc.internal.pageSize.getHeight();
+            const margin = 10;
+            let y = margin;
+            
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(16);
+            doc.text('REMAL HOTEL & VILLAS', pageWidth / 2, y + 5, { align: 'center' });
+            
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(9);
+            doc.text('Al Dhannah City', pageWidth / 2, y + 11, { align: 'center' });
+            
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(11);
+            doc.text('ROOM SERVICE TICKET', pageWidth / 2, y + 17, { align: 'center' });
+            
+            y += 22;
+            doc.setDrawColor(0, 0, 0);
+            doc.setLineWidth(0.3);
+            doc.line(margin, y, pageWidth - margin, y);
+            
+            y += 8;
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(9);
+            
+            doc.text('Ticket #:', margin, y);
+            doc.text(String(order.id), pageWidth - margin, y, { align: 'right' });
+            y += 5;
+            
+            doc.text('Date:', margin, y);
+            doc.text(dateStr + ' ' + timeStr, pageWidth - margin, y, { align: 'right' });
+            y += 5;
+            
+            doc.text('Room:', margin, y);
+            doc.setFont('helvetica', 'bold');
+            doc.text(String(order.room_number || 'N/A'), pageWidth - margin, y, { align: 'right' });
+            doc.setFont('helvetica', 'normal');
+            y += 5;
+            
+            doc.text('Guest:', margin, y);
+            doc.text(String(order.guest_name || 'Guest'), pageWidth - margin, y, { align: 'right' });
+            
+            y += 6;
+            doc.setDrawColor(0, 0, 0);
+            doc.setLineWidth(0.1);
+            doc.setLineDashPattern([1, 1], 0);
+            doc.line(margin, y, pageWidth - margin, y);
+            doc.setLineDashPattern([], 0);
+            
+            y += 8;
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(8);
+            doc.text('ITEMS', margin, y);
+            y += 4;
+            
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(8);
+            
+            items.forEach(item => {
+                const itemName = `${item.quantity}x ${item.name}`;
+                const itemPrice = `AED ${(item.total || item.price * item.quantity || 0).toFixed(2)}`;
+                
+                doc.text(itemName, margin, y);
+                doc.text(itemPrice, pageWidth - margin, y, { align: 'right' });
+                y += 5;
+                
+                if (y > pageHeight - 30) {
+                    doc.addPage();
+                    y = margin;
+                }
+            });
+            
+            y += 2;
+            doc.setDrawColor(0, 0, 0);
+            doc.setLineWidth(0.3);
+            doc.line(margin, y, pageWidth - margin, y);
+            
+            y += 8;
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(11);
+            doc.text('TOTAL:', margin, y);
+            doc.text(`AED ${(parseFloat(order.total_amount) || 0).toFixed(2)}`, pageWidth - margin, y, { align: 'right' });
+            
+            if (order.details && order.details !== 'None') {
+                y += 8;
+                doc.setFontSize(8);
+                doc.setFont('helvetica', 'italic');
+                doc.text('Notes: ' + order.details, margin, y);
+                doc.setFont('helvetica', 'normal');
+            }
+            
+            doc.setDrawColor(0, 0, 0);
+            doc.setLineWidth(0.3);
+            doc.line(margin, pageHeight - 20, pageWidth - margin, pageHeight - 20);
+            
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(8);
+            doc.text('Merci de votre visite !', pageWidth / 2, pageHeight - 13, { align: 'center' });
+            doc.text('Remal Hotel & Villas', pageWidth / 2, pageHeight - 8, { align: 'center' });
+            
+            // Ouvrir dans une nouvelle fenêtre pour impression
+            const pdfBlob = doc.output('blob');
+            const pdfUrl = URL.createObjectURL(pdfBlob);
+            window.open(pdfUrl, '_blank');
         }
 
         // ==================== RÉCUPÉRATION DES DONNÉES ====================
@@ -777,13 +895,13 @@
                                     `<span class="flex-1 text-center text-[10px] text-emerald-400 font-bold py-2.5">✅ Completed</span>`
                                 }
                             </div>
-                            <!-- Boutons Impression et Téléchargement -->
+                            <!-- Boutons PDF -->
                             <div class="flex gap-2 pt-1">
-                                <button onclick="printFoodOrderTicket(${request.id})" class="flex-1 bg-stone-800 text-stone-200 py-2 rounded-xl text-[10px] font-bold hover:bg-stone-700 transition">
-                                    🖨️ Print
+                                <button onclick="printFoodOrderPDF(${request.id})" class="flex-1 bg-blue-500/20 text-blue-400 py-2 rounded-xl text-[10px] font-bold hover:bg-blue-500/40 transition">
+                                    🖨️ Print PDF
                                 </button>
-                                <button onclick="downloadFoodOrderTicket(${request.id})" class="flex-1 bg-stone-800 text-stone-200 py-2 rounded-xl text-[10px] font-bold hover:bg-stone-700 transition">
-                                    ⬇️ Download
+                                <button onclick="generateFoodOrderPDF(${request.id})" class="flex-1 bg-emerald-500/20 text-emerald-400 py-2 rounded-xl text-[10px] font-bold hover:bg-emerald-500/40 transition">
+                                    ⬇️ Download PDF
                                 </button>
                                 <button onclick="deleteFoodOrder(${request.id})" class="bg-red-500/10 text-red-400 px-3 py-2 rounded-xl text-xs font-bold hover:bg-red-500/30 transition">🗑️</button>
                             </div>
