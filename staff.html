@@ -426,7 +426,7 @@
         let analyticsCharts = {};
         let staffChatManager = null;
 
-        // ==================== CHAT MANAGER CLASS ====================
+        // ==================== CHAT MANAGER CLASS (TOTALEMENT BLINDÉ) ====================
         class StaffChatManager {
             constructor(supabaseClient) {
                 this.supabase = supabaseClient;
@@ -434,25 +434,27 @@
                 this.currentGuest = null;
                 this.messages = [];
                 this.channel = null;
-                this.typingTimeout = null;
             }
 
             async openChat(roomNumber, guestName) {
                 this.currentRoom = String(roomNumber);
-                this.currentGuest = guestName;
+                this.currentGuest = guestName || 'Invité';
                 
-                document.getElementById('chatGuestName').textContent = 
-                    `${guestName} (Chambre ${roomNumber})`;
-                document.getElementById('chatModal').classList.remove('hidden');
+                const titleEl = document.getElementById('chatGuestName');
+                if (titleEl) titleEl.textContent = `${this.currentGuest} (Chambre ${this.currentRoom})`;
+                
+                const modalEl = document.getElementById('chatModal');
+                if (modalEl) modalEl.classList.remove('hidden');
                 
                 await this.loadMessages();
                 await this.markMessagesAsRead();
                 this.subscribeToRealtime();
-                await this.trackPresence();
             }
 
             closeChat() {
-                document.getElementById('chatModal').classList.add('hidden');
+                const modalEl = document.getElementById('chatModal');
+                if (modalEl) modalEl.classList.add('hidden');
+                
                 this.currentRoom = null;
                 this.currentGuest = null;
                 
@@ -466,39 +468,41 @@
                 if (!this.currentRoom) return [];
                 
                 try {
-                    const { data, error } = await this.supabase
+                    let { data, error } = await this.supabase
                         .from('chat_messages')
                         .select('*')
-                        .or(`room_number.eq.${this.currentRoom},guest_room.eq.${this.currentRoom}`)
+                        .eq('room_number', this.currentRoom)
                         .order('created_at', { ascending: true })
                         .limit(200);
                         
-                    if (error) throw error;
+                    if (error) {
+                        const fallback = await this.supabase
+                            .from('chat_messages')
+                            .select('*')
+                            .eq('guest_room', this.currentRoom)
+                            .order('created_at', { ascending: true })
+                            .limit(200);
+                        data = fallback.data;
+                    }
                     
                     this.messages = data || [];
                     this.renderMessages();
                     return this.messages;
                 } catch (error) {
-                    console.error('Erreur de chargement des messages:', error);
+                    console.error('Erreur chargement messages:', error);
                     return [];
                 }
             }
 
             async markMessagesAsRead() {
                 if (!this.currentRoom) return;
-                
                 try {
-                    const { error } = await this.supabase
+                    await this.supabase
                         .from('chat_messages')
                         .update({ is_read: true })
-                        .or(`room_number.eq.${this.currentRoom},guest_room.eq.${this.currentRoom}`)
-                        .eq('sender', 'guest')
-                        .eq('is_read', false);
-                        
-                    if (error) console.warn('Erreur de marquage:', error);
-                } catch (error) {
-                    console.warn('Erreur de marquage:', error);
-                }
+                        .eq('room_number', this.currentRoom)
+                        .eq('sender', 'guest');
+                } catch (e) {}
             }
 
             subscribeToRealtime() {
@@ -509,108 +513,65 @@
                 }
                 
                 this.channel = this.supabase
-                    .channel(`staff-chat-${this.currentRoom}`)
+                    .channel(`staff-chat-room-${this.currentRoom}`)
                     .on('postgres_changes', {
                         event: 'INSERT',
                         schema: 'public',
                         table: 'chat_messages'
                     }, (payload) => {
-                        const newMessage = payload.new;
-                        if (newMessage && (String(newMessage.room_number) === this.currentRoom || String(newMessage.guest_room) === this.currentRoom)) {
-                            if (!this.messages.some(m => m.id === newMessage.id)) {
-                                this.messages.push(newMessage);
+                        const newMsg = payload.new;
+                        if (newMsg && (String(newMsg.room_number) === this.currentRoom || String(newMsg.guest_room) === this.currentRoom)) {
+                            if (!this.messages.some(m => m.id === newMsg.id)) {
+                                this.messages.push(newMsg);
                                 this.renderMessages();
-                                
-                                if (newMessage.sender === 'guest') {
-                                    this.markMessagesAsRead();
-                                }
                             }
                         }
                     })
-                    .on('broadcast', { event: 'typing' }, (payload) => {
-                        if (payload.payload.room_number === this.currentRoom && payload.payload.sender === 'guest') {
-                            this.showTypingIndicator(payload.payload.is_typing);
-                        }
-                    })
-                    .on('presence', { event: 'sync' }, () => {
-                        this.updatePresenceDisplay();
-                    })
-                    .subscribe(async (status) => {
-                        if (status === 'SUBSCRIBED') {
-                            await this.trackPresence();
-                        }
-                    });
-            }
-
-            async trackPresence() {
-                if (!this.channel || !this.currentRoom) return;
-                
-                await this.channel.track({
-                    user_type: 'staff',
-                    room_number: this.currentRoom,
-                    staff_name: 'Staff Member',
-                    online_at: new Date().toISOString()
-                });
-            }
-
-            updatePresenceDisplay() {
-                if (!this.channel || !this.currentRoom) return;
-                
-                const state = this.channel.presenceState();
-                const guestOnline = Object.values(state).some(
-                    presence => presence[0]?.user_type === 'guest' && 
-                               presence[0]?.room_number === this.currentRoom
-                );
-                
-                const presenceElement = document.getElementById('chatPresenceStatus');
-                if (presenceElement) {
-                    presenceElement.textContent = guestOnline ? '● Invité en ligne' : '● Invité hors ligne';
-                    presenceElement.className = guestOnline ? 
-                        'chat-presence-status text-emerald-400' : 
-                        'chat-presence-status text-gray-400';
-                }
-            }
-
-            showTypingIndicator(isTyping) {
-                const typingElement = document.getElementById('chatTypingIndicator');
-                if (!typingElement) return;
-                
-                if (isTyping) {
-                    typingElement.textContent = `${this.currentGuest} est en train d'écrire...`;
-                    typingElement.classList.remove('hidden');
-                } else {
-                    typingElement.classList.add('hidden');
-                }
+                    .subscribe();
             }
 
             async sendMessage(messageText) {
                 if (!messageText || !messageText.trim() || !this.currentRoom) return null;
                 
-                const message = {
+                const cleanText = messageText.trim();
+                
+                const payload = {
                     room_number: this.currentRoom,
                     guest_room: this.currentRoom,
                     sender: 'staff',
                     staff_name: 'Staff Member',
-                    message: messageText.trim(),
+                    message: cleanText,
                     is_read: false,
                     created_at: new Date().toISOString()
                 };
                 
                 try {
-                    const { data, error } = await this.supabase
+                    let { data, error } = await this.supabase
                         .from('chat_messages')
-                        .insert([message])
-                        .select()
-                        .single();
+                        .insert([payload])
+                        .select();
                         
+                    if (error) {
+                        delete payload.guest_room;
+                        const fallback = await this.supabase
+                            .from('chat_messages')
+                            .insert([payload])
+                            .select();
+                            
+                        data = fallback.data;
+                        error = fallback.error;
+                    }
+                    
                     if (error) throw error;
                     
-                    this.messages.push(data);
+                    const insertedMessage = data ? data[0] : payload;
+                    this.messages.push(insertedMessage);
                     this.renderMessages();
                     
-                    return data;
+                    return insertedMessage;
                 } catch (error) {
-                    console.error('Erreur d\'envoi:', error);
+                    console.error('Erreur envoi message chat:', error);
+                    showToast('Erreur envoi message: ' + (error.message || 'BDD/Réseau'), 'error');
                     return null;
                 }
             }
@@ -621,16 +582,16 @@
                 
                 container.innerHTML = this.messages.map(msg => {
                     const isStaff = msg.sender === 'staff';
-                    const time = new Date(msg.created_at).toLocaleTimeString([], {
+                    const time = msg.created_at ? new Date(msg.created_at).toLocaleTimeString([], {
                         hour: '2-digit',
                         minute: '2-digit'
-                    });
+                    }) : '';
                     
                     return `
                         <div class="chat-message ${isStaff ? 'staff' : 'guest'}">
                             <div class="flex items-start gap-2">
                                 <div class="flex-1">
-                                    <p class="text-[10px]">${msg.message}</p>
+                                    <p class="text-[10px]">${msg.message || ''}</p>
                                     <div class="flex items-center gap-2 mt-1">
                                         <p class="text-[8px] opacity-60">${time}</p>
                                         ${isStaff && msg.is_read ? '<span class="text-[8px] text-blue-400">✓✓ Lu</span>' : ''}
@@ -661,14 +622,16 @@
 
         async function sendChatMessage() {
             const input = document.getElementById('chatInput');
-            const message = input.value.trim();
+            if (!input) return;
             
+            const message = input.value.trim();
             if (!message || !staffChatManager) return;
             
+            input.value = '';
+            
             const sent = await staffChatManager.sendMessage(message);
-            if (sent) {
-                input.value = '';
-                input.focus();
+            if (!sent) {
+                input.value = message;
             }
         }
 
@@ -844,7 +807,7 @@
             document.getElementById('fbStatTopItem').innerText = topItem.length > 15 ? topItem.substring(0, 15) + '...' : topItem;
         }
 
-        // ==================== ANALYTICS ====================
+        // ==================== ANALYTICS (CORRIGÉ & ROBUSTE) ====================
         function setAnalyticsPeriod(period) {
             analyticsPeriod = period;
             ['today', 'week', 'month', 'all'].forEach(p => {
@@ -879,9 +842,14 @@
             const completedRequests = filteredRequests.filter(r => r.status === 'Completed' || r.status === 'Delivered');
             const resolutionRate = filteredRequests.length > 0 ? Math.round((completedRequests.length / filteredRequests.length) * 100) : 0;
             
-            document.getElementById('analyticsTotalOrders').innerText = filteredRequests.length;
-            document.getElementById('analyticsTotalRevenue').innerText = 'AED ' + totalRevenue.toFixed(2);
-            document.getElementById('analyticsResolutionRate').innerText = resolutionRate + '%';
+            const elTotal = document.getElementById('analyticsTotalOrders');
+            const elRev = document.getElementById('analyticsTotalRevenue');
+            const elRate = document.getElementById('analyticsResolutionRate');
+            const elAvg = document.getElementById('analyticsAvgTime');
+
+            if (elTotal) elTotal.innerText = filteredRequests.length;
+            if (elRev) elRev.innerText = 'AED ' + totalRevenue.toFixed(2);
+            if (elRate) elRate.innerText = resolutionRate + '%';
             
             let totalTime = 0;
             let timeCount = 0;
@@ -892,23 +860,28 @@
                 }
             });
             const avgTime = timeCount > 0 ? Math.round(totalTime / timeCount) : 0;
-            document.getElementById('analyticsAvgTime').innerText = avgTime + ' min';
+            if (elAvg) elAvg.innerText = avgTime + ' min';
             
             const hourCounts = Array(24).fill(0);
             filteredRequests.forEach(r => {
-                const hour = new Date(r.created_at).getHours();
-                hourCounts[hour]++;
+                if (r.created_at) {
+                    const hour = new Date(r.created_at).getHours();
+                    if (hour >= 0 && hour < 24) hourCounts[hour]++;
+                }
             });
             
-            if (analyticsCharts.hourly) analyticsCharts.hourly.destroy();
-            analyticsCharts.hourly = new Chart(document.getElementById('chartOrdersByHour'), {
-                type: 'bar',
-                data: {
-                    labels: Array.from({length: 24}, (_, i) => i + 'h'),
-                    datasets: [{ label: 'Commandes', data: hourCounts, backgroundColor: '#DCA773' }]
-                },
-                options: { responsive: true, plugins: { legend: { display: false } } }
-            });
+            const canvasHour = document.getElementById('chartOrdersByHour');
+            if (canvasHour) {
+                if (analyticsCharts.hourly) analyticsCharts.hourly.destroy();
+                analyticsCharts.hourly = new Chart(canvasHour, {
+                    type: 'bar',
+                    data: {
+                        labels: Array.from({length: 24}, (_, i) => i + 'h'),
+                        datasets: [{ label: 'Commandes', data: hourCounts, backgroundColor: '#DCA773' }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+                });
+            }
             
             const serviceCounts = {};
             filteredRequests.forEach(r => {
@@ -916,32 +889,39 @@
                 serviceCounts[key] = (serviceCounts[key] || 0) + 1;
             });
             
-            if (analyticsCharts.service) analyticsCharts.service.destroy();
-            analyticsCharts.service = new Chart(document.getElementById('chartServiceBreakdown'), {
-                type: 'doughnut',
-                data: {
-                    labels: Object.keys(serviceCounts),
-                    datasets: [{ data: Object.values(serviceCounts), backgroundColor: ['#DCA773', '#10b981', '#3b82f6', '#ef4444', '#f59e0b', '#8b5cf6'] }]
-                },
-                options: { responsive: true }
-            });
+            const canvasService = document.getElementById('chartServiceBreakdown');
+            if (canvasService) {
+                if (analyticsCharts.service) analyticsCharts.service.destroy();
+                analyticsCharts.service = new Chart(canvasService, {
+                    type: 'doughnut',
+                    data: {
+                        labels: Object.keys(serviceCounts),
+                        datasets: [{ data: Object.values(serviceCounts), backgroundColor: ['#DCA773', '#10b981', '#3b82f6', '#ef4444', '#f59e0b', '#8b5cf6'] }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+            }
             
             const statusCounts = { 'Pending': 0, 'In Progress': 0, 'Completed': 0 };
             filteredRequests.forEach(r => {
-                if (r.status === 'Pending') statusCounts['Pending']++;
-                else if (r.status === 'Preparing' || r.status === 'Ready' || r.status === 'In Progress') statusCounts['In Progress']++;
-                else if (r.status === 'Completed' || r.status === 'Delivered') statusCounts['Completed']++;
+                const s = r.status || 'Pending';
+                if (s === 'Pending') statusCounts['Pending']++;
+                else if (s === 'Preparing' || s === 'Ready' || s === 'In Progress') statusCounts['In Progress']++;
+                else if (s === 'Completed' || s === 'Delivered') statusCounts['Completed']++;
             });
             
-            if (analyticsCharts.status) analyticsCharts.status.destroy();
-            analyticsCharts.status = new Chart(document.getElementById('chartStatusBreakdown'), {
-                type: 'bar',
-                data: {
-                    labels: ['Pending', 'In Progress', 'Completed'],
-                    datasets: [{ data: [statusCounts['Pending'], statusCounts['In Progress'], statusCounts['Completed']], backgroundColor: ['#f59e0b', '#3b82f6', '#10b981'] }]
-                },
-                options: { responsive: true, plugins: { legend: { display: false } } }
-            });
+            const canvasStatus = document.getElementById('chartStatusBreakdown');
+            if (canvasStatus) {
+                if (analyticsCharts.status) analyticsCharts.status.destroy();
+                analyticsCharts.status = new Chart(canvasStatus, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Pending', 'In Progress', 'Completed'],
+                        datasets: [{ data: [statusCounts['Pending'], statusCounts['In Progress'], statusCounts['Completed']], backgroundColor: ['#f59e0b', '#3b82f6', '#10b981'] }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+                });
+            }
         }
 
         function exportAnalyticsCSV() {
@@ -985,7 +965,6 @@
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a5' });
             const pageWidth = doc.internal.pageSize.getWidth();
-            const pageHeight = doc.internal.pageSize.getHeight();
             const margin = 10;
             let y = margin;
             const items = Array.isArray(order.items) ? order.items : [];
@@ -1041,7 +1020,6 @@
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a5' });
             const pageWidth = doc.internal.pageSize.getWidth();
-            const pageHeight = doc.internal.pageSize.getHeight();
             const margin = 10;
             let y = margin;
             const items = Array.isArray(order.items) ? order.items : [];
