@@ -83,6 +83,18 @@
         .favorite-heart { color: #525252; transition: color 0.2s ease; }
         .favorite-heart.active { color: #ef4444; }
 
+        /* ==================== STYLES CHAT ==================== */
+        .chat-message {
+            padding: 8px 12px;
+            border-radius: 12px;
+            margin-bottom: 6px;
+            max-width: 80%;
+            font-size: 11px;
+            word-wrap: break-word;
+        }
+        .chat-message.guest { background: #DCA773; color: #1c1917; margin-left: auto; }
+        .chat-message.staff { background: rgba(255,255,255,0.1); color: #f5f5f4; margin-right: auto; }
+
         /* ==================== APPARENCE MODE CLAIR OPTIMISÉE ==================== */
         body.light-mode {
             background-color: #f8fafc !important;
@@ -90,7 +102,8 @@
         }
         body.light-mode .lock-card,
         body.light-mode .remal-card,
-        body.light-mode #menuModal > div {
+        body.light-mode #menuModal > div,
+        body.light-mode #guestChatModal > div {
             background-color: #ffffff !important;
             border-color: rgba(217, 119, 6, 0.2) !important;
             box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.08) !important;
@@ -121,6 +134,10 @@
         body.light-mode textarea {
             background-color: #ffffff !important;
             border-color: #cbd5e1 !important;
+            color: #0f172a !important;
+        }
+        body.light-mode .chat-message.staff {
+            background-color: #e2e8f0 !important;
             color: #0f172a !important;
         }
         body.light-mode .order-progress-dot {
@@ -283,6 +300,11 @@
 
         <button onclick="toggleTheme()" id="themeToggleMain" class="theme-toggle-btn fixed top-4 right-4 z-50 p-3 rounded-full bg-stone-900 border border-stone-800 text-amber-400 shadow-xl">
             <i class="fas fa-sun text-sm" id="themeIconMain"></i>
+        </button>
+
+        <!-- BOUTON FLOTTANT CHAT GUEST -->
+        <button onclick="openGuestChatModal()" class="fixed bottom-4 left-4 z-50 bg-[#DCA773] text-stone-950 w-14 h-14 rounded-full flex items-center justify-center shadow-2xl transition hover:scale-110">
+            <i class="fas fa-comments text-lg"></i>
         </button>
         
         <a href="tel:+971526966865" class="fixed bottom-4 right-4 z-50 bg-emerald-600 hover:bg-emerald-700 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-2xl transition hover:scale-110">
@@ -554,6 +576,23 @@
         </div>
     </div>
 
+    <!-- MODALE CHAT GUEST -->
+    <div id="guestChatModal" class="hidden fixed inset-0 bg-black/80 z-[300] flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-stone-900 border border-amber-500/30 w-full max-w-md rounded-3xl p-6 space-y-4 max-h-[80vh] flex flex-col shadow-2xl">
+            <div class="flex justify-between items-center border-b border-stone-800 pb-3">
+                <h3 class="text-xs font-serif-luxury font-bold text-[var(--text-gold,#DCA773)] uppercase tracking-widest">
+                    💬 Front Desk Chat
+                </h3>
+                <button onclick="closeGuestChatModal()" class="text-stone-400 hover:text-stone-100 text-xl font-bold">✕</button>
+            </div>
+            <div id="guestChatContainer" class="flex-1 overflow-y-auto space-y-2 pr-1 max-h-[50vh]"></div>
+            <div class="flex gap-2 pt-2 border-t border-stone-800">
+                <input type="text" id="guestChatInput" placeholder="Write a message..." class="flex-1 bg-stone-950 border border-stone-800 rounded-xl px-3 py-2 text-xs text-stone-100 outline-none focus:border-amber-500" onkeypress="if(event.key==='Enter') sendGuestChatMessage()">
+                <button onclick="sendGuestChatMessage()" class="bg-[var(--text-gold,#DCA773)] text-stone-950 font-bold px-4 py-2 rounded-xl text-xs hover:bg-[#ebd0b3]">Send</button>
+            </div>
+        </div>
+    </div>
+
     <!-- MENU MODAL -->
     <div id="menuModal" class="hidden fixed inset-0 bg-black/90 z-[100] flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-stone-900 border border-amber-500/30 w-full max-w-lg rounded-3xl p-6 space-y-4 max-h-[90vh] flex flex-col shadow-2xl">
@@ -599,6 +638,9 @@
         let currentLanguage = localStorage.getItem('remal_language') || 'en';
         let trackingTimeout = null;
         let serviceRequestsTimeout = null;
+
+        let guestChatMessages = [];
+        let guestChatChannel = null;
 
         const SALUTATIONS_REGEX = /\b(mr|mrs|ms|miss|mme|mlle|dr|prof|eng|sir|madam|lady|lord|sheikh|sheikha)\.?\b/gi;
 
@@ -1507,6 +1549,99 @@
             }
         }
 
+        // ==================== CHAT GUEST ====================
+        function openGuestChatModal() {
+            const room = cachedGuestData?.room || localStorage.getItem('remal_guest_room');
+            if (!room) {
+                showToast("Please verify your room first.", "error");
+                return;
+            }
+            document.getElementById('guestChatContainer').innerHTML = '';
+            document.getElementById('guestChatModal').classList.remove('hidden');
+            
+            loadGuestChatMessages(room);
+            subscribeGuestChatRealtime(room);
+        }
+
+        function closeGuestChatModal() {
+            document.getElementById('guestChatModal').classList.add('hidden');
+            if (guestChatChannel && supabaseClient) {
+                supabaseClient.removeChannel(guestChatChannel);
+                guestChatChannel = null;
+            }
+        }
+
+        async function loadGuestChatMessages(room) {
+            if (!supabaseClient) return;
+            const { data, error } = await supabaseClient
+                .from('chat_messages')
+                .select('*')
+                .or(`room_number.eq.${room},guest_room.eq.${room}`)
+                .order('created_at', { ascending: true })
+                .limit(100);
+
+            if (!error && data) {
+                guestChatMessages = data;
+                renderGuestChatMessages();
+            }
+        }
+
+        function renderGuestChatMessages() {
+            const container = document.getElementById('guestChatContainer');
+            if (!container) return;
+            container.innerHTML = guestChatMessages.map(msg => `
+                <div class="chat-message ${msg.sender === 'guest' ? 'guest' : 'staff'}">
+                    <p>${msg.message}</p>
+                    <p class="text-[8px] opacity-60 text-right mt-1">${new Date(msg.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
+                </div>
+            `).join('');
+            container.scrollTop = container.scrollHeight;
+        }
+
+        async function sendGuestChatMessage() {
+            const input = document.getElementById('guestChatInput');
+            const message = input.value.trim();
+            const room = cachedGuestData?.room || localStorage.getItem('remal_guest_room');
+            
+            if (!message || !room) return;
+
+            const newMessage = {
+                room_number: room,
+                sender: 'guest',
+                message: message,
+                created_at: new Date().toISOString()
+            };
+
+            input.value = '';
+
+            if (supabaseClient) {
+                const { error } = await supabaseClient.from('chat_messages').insert([newMessage]);
+                if (error) {
+                    showToast("Error sending message", "error");
+                }
+            }
+        }
+
+        function subscribeGuestChatRealtime(room) {
+            if (!supabaseClient) return;
+            if (guestChatChannel) supabaseClient.removeChannel(guestChatChannel);
+
+            guestChatChannel = supabaseClient
+                .channel(`chat-guest-${room}`)
+                .on('postgres_changes', { 
+                    event: 'INSERT', 
+                    schema: 'public', 
+                    table: 'chat_messages'
+                }, payload => {
+                    const msg = payload.new;
+                    if (msg && (msg.room_number == room || msg.guest_room == room)) {
+                        guestChatMessages.push(msg);
+                        renderGuestChatMessages();
+                    }
+                })
+                .subscribe();
+        }
+
         // ==================== THEME & UTILS ====================
         function toggleTheme() {
             document.body.classList.toggle('light-mode');
@@ -1652,6 +1787,10 @@
             currentOrderId = null;
             if (trackingTimeout) clearTimeout(trackingTimeout);
             if (serviceRequestsTimeout) clearTimeout(serviceRequestsTimeout);
+            if (guestChatChannel && supabaseClient) {
+                supabaseClient.removeChannel(guestChatChannel);
+                guestChatChannel = null;
+            }
             
             localStorage.removeItem('remal_guest_room');
             localStorage.removeItem('remal_guest_data');
