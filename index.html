@@ -5,104 +5,73 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Remal Hotel & Villas - Guest Hub</title>
     
-    <!-- CDNs -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Fichiers locaux -->
     <link rel="stylesheet" href="assets/css/style.css">
     
     <style>
-        @keyframes slideOutLeft {
-            from { opacity: 1; transform: translateX(0); }
-            to { opacity: 0; transform: translateX(-100px); }
-        }
-        @keyframes slideInRight {
-            from { opacity: 0; transform: translateX(100px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
+        @keyframes slideOutLeft { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(-100px); } }
+        @keyframes slideInRight { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
         .screen-exit { animation: slideOutLeft 0.4s ease forwards; }
         .screen-enter { animation: slideInRight 0.5s ease forwards; }
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-            20%, 40%, 60%, 80% { transform: translateX(5px); }
-        }
+        @keyframes shake { 0%,100%{transform:translateX(0)} 10%,30%,50%,70%,90%{transform:translateX(-5px)} 20%,40%,60%,80%{transform:translateX(5px)} }
         .shake-error { animation: shake 0.5s ease; }
-        @keyframes toastIn {
-            from { opacity: 0; transform: translateX(100px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
+        @keyframes toastIn { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
         .toast-in { animation: toastIn 0.4s ease forwards; }
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-in-up { animation: fadeInUp 0.5s ease forwards; }
         .tab-btn { transition: all 0.3s ease; }
-        .tab-btn.active { background: var(--text-gold); color: #1c1917; font-weight: 900; box-shadow: 0 5px 15px rgba(220, 167, 115, 0.3); }
+        .tab-btn.active { background: var(--text-gold); color: #1c1917; font-weight: 900; box-shadow: 0 5px 15px rgba(220,167,115,0.3); }
         .tab-btn:not(.active) { background: var(--bg-card-hover); color: var(--text-muted); border: 1px solid var(--border-gold); }
         .tab-btn:not(.active):hover { color: var(--text-gold); border-color: var(--text-gold); }
         .service-card { transition: all 0.3s ease; cursor: pointer; }
-        .service-card:hover { transform: translateY(-3px); border-color: var(--text-gold); box-shadow: 0 10px 30px rgba(220, 167, 115, 0.2); }
+        .service-card:hover { transform: translateY(-3px); border-color: var(--text-gold); box-shadow: 0 10px 30px rgba(220,167,115,0.2); }
         .offer-card { transition: all 0.3s ease; overflow: hidden; }
-        .offer-card:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(220, 167, 115, 0.3); border-color: var(--text-gold); }
-        .offer-card img { transition: all 0.5s ease; }
-        .offer-card:hover img { transform: scale(1.05); }
         .featured-offer { position: relative; overflow: hidden; border-radius: 1rem; border: 1px solid var(--border-gold-strong); cursor: pointer; transition: all 0.3s ease; }
-        .featured-offer:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(220, 167, 115, 0.3); }
         .featured-offer img { width: 100%; height: 180px; object-fit: cover; }
         .featured-offer-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 50%, transparent 100%); padding: 20px 15px 15px; }
-        
-        /* Sélecteur de langue */
-        .lang-btn {
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        .lang-btn.active {
-            background: var(--text-gold);
-            color: #1c1917;
-            font-weight: 900;
-        }
-        .lang-btn:not(.active) {
-            background: var(--bg-card-hover);
-            color: var(--text-muted);
-            border: 1px solid var(--border-gold);
-        }
-        .lang-btn:not(.active):hover {
-            color: var(--text-gold);
-        }
+        .lang-btn { transition: all 0.3s ease; cursor: pointer; font-size: 9px; padding: 4px 8px; border-radius: 8px; font-weight: 800; letter-spacing: 0.05em; }
+        .lang-btn.active { background: var(--text-gold); color: #1c1917; box-shadow: 0 2px 10px rgba(220,167,115,0.4); }
+        .lang-btn:not(.active) { background: var(--bg-card-hover); color: var(--text-muted); border: 1px solid var(--border-gold); }
+        .lang-btn:not(.active):hover { color: var(--text-gold); border-color: var(--text-gold); }
+        .top-bar { position: fixed; top: 0; left: 0; right: 0; z-index: 50; display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background: var(--bg-card); backdrop-filter: blur(15px); border-bottom: 1px solid var(--border-gold-strong); }
     </style>
 </head>
 <body class="min-h-screen lock-screen">
 
-    <!-- ==================== ÉCRAN 1 : IDENTIFICATION ==================== -->
-    <div id="lockScreen" class="min-h-screen flex items-center justify-center p-4 relative">
-        
-        <button onclick="toggleTheme()" id="themeToggleLock" class="theme-toggle-btn fixed top-4 right-4 z-50">
-            <i class="fas fa-sun text-sm" id="themeIconLock"></i>
+    <!-- BARRE SUPÉRIEURE -->
+    <div class="top-bar">
+        <div class="flex items-center gap-1.5">
+            <button onclick="setLanguage('en')" id="langEn" class="lang-btn active">EN</button>
+            <button onclick="setLanguage('fr')" id="langFr" class="lang-btn">FR</button>
+            <button onclick="setLanguage('ar')" id="langAr" class="lang-btn">عربي</button>
+            <button onclick="setLanguage('hi')" id="langHi" class="lang-btn">हिन्दी</button>
+        </div>
+        <button onclick="toggleTheme()" id="themeToggleMain" class="theme-toggle-btn" title="Toggle Theme">
+            <i class="fas fa-sun text-sm" id="themeIconMain"></i>
         </button>
-        
+    </div>
+
+    <!-- ÉCRAN 1 : IDENTIFICATION -->
+    <div id="lockScreen" class="min-h-screen flex items-center justify-center p-4 pt-16">
         <div class="w-full max-w-md lock-card p-8 rounded-[2rem] space-y-6">
-            
             <div class="remal-banner text-center space-y-2 rounded-2xl p-6 border border-[var(--border-gold-strong)]">
                 <div class="w-20 h-20 mx-auto rounded-full bg-[var(--text-gold)] flex items-center justify-center shadow-2xl">
                     <i class="fas fa-concierge-bell text-2xl text-stone-950"></i>
                 </div>
-                <h1 class="text-2xl font-serif-luxury font-bold text-gold-gradient tracking-[0.2em] drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">GUEST HUB</h1>
-                <p class="text-[10px] text-muted-custom uppercase tracking-[0.3em] font-bold drop-shadow-md" data-i18n="hotelName">Remal Hotel & Villas</p>
+                <h1 class="text-2xl font-serif-luxury font-bold text-gold-gradient tracking-[0.2em]">GUEST HUB</h1>
+                <p class="text-[10px] text-muted-custom uppercase tracking-[0.3em] font-bold" data-i18n="hotelName">Remal Hotel & Villas</p>
                 <div class="pt-2">
-                    <span class="inline-block text-[9px] bg-[var(--bg-card)] text-[var(--text-gold)] border border-[var(--border-gold-strong)] font-extrabold px-4 py-1.5 rounded-full uppercase tracking-[0.15em] shadow-lg backdrop-blur-md" data-i18n="guestId">
-                        🔒 Guest Identification
-                    </span>
+                    <span class="inline-block text-[9px] bg-[var(--bg-card)] text-[var(--text-gold)] border border-[var(--border-gold-strong)] font-extrabold px-4 py-1.5 rounded-full uppercase tracking-[0.15em]" data-i18n="guestId">🔒 Guest Identification</span>
                 </div>
             </div>
 
             <div class="text-center space-y-1">
-                <h2 class="text-sm font-bold text-[var(--text-main)]" id="greetingText" data-i18n="welcomeTitle">Welcome to Guest Hub</h2>
-                <p class="text-[10px] text-muted-custom" data-i18n="verifyPrompt">Please verify your identity to access all services</p>
+                <h2 class="text-sm font-bold text-[var(--text-main)]" data-i18n="welcomeTitle">Welcome to Guest Hub</h2>
+                <p class="text-[10px] text-muted-custom" data-i18n="verifyPrompt">Please verify your identity</p>
             </div>
 
             <div class="space-y-4">
@@ -110,360 +79,134 @@
                     <label class="block font-bold text-[var(--text-gold)] uppercase tracking-wider text-[10px] mb-1.5">
                         <i class="fas fa-door-open mr-1"></i> <span data-i18n="roomNumber">Room Number</span>
                     </label>
-                    <input type="text" id="lockRoomInput" placeholder="e.g., 103" 
-                           class="w-full remal-input rounded-2xl p-4 font-bold text-xl text-[var(--text-gold)] tracking-wide text-center"
-                           onkeypress="if(event.key==='Enter') verifierIdentiteClient()">
+                    <input type="text" id="lockRoomInput" placeholder="e.g., 103" class="w-full remal-input rounded-2xl p-4 font-bold text-xl text-[var(--text-gold)] tracking-wide text-center" onkeypress="if(event.key==='Enter') verifierIdentiteClient()">
                 </div>
-
                 <div>
                     <label class="block font-bold text-[var(--text-gold)] uppercase tracking-wider text-[10px] mb-1.5">
                         <i class="fas fa-user mr-1"></i> <span data-i18n="yourName">Your Name</span>
                     </label>
-                    <input type="text" id="lockNameInput" placeholder="e.g., SANGARE or ZIDANE" 
-                           class="w-full remal-input rounded-2xl p-4 font-semibold text-sm text-center"
-                           onkeypress="if(event.key==='Enter') verifierIdentiteClient()">
-                    <p class="text-[9px] text-muted-custom text-center mt-1" data-i18n="nameHint">Enter any name on your reservation</p>
+                    <input type="text" id="lockNameInput" placeholder="e.g., SANGARE" class="w-full remal-input rounded-2xl p-4 font-semibold text-sm text-center" onkeypress="if(event.key==='Enter') verifierIdentiteClient()">
                 </div>
-
                 <div id="lockLoadingIndicator" class="hidden text-center text-[10px] text-[var(--text-gold)] py-2">
-                    <i class="fas fa-spinner fa-spin mr-1"></i> <span data-i18n="verifying">Verifying with hotel records...</span>
+                    <i class="fas fa-spinner fa-spin mr-1"></i> <span data-i18n="verifying">Verifying...</span>
                 </div>
-
-                <div id="lockErrorMsg" class="hidden text-center text-[10px] text-red-400 font-bold py-2">
-                    ❌ <span data-i18n="notFound">Room number or name not found. Please try again.</span>
-                </div>
-
-                <button onclick="verifierIdentiteClient()" 
-                        class="w-full bg-[#DCA773] hover:bg-[#ebd0b3] text-stone-950 font-black py-4 rounded-2xl text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2.5 shadow-lg hover:scale-[1.02] active:scale-[0.98]">
+                <div id="lockErrorMsg" class="hidden text-center text-[10px] text-red-400 font-bold py-2">❌ <span data-i18n="notFound">Not found</span></div>
+                <button onclick="verifierIdentiteClient()" class="w-full bg-[#DCA773] hover:bg-[#ebd0b3] text-stone-950 font-black py-4 rounded-2xl text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2.5 shadow-lg">
                     <i class="fas fa-unlock"></i> <span data-i18n="verifyAccess">Verify & Access</span>
                 </button>
-            </div>
-
-            <!-- Sélecteur de langue -->
-            <div class="flex justify-center gap-2 pt-2">
-                <button onclick="setLanguage('en')" id="langEn" class="lang-btn active text-[10px] px-3 py-1.5 rounded-full font-bold transition">EN</button>
-                <button onclick="setLanguage('fr')" id="langFr" class="lang-btn text-[10px] px-3 py-1.5 rounded-full font-bold transition">FR</button>
-                <button onclick="setLanguage('ar')" id="langAr" class="lang-btn text-[10px] px-3 py-1.5 rounded-full font-bold transition">عربي</button>
-                <button onclick="setLanguage('hi')" id="langHi" class="lang-btn text-[10px] px-3 py-1.5 rounded-full font-bold transition">हिन्दी</button>
             </div>
         </div>
     </div>
 
-    <!-- ==================== ÉCRAN 2 : GUEST HUB PRINCIPAL ==================== -->
-    <div id="mainScreen" class="hidden min-h-screen p-3 sm:p-6 pb-24 relative">
-        
-        <button onclick="toggleTheme()" id="themeToggleMain" class="theme-toggle-btn fixed top-4 right-4 z-50">
-            <i class="fas fa-sun text-sm" id="themeIconMain"></i>
-        </button>
-        
+    <!-- ÉCRAN 2 : GUEST HUB -->
+    <div id="mainScreen" class="hidden min-h-screen p-3 sm:p-6 pb-24 pt-16 relative">
         <a href="tel:+971526966865" class="fixed bottom-4 right-4 z-50 bg-emerald-600 hover:bg-emerald-700 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-2xl transition hover:scale-110">
             <i class="fas fa-phone-alt text-lg"></i>
         </a>
-        
         <div class="w-full max-w-md mx-auto remal-card p-6 sm:p-8 rounded-[2rem] space-y-6">
-            
             <div class="remal-banner text-center border border-[var(--border-gold-strong)] pb-6 pt-7 rounded-2xl overflow-hidden">
                 <div class="space-y-2">
-                    <h1 class="text-2xl font-serif-luxury font-bold text-gold-gradient tracking-[0.15em] drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">GUEST HUB</h1>
-                    <p class="text-[9px] text-muted-custom uppercase tracking-[0.2em] font-bold drop-shadow-md" data-i18n="hotelLocation">Remal Hotel & Villas • Al Dhannah City</p>
-                    
+                    <h1 class="text-2xl font-serif-luxury font-bold text-gold-gradient tracking-[0.15em]">GUEST HUB</h1>
+                    <p class="text-[9px] text-muted-custom uppercase tracking-[0.2em] font-bold" data-i18n="hotelLocation">Remal Hotel & Villas • Al Dhannah City</p>
                     <div class="pt-3">
-                        <p class="text-[10px] text-muted-custom uppercase tracking-wider drop-shadow-md" id="greetingTime">Welcome</p>
-                        <h2 id="welcomeGuestName" class="text-lg font-serif-luxury font-bold text-[var(--text-gold)] tracking-wide uppercase drop-shadow-md">---</h2>
-                    </div>
-                    
-                    <div class="pt-2">
-                        <span id="roomTypeBadge" class="inline-block text-[9px] bg-[var(--bg-card)] text-[var(--text-gold)] border border-[var(--border-gold-strong)] font-extrabold px-4 py-1.5 rounded-full uppercase tracking-[0.15em] shadow-lg backdrop-blur-md">
-                            🏨 Guest Hub Services
-                        </span>
+                        <p class="text-[10px] text-muted-custom uppercase tracking-wider" id="greetingTime">Welcome</p>
+                        <h2 id="welcomeGuestName" class="text-lg font-serif-luxury font-bold text-[var(--text-gold)] tracking-wide uppercase">---</h2>
                     </div>
                 </div>
             </div>
 
-            <!-- Infos client -->
-            <div class="p-4 bg-[var(--bg-card-hover)] border border-[var(--border-gold-strong)] rounded-2xl space-y-2 animate-fade-in">
-                <div class="flex justify-between font-semibold">
-                    <span class="text-muted-custom text-[11px]" data-i18n="room">Room:</span> 
-                    <span id="displayRoomNumber" class="text-[var(--text-gold)] font-bold">---</span>
-                </div>
-                <div class="flex justify-between font-semibold border-t border-[var(--border-gold)] pt-2">
-                    <span class="text-muted-custom text-[11px]" data-i18n="roomType">Room Type:</span> 
-                    <span id="displayRoomType" class="text-[var(--text-gold)] font-bold">---</span>
-                </div>
-                <div class="flex justify-between font-semibold border-t border-[var(--border-gold)] pt-2">
-                    <span class="text-muted-custom text-[11px]" data-i18n="departure">Departure:</span> 
-                    <span id="displayDeparture" class="text-[var(--text-gold)] font-bold">---</span>
-                </div>
-                <button onclick="changerDeChambre()" class="w-full text-center text-[10px] text-muted-custom hover:text-[var(--text-gold)] font-bold uppercase tracking-wider transition">
-                    <i class="fas fa-sign-out-alt mr-1"></i> <span data-i18n="logout">Change Room / Logout</span>
-                </button>
+            <div class="p-4 bg-[var(--bg-card-hover)] border border-[var(--border-gold-strong)] rounded-2xl space-y-2">
+                <div class="flex justify-between"><span class="text-muted-custom text-[11px]" data-i18n="room">Room:</span><span id="displayRoomNumber" class="text-[var(--text-gold)] font-bold">---</span></div>
+                <div class="flex justify-between border-t border-[var(--border-gold)] pt-2"><span class="text-muted-custom text-[11px]" data-i18n="roomType">Room Type:</span><span id="displayRoomType" class="text-[var(--text-gold)] font-bold">---</span></div>
+                <div class="flex justify-between border-t border-[var(--border-gold)] pt-2"><span class="text-muted-custom text-[11px]" data-i18n="departure">Departure:</span><span id="displayDeparture" class="text-[var(--text-gold)] font-bold">---</span></div>
+                <button onclick="changerDeChambre()" class="w-full text-center text-[10px] text-muted-custom hover:text-[var(--text-gold)] font-bold uppercase"><i class="fas fa-sign-out-alt mr-1"></i> <span data-i18n="logout">Logout</span></button>
             </div>
 
-            <!-- Sélecteur de langue (main screen) -->
-            <div class="flex justify-center gap-2">
-                <button onclick="setLanguage('en')" id="langEnMain" class="lang-btn active text-[10px] px-3 py-1.5 rounded-full font-bold transition">EN</button>
-                <button onclick="setLanguage('fr')" id="langFrMain" class="lang-btn text-[10px] px-3 py-1.5 rounded-full font-bold transition">FR</button>
-                <button onclick="setLanguage('ar')" id="langArMain" class="lang-btn text-[10px] px-3 py-1.5 rounded-full font-bold transition">عربي</button>
-                <button onclick="setLanguage('hi')" id="langHiMain" class="lang-btn text-[10px] px-3 py-1.5 rounded-full font-bold transition">हिन्दी</button>
-            </div>
-
-            <!-- ONGLETS -->
             <div class="flex gap-2">
-                <button onclick="switchTab('services')" id="tabServices" class="tab-btn active flex-1 py-3 rounded-xl text-xs font-bold transition">
-                    <i class="fas fa-concierge-bell mr-1"></i> <span data-i18n="services">Services</span>
-                </button>
-                <button onclick="switchTab('offers')" id="tabOffers" class="tab-btn flex-1 py-3 rounded-xl text-xs font-bold transition">
-                    <i class="fas fa-tags mr-1"></i> <span data-i18n="offers">Offers</span>
-                </button>
-                <button onclick="switchTab('faq')" id="tabFaq" class="tab-btn flex-1 py-3 rounded-xl text-xs font-bold transition">
-                    <i class="fas fa-question-circle mr-1"></i> <span data-i18n="faq">FAQ</span>
-                </button>
+                <button onclick="switchTab('services')" id="tabServices" class="tab-btn active flex-1 py-3 rounded-xl text-xs font-bold"><i class="fas fa-concierge-bell mr-1"></i> <span data-i18n="services">Services</span></button>
+                <button onclick="switchTab('offers')" id="tabOffers" class="tab-btn flex-1 py-3 rounded-xl text-xs font-bold"><i class="fas fa-tags mr-1"></i> <span data-i18n="offers">Offers</span></button>
+                <button onclick="switchTab('faq')" id="tabFaq" class="tab-btn flex-1 py-3 rounded-xl text-xs font-bold"><i class="fas fa-question-circle mr-1"></i> <span data-i18n="faq">FAQ</span></button>
             </div>
 
-            <!-- SECTION SERVICES -->
             <div id="servicesSection" class="space-y-4">
                 <div id="servicesList" class="space-y-3">
-                    <p class="text-center text-[10px] text-muted-custom font-bold uppercase tracking-wider" data-i18n="selectService">Select a Service</p>
-                    
-                    <div class="service-card p-4 bg-[var(--bg-card-hover)] border border-[var(--border-gold-strong)] rounded-2xl" onclick="showService('room_service')">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold)] text-stone-950 flex items-center justify-center"><i class="fas fa-utensils"></i></div>
-                            <div>
-                                <p class="font-bold text-[var(--text-main)] text-xs" data-i18n="roomService">Room Service / Order Food</p>
-                                <p class="text-[9px] text-muted-custom" data-i18n="roomServiceDesc">In-room dining & beverages</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="service-card p-4 bg-[var(--bg-card-hover)] border border-[var(--border-gold-strong)] rounded-2xl" onclick="showService('table_reservation')">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold)] text-stone-950 flex items-center justify-center"><i class="fas fa-calendar-check"></i></div>
-                            <div>
-                                <p class="font-bold text-[var(--text-main)] text-xs" data-i18n="tableReservation">Table Reservation</p>
-                                <p class="text-[9px] text-muted-custom" data-i18n="tableReservationDesc">Restaurant & lounge booking</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="service-card p-4 bg-[var(--bg-card-hover)] border border-[var(--border-gold-strong)] rounded-2xl" onclick="showService('wakeup_call')">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold)] text-stone-950 flex items-center justify-center"><i class="fas fa-alarm-clock"></i></div>
-                            <div>
-                                <p class="font-bold text-[var(--text-main)] text-xs" data-i18n="wakeupCall">Wake-up Call / Alarm</p>
-                                <p class="text-[9px] text-muted-custom" data-i18n="wakeupCallDesc">Morning wake-up service</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="service-card p-4 bg-[var(--bg-card-hover)] border border-[var(--border-gold-strong)] rounded-2xl" onclick="showService('late_checkout')">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold)] text-stone-950 flex items-center justify-center"><i class="fas fa-clock"></i></div>
-                            <div>
-                                <p class="font-bold text-[var(--text-main)] text-xs" data-i18n="lateCheckout">Late Check-out / Extension</p>
-                                <p class="text-[9px] text-muted-custom" data-i18n="lateCheckoutDesc">Extend your stay</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="service-card p-4 bg-[var(--bg-card-hover)] border border-[var(--border-gold-strong)] rounded-2xl" onclick="showService('housekeeping')">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold)] text-stone-950 flex items-center justify-center"><i class="fas fa-broom"></i></div>
-                            <div>
-                                <p class="font-bold text-[var(--text-main)] text-xs" data-i18n="housekeeping">Housekeeping / Room Cleaning</p>
-                                <p class="text-[9px] text-muted-custom" data-i18n="housekeepingDesc">Room cleaning service</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="service-card p-4 bg-[var(--bg-card-hover)] border border-[var(--border-gold-strong)] rounded-2xl" onclick="showService('front_desk')">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold)] text-stone-950 flex items-center justify-center"><i class="fas fa-headset"></i></div>
-                            <div>
-                                <p class="font-bold text-[var(--text-main)] text-xs" data-i18n="frontDesk">Front Desk Inquiry</p>
-                                <p class="text-[9px] text-muted-custom" data-i18n="frontDeskDesc">General assistance</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="service-card p-4 bg-[var(--bg-card-hover)] border border-[var(--border-gold-strong)] rounded-2xl" onclick="showService('luggage')">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold)] text-stone-950 flex items-center justify-center"><i class="fas fa-suitcase"></i></div>
-                            <div>
-                                <p class="font-bold text-[var(--text-main)] text-xs" data-i18n="luggage">Luggage Assistance</p>
-                                <p class="text-[9px] text-muted-custom" data-i18n="luggageDesc">Baggage handling</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="service-card p-4 bg-[var(--bg-card-hover)] border border-[var(--border-gold-strong)] rounded-2xl" onclick="showService('maintenance')">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold)] text-stone-950 flex items-center justify-center"><i class="fas fa-tools"></i></div>
-                            <div>
-                                <p class="font-bold text-[var(--text-main)] text-xs" data-i18n="maintenance">Maintenance / Technical Support</p>
-                                <p class="text-[9px] text-muted-custom" data-i18n="maintenanceDesc">Repairs & technical help</p>
-                            </div>
-                        </div>
-                    </div>
+                    <p class="text-center text-[10px] text-muted-custom font-bold uppercase" data-i18n="selectService">Select a Service</p>
+                    <div class="service-card p-4 bg-[var(--bg-card-hover)] border border-[var(--border-gold-strong)] rounded-2xl" onclick="showService('room_service')"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-[var(--text-gold)] text-stone-950 flex items-center justify-center"><i class="fas fa-utensils"></i></div><div><p class="font-bold text-xs" data-i18n="roomService">Room Service</p><p class="text-[9px] text-muted-custom" data-i18n="roomServiceDesc">In-room dining</p></div></div></div>
+                    <div class="service-card p-4 bg-[var(--bg-card-hover)] border border-[var(--border-gold-strong)] rounded-2xl" onclick="showService('table_reservation')"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-[var(--text-gold)] text-stone-950 flex items-center justify-center"><i class="fas fa-calendar-check"></i></div><div><p class="font-bold text-xs" data-i18n="tableReservation">Table Reservation</p><p class="text-[9px] text-muted-custom" data-i18n="tableReservationDesc">Restaurant booking</p></div></div></div>
+                    <div class="service-card p-4 bg-[var(--bg-card-hover)] border border-[var(--border-gold-strong)] rounded-2xl" onclick="showService('wakeup_call')"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-[var(--text-gold)] text-stone-950 flex items-center justify-center"><i class="fas fa-alarm-clock"></i></div><div><p class="font-bold text-xs" data-i18n="wakeupCall">Wake-up Call</p><p class="text-[9px] text-muted-custom" data-i18n="wakeupCallDesc">Morning alarm</p></div></div></div>
+                    <div class="service-card p-4 bg-[var(--bg-card-hover)] border border-[var(--border-gold-strong)] rounded-2xl" onclick="showService('late_checkout')"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-[var(--text-gold)] text-stone-950 flex items-center justify-center"><i class="fas fa-clock"></i></div><div><p class="font-bold text-xs" data-i18n="lateCheckout">Late Check-out</p><p class="text-[9px] text-muted-custom" data-i18n="lateCheckoutDesc">Extend stay</p></div></div></div>
+                    <div class="service-card p-4 bg-[var(--bg-card-hover)] border border-[var(--border-gold-strong)] rounded-2xl" onclick="showService('housekeeping')"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-[var(--text-gold)] text-stone-950 flex items-center justify-center"><i class="fas fa-broom"></i></div><div><p class="font-bold text-xs" data-i18n="housekeeping">Housekeeping</p><p class="text-[9px] text-muted-custom" data-i18n="housekeepingDesc">Room cleaning</p></div></div></div>
+                    <div class="service-card p-4 bg-[var(--bg-card-hover)] border border-[var(--border-gold-strong)] rounded-2xl" onclick="showService('front_desk')"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-[var(--text-gold)] text-stone-950 flex items-center justify-center"><i class="fas fa-headset"></i></div><div><p class="font-bold text-xs" data-i18n="frontDesk">Front Desk</p><p class="text-[9px] text-muted-custom" data-i18n="frontDeskDesc">Assistance</p></div></div></div>
+                    <div class="service-card p-4 bg-[var(--bg-card-hover)] border border-[var(--border-gold-strong)] rounded-2xl" onclick="showService('luggage')"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-[var(--text-gold)] text-stone-950 flex items-center justify-center"><i class="fas fa-suitcase"></i></div><div><p class="font-bold text-xs" data-i18n="luggage">Luggage</p><p class="text-[9px] text-muted-custom" data-i18n="luggageDesc">Baggage help</p></div></div></div>
+                    <div class="service-card p-4 bg-[var(--bg-card-hover)] border border-[var(--border-gold-strong)] rounded-2xl" onclick="showService('maintenance')"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-[var(--text-gold)] text-stone-950 flex items-center justify-center"><i class="fas fa-tools"></i></div><div><p class="font-bold text-xs" data-i18n="maintenance">Maintenance</p><p class="text-[9px] text-muted-custom" data-i18n="maintenanceDesc">Technical help</p></div></div></div>
                 </div>
 
-                <!-- ROOM SERVICE SECTION -->
                 <div id="roomServiceSection" class="hidden space-y-4 animate-fade-in-up">
-                    <button onclick="backToServices()" class="text-[10px] text-muted-custom hover:text-[var(--text-gold)] font-bold transition">
-                        <i class="fas fa-arrow-left mr-1"></i> <span data-i18n="backToServices">Back to Services</span>
-                    </button>
-
-                    <!-- Suivi de commande -->
+                    <button onclick="backToServices()" class="text-[10px] text-muted-custom hover:text-[var(--text-gold)] font-bold"><i class="fas fa-arrow-left mr-1"></i> <span data-i18n="backToServices">Back</span></button>
                     <div id="orderTrackingSection" class="hidden p-4 bg-[var(--bg-card-hover)] border border-[var(--border-gold-strong)] rounded-2xl space-y-3">
-                        <div class="flex justify-between items-center">
-                            <span class="text-[10px] font-bold text-[var(--text-gold)] uppercase tracking-wider">
-                                <i class="fas fa-truck mr-1"></i> <span data-i18n="orderTracking">Order Tracking</span>
-                            </span>
-                            <span id="orderStatusText" class="text-[10px] font-bold text-amber-400">---</span>
-                        </div>
+                        <div class="flex justify-between items-center"><span class="text-[10px] font-bold text-[var(--text-gold)] uppercase"><i class="fas fa-truck mr-1"></i> <span data-i18n="orderTracking">Tracking</span></span><span id="orderStatusText" class="text-[10px] font-bold text-amber-400">---</span></div>
                         <div class="order-progress">
-                            <div class="order-progress-step">
-                                <div class="order-progress-dot active" id="stepReceived"><i class="fas fa-check"></i></div>
-                                <span class="order-progress-label active" data-i18n="received">Received</span>
-                            </div>
+                            <div class="order-progress-step"><div class="order-progress-dot active" id="stepReceived"><i class="fas fa-check"></i></div><span class="order-progress-label active" data-i18n="received">Received</span></div>
                             <div class="order-progress-line" id="lineReceived"></div>
-                            <div class="order-progress-step">
-                                <div class="order-progress-dot" id="stepPreparing"><i class="fas fa-fire"></i></div>
-                                <span class="order-progress-label" data-i18n="preparing">Preparing</span>
-                            </div>
+                            <div class="order-progress-step"><div class="order-progress-dot" id="stepPreparing"><i class="fas fa-fire"></i></div><span class="order-progress-label" data-i18n="preparing">Preparing</span></div>
                             <div class="order-progress-line" id="linePreparing"></div>
-                            <div class="order-progress-step">
-                                <div class="order-progress-dot" id="stepReady"><i class="fas fa-bell"></i></div>
-                                <span class="order-progress-label" data-i18n="ready">Ready</span>
-                            </div>
+                            <div class="order-progress-step"><div class="order-progress-dot" id="stepReady"><i class="fas fa-bell"></i></div><span class="order-progress-label" data-i18n="ready">Ready</span></div>
                             <div class="order-progress-line" id="lineReady"></div>
-                            <div class="order-progress-step">
-                                <div class="order-progress-dot" id="stepDelivered"><i class="fas fa-home"></i></div>
-                                <span class="order-progress-label" data-i18n="delivered">Delivered</span>
-                            </div>
+                            <div class="order-progress-step"><div class="order-progress-dot" id="stepDelivered"><i class="fas fa-home"></i></div><span class="order-progress-label" data-i18n="delivered">Delivered</span></div>
                         </div>
                     </div>
-
-                    <div>
-                        <label class="block font-bold text-[var(--text-gold)] mb-1.5 uppercase tracking-wider text-[10px]" data-i18n="mealPeriod">Meal Period</label>
-                        <select id="guestMealType" class="w-full remal-input rounded-2xl p-3.5 font-bold cursor-pointer text-xs">
-                            <option value="Breakfast">🌅 Breakfast (6:00 - 11:00)</option>
-                            <option value="Lunch">☀️ Lunch (12:00 - 15:00)</option>
-                            <option value="Dinner">🌙 Dinner (18:00 - 23:00)</option>
-                            <option value="All Day">🕐 All Day Dining</option>
-                            <option value="Late Night">🌃 Late Night (23:00 - 6:00)</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <button onclick="openMenuModal()" class="w-full bg-[var(--bg-card-hover)] hover:border-[var(--text-gold)] text-[var(--text-gold)] border border-[var(--border-gold-strong)] font-bold py-4 px-4 rounded-2xl transition flex items-center justify-between shadow-md">
-                            <span class="flex items-center gap-3">
-                                <i class="fas fa-utensils"></i> <span data-i18n="browseMenu">Browse Menu</span>
-                            </span>
-                            <span id="selectedBadgeCount" class="bg-[var(--text-gold)] text-stone-950 px-3.5 py-1 rounded-full text-[11px] font-black">0</span>
-                        </button>
-                    </div>
-
-                    <div>
-                        <label class="block font-bold text-[var(--text-gold)] mb-1.5 uppercase tracking-wider text-[10px]" data-i18n="specialInstructions">Special Instructions / Allergies</label>
-                        <textarea id="guestSpecialInstructions" placeholder="e.g., No onions, gluten allergy..." class="w-full h-20 remal-input rounded-2xl p-3.5 outline-none resize-none text-xs"></textarea>
-                    </div>
-
-                    <div>
-                        <label class="block font-bold text-[var(--text-gold)] mb-1.5 uppercase tracking-wider text-[10px]" data-i18n="deliveryTime">Delivery Time</label>
-                        <select id="deliveryTime" class="w-full remal-input rounded-2xl p-3.5 font-bold cursor-pointer text-xs">
-                            <option value="As soon as possible">⚡ ASAP (~30 min)</option>
-                            <option value="In 45 minutes">🕒 45 min</option>
-                            <option value="In 1 hour">🕒 1 hour</option>
-                        </select>
-                    </div>
-
-                    <div class="space-y-3 pt-2">
-                        <button onclick="submitRoomServiceOrder('direct')" class="w-full bg-[#DCA773] hover:bg-[#ebd0b3] text-stone-950 font-black py-4 rounded-2xl text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2.5 shadow-lg">
-                            <i class="fas fa-concierge-bell"></i> <span data-i18n="directOrder">Direct Order to Kitchen</span>
-                        </button>
-                        <button onclick="submitRoomServiceOrder('whatsapp')" class="w-full bg-[#10b981] hover:bg-[#34d399] text-stone-950 font-black py-3.5 rounded-2xl text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2.5 shadow-lg">
-                            <i class="fab fa-whatsapp text-lg"></i> <span data-i18n="whatsappOrder">Send via WhatsApp</span>
-                        </button>
-                    </div>
+                    <div><label class="block font-bold text-[var(--text-gold)] mb-1.5 uppercase text-[10px]" data-i18n="mealPeriod">Meal Period</label><select id="guestMealType" class="w-full remal-input rounded-2xl p-3.5 font-bold text-xs"><option>Breakfast</option><option>Lunch</option><option>Dinner</option><option>All Day</option></select></div>
+                    <div><button onclick="openMenuModal()" class="w-full bg-[var(--bg-card-hover)] text-[var(--text-gold)] border border-[var(--border-gold-strong)] font-bold py-4 px-4 rounded-2xl flex items-center justify-between"><span><i class="fas fa-utensils"></i> <span data-i18n="browseMenu">Browse Menu</span></span><span id="selectedBadgeCount" class="bg-[var(--text-gold)] text-stone-950 px-3 py-1 rounded-full text-[11px] font-black">0</span></button></div>
+                    <div><label class="block font-bold text-[var(--text-gold)] mb-1.5 uppercase text-[10px]" data-i18n="specialInstructions">Instructions</label><textarea id="guestSpecialInstructions" class="w-full h-20 remal-input rounded-2xl p-3.5 text-xs"></textarea></div>
+                    <div><label class="block font-bold text-[var(--text-gold)] mb-1.5 uppercase text-[10px]" data-i18n="deliveryTime">Delivery Time</label><select id="deliveryTime" class="w-full remal-input rounded-2xl p-3.5 font-bold text-xs"><option>ASAP</option><option>45 min</option><option>1 hour</option></select></div>
+                    <button onclick="submitRoomServiceOrder('direct')" class="w-full bg-[#DCA773] text-stone-950 font-black py-4 rounded-2xl text-xs uppercase shadow-lg"><i class="fas fa-concierge-bell"></i> <span data-i18n="directOrder">Direct Order</span></button>
+                    <button onclick="submitRoomServiceOrder('whatsapp')" class="w-full bg-[#10b981] text-stone-950 font-black py-3.5 rounded-2xl text-xs uppercase shadow-lg"><i class="fab fa-whatsapp"></i> <span data-i18n="whatsappOrder">WhatsApp</span></button>
                 </div>
 
-                <!-- OTHER SERVICES SECTION -->
                 <div id="otherServiceSection" class="hidden space-y-4 animate-fade-in-up">
-                    <button onclick="backToServices()" class="text-[10px] text-muted-custom hover:text-[var(--text-gold)] font-bold transition">
-                        <i class="fas fa-arrow-left mr-1"></i> <span data-i18n="backToServices">Back to Services</span>
-                    </button>
+                    <button onclick="backToServices()" class="text-[10px] text-muted-custom hover:text-[var(--text-gold)] font-bold"><i class="fas fa-arrow-left mr-1"></i> <span data-i18n="backToServices">Back</span></button>
                     <div class="p-4 bg-[var(--bg-card-hover)] border border-[var(--border-gold-strong)] rounded-2xl space-y-3">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold)] text-stone-950 flex items-center justify-center" id="otherServiceIcon">
-                                <i class="fas fa-concierge-bell"></i>
-                            </div>
-                            <div>
-                                <p class="font-bold text-[var(--text-main)] text-xs" id="otherServiceTitle">Service</p>
-                                <p class="text-[9px] text-muted-custom" id="otherServiceSubtitle">Description</p>
-                            </div>
-                        </div>
+                        <div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-[var(--text-gold)] text-stone-950 flex items-center justify-center" id="otherServiceIcon"><i class="fas fa-concierge-bell"></i></div><div><p class="font-bold text-xs" id="otherServiceTitle">Service</p><p class="text-[9px] text-muted-custom" id="otherServiceSubtitle">Description</p></div></div>
                         <div id="otherServiceFields" class="space-y-3"></div>
-                        <div>
-                            <label class="block font-bold text-[var(--text-gold)] mb-1.5 uppercase tracking-wider text-[10px]" data-i18n="additionalNotes">Additional Notes</label>
-                            <textarea id="otherServiceNotes" placeholder="Any specific details..." class="w-full h-20 remal-input rounded-2xl p-3.5 outline-none resize-none text-xs"></textarea>
-                        </div>
-                        <button onclick="submitOtherService()" class="w-full bg-[#DCA773] hover:bg-[#ebd0b3] text-stone-950 font-black py-4 rounded-2xl text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2.5 shadow-lg">
-                            <i class="fas fa-paper-plane"></i> <span data-i18n="submitRequest">Submit Request</span>
-                        </button>
+                        <div><label class="block font-bold text-[var(--text-gold)] mb-1.5 uppercase text-[10px]" data-i18n="additionalNotes">Notes</label><textarea id="otherServiceNotes" class="w-full h-20 remal-input rounded-2xl p-3.5 text-xs"></textarea></div>
+                        <button onclick="submitOtherService()" class="w-full bg-[#DCA773] text-stone-950 font-black py-4 rounded-2xl text-xs uppercase shadow-lg"><i class="fas fa-paper-plane"></i> <span data-i18n="submitRequest">Submit</span></button>
                     </div>
                 </div>
             </div>
 
-            <!-- SECTION OFFERS -->
             <div id="offersSection" class="hidden space-y-4">
-                <p class="text-center text-[10px] text-muted-custom font-bold uppercase tracking-wider">
-                    <i class="fas fa-star mr-1"></i> <span data-i18n="exclusiveOffers">Exclusive Offers</span>
-                </p>
+                <p class="text-center text-[10px] text-muted-custom font-bold uppercase" data-i18n="exclusiveOffers">Exclusive Offers</p>
                 <div id="offersContainer" class="space-y-4"></div>
             </div>
 
-            <!-- SECTION FAQ -->
             <div id="faqSection" class="hidden space-y-4">
-                <p class="text-center text-[10px] text-muted-custom font-bold uppercase tracking-wider" data-i18n="faqTitle">Frequently Asked Questions</p>
+                <p class="text-center text-[10px] text-muted-custom font-bold uppercase" data-i18n="faqTitle">FAQ</p>
                 <div class="space-y-3" id="faqContainer"></div>
             </div>
         </div>
     </div>
 
-    <!-- Modale Menu -->
+    <!-- MODALE MENU -->
     <div id="menuModal" class="hidden fixed inset-0 bg-black/90 z-[100] flex items-center justify-center p-4">
         <div class="bg-[var(--bg-card)] border border-[var(--border-gold-strong)] w-full max-w-lg rounded-3xl p-6 space-y-4 max-h-[90vh] flex flex-col">
             <div class="flex justify-between items-center border-b border-[var(--border-gold)] pb-3">
-                <h3 class="text-xs font-serif-luxury font-bold text-[var(--text-gold)] uppercase tracking-widest">
-                    <i class="fas fa-book-open"></i> <span data-i18n="restaurantMenu">Restaurant Menu</span>
-                </h3>
-                <button onclick="closeMenuModal()" class="text-muted-custom hover:text-[var(--text-main)] text-xl">✕</button>
+                <h3 class="text-xs font-serif-luxury font-bold text-[var(--text-gold)] uppercase"><i class="fas fa-book-open"></i> <span data-i18n="restaurantMenu">Menu</span></h3>
+                <button onclick="closeMenuModal()" class="text-muted-custom text-xl">✕</button>
             </div>
-            <div class="relative">
-                <i class="fas fa-search absolute left-3.5 top-3 text-muted-custom text-xs"></i>
-                <input type="text" id="menuSearchInput" oninput="renderMenuItems()" placeholder="Search dish..." class="w-full remal-input rounded-xl pl-9 pr-3 py-2 text-xs">
-            </div>
+            <input type="text" id="menuSearchInput" oninput="renderMenuItems()" placeholder="Search..." class="w-full remal-input rounded-xl p-2 text-xs">
             <div id="menuItemsContainer" class="flex-1 overflow-y-auto pr-1 space-y-3 scrollbar-none"></div>
-            <div class="border-t border-[var(--border-gold)] pt-3 space-y-3">
-                <div class="flex justify-between items-center text-xs font-bold">
-                    <span class="text-muted-custom" data-i18n="total">Total:</span>
-                    <span id="modalMenuTotalSummary" class="text-[var(--text-gold)] font-serif-luxury text-sm">0 items · 0.00 AED</span>
-                </div>
-                <button onclick="confirmMenuSelection()" class="w-full bg-[var(--text-gold)] text-stone-950 font-bold py-3.5 rounded-2xl text-xs uppercase tracking-widest">
-                    <span data-i18n="confirmSelection">Confirm Selection</span>
-                </button>
+            <div class="border-t border-[var(--border-gold)] pt-3">
+                <div class="flex justify-between text-xs font-bold"><span class="text-muted-custom" data-i18n="total">Total:</span><span id="modalMenuTotalSummary" class="text-[var(--text-gold)]">0 items · 0.00 AED</span></div>
+                <button onclick="confirmMenuSelection()" class="w-full bg-[var(--text-gold)] text-stone-950 font-bold py-3.5 rounded-2xl text-xs uppercase mt-2"><span data-i18n="confirmSelection">Confirm</span></button>
             </div>
         </div>
     </div>
 
-    <!-- Scripts -->
     <script src="assets/js/config.js"></script>
     <script src="assets/js/menu.js"></script>
     <script>
-        // ==================== INITIALISATION ====================
         const supabaseClient = initSupabaseClient();
         const pmsSupabaseClient = initPmsSupabaseClient();
-        
         let menuCart = {};
         let cachedGuestData = null;
         let isGuestVerified = false;
@@ -472,819 +215,94 @@
         let currentService = null;
         let currentTab = 'services';
         let currentOffers = [];
-        let currentLanguage = localStorage.getItem('remal_language') || 'en';
         let trackingTimeout = null;
 
+        function detectPhoneLanguage() {
+            const saved = localStorage.getItem('remal_language');
+            if (saved) return saved;
+            const lang = (navigator.language || 'en').split('-')[0].toLowerCase();
+            if (lang === 'fr') return 'fr';
+            if (lang === 'ar') return 'ar';
+            if (lang === 'hi') return 'hi';
+            return 'en';
+        }
+        let currentLanguage = detectPhoneLanguage();
         const SALUTATIONS_REGEX = /\b(mr|mrs|ms|miss|mme|mlle|dr|prof|eng|sir|madam|lady|lord|sheikh|sheikha)\.?\b/gi;
 
-        // ==================== TRADUCTIONS ====================
         const TRANSLATIONS = {
-            en: {
-                hotelName: 'Remal Hotel & Villas',
-                hotelLocation: 'Remal Hotel & Villas • Al Dhannah City',
-                guestId: '🔒 Guest Identification',
-                welcomeTitle: 'Welcome to Guest Hub',
-                verifyPrompt: 'Please verify your identity to access all services',
-                roomNumber: 'Room Number',
-                yourName: 'Your Name',
-                nameHint: 'Enter any name on your reservation',
-                verifying: 'Verifying with hotel records...',
-                notFound: 'Room number or name not found. Please try again.',
-                verifyAccess: 'Verify & Access',
-                services: 'Services',
-                offers: 'Offers',
-                faq: 'FAQ',
-                selectService: 'Select a Service',
-                roomService: 'Room Service / Order Food',
-                roomServiceDesc: 'In-room dining & beverages',
-                tableReservation: 'Table Reservation',
-                tableReservationDesc: 'Restaurant & lounge booking',
-                wakeupCall: 'Wake-up Call / Alarm',
-                wakeupCallDesc: 'Morning wake-up service',
-                lateCheckout: 'Late Check-out / Extension',
-                lateCheckoutDesc: 'Extend your stay',
-                housekeeping: 'Housekeeping / Room Cleaning',
-                housekeepingDesc: 'Room cleaning service',
-                frontDesk: 'Front Desk Inquiry',
-                frontDeskDesc: 'General assistance',
-                luggage: 'Luggage Assistance',
-                luggageDesc: 'Baggage handling',
-                maintenance: 'Maintenance / Technical Support',
-                maintenanceDesc: 'Repairs & technical help',
-                backToServices: 'Back to Services',
-                orderTracking: 'Order Tracking',
-                received: 'Received',
-                preparing: 'Preparing',
-                ready: 'Ready',
-                delivered: 'Delivered',
-                mealPeriod: 'Meal Period',
-                browseMenu: 'Browse Menu',
-                specialInstructions: 'Special Instructions / Allergies',
-                deliveryTime: 'Delivery Time',
-                directOrder: 'Direct Order to Kitchen',
-                whatsappOrder: 'Send via WhatsApp',
-                additionalNotes: 'Additional Notes',
-                submitRequest: 'Submit Request',
-                exclusiveOffers: 'Exclusive Offers',
-                faqTitle: 'Frequently Asked Questions',
-                restaurantMenu: 'Restaurant Menu',
-                total: 'Total:',
-                confirmSelection: 'Confirm Selection',
-                room: 'Room:',
-                roomType: 'Room Type:',
-                departure: 'Departure:',
-                logout: 'Change Room / Logout',
-                orderReceived: 'Order Received',
-                beingPrepared: 'Being Prepared',
-                readyForDelivery: 'Ready for Delivery',
-                orderDelivered: 'Delivered',
-                noOffers: 'No offers available at the moment',
-                featured: 'Featured'
-            },
-            fr: {
-                hotelName: 'Remal Hotel & Villas',
-                hotelLocation: 'Remal Hotel & Villas • Al Dhannah City',
-                guestId: '🔒 Identification Client',
-                welcomeTitle: 'Bienvenue au Guest Hub',
-                verifyPrompt: 'Veuillez vérifier votre identité pour accéder aux services',
-                roomNumber: 'Numéro de chambre',
-                yourName: 'Votre nom',
-                nameHint: 'Entrez un nom de votre réservation',
-                verifying: 'Vérification avec les dossiers de l\'hôtel...',
-                notFound: 'Numéro de chambre ou nom introuvable. Veuillez réessayer.',
-                verifyAccess: 'Vérifier & Accéder',
-                services: 'Services',
-                offers: 'Offres',
-                faq: 'FAQ',
-                selectService: 'Sélectionnez un service',
-                roomService: 'Service de chambre / Commander',
-                roomServiceDesc: 'Restauration en chambre',
-                tableReservation: 'Réservation de table',
-                tableReservationDesc: 'Réservation restaurant & lounge',
-                wakeupCall: 'Réveil / Alarme',
-                wakeupCallDesc: 'Service de réveil matinal',
-                lateCheckout: 'Départ tardif / Extension',
-                lateCheckoutDesc: 'Prolongez votre séjour',
-                housekeeping: 'Ménage / Nettoyage',
-                housekeepingDesc: 'Service de nettoyage',
-                frontDesk: 'Réception',
-                frontDeskDesc: 'Assistance générale',
-                luggage: 'Aide bagages',
-                luggageDesc: 'Manutention des bagages',
-                maintenance: 'Maintenance / Support technique',
-                maintenanceDesc: 'Réparations & aide technique',
-                backToServices: 'Retour aux services',
-                orderTracking: 'Suivi de commande',
-                received: 'Reçue',
-                preparing: 'En préparation',
-                ready: 'Prête',
-                delivered: 'Livrée',
-                mealPeriod: 'Période de repas',
-                browseMenu: 'Parcourir le menu',
-                specialInstructions: 'Instructions spéciales / Allergies',
-                deliveryTime: 'Heure de livraison',
-                directOrder: 'Commande directe',
-                whatsappOrder: 'Envoyer via WhatsApp',
-                additionalNotes: 'Notes supplémentaires',
-                submitRequest: 'Envoyer la demande',
-                exclusiveOffers: 'Offres exclusives',
-                faqTitle: 'Questions fréquentes',
-                restaurantMenu: 'Menu du restaurant',
-                total: 'Total :',
-                confirmSelection: 'Confirmer la sélection',
-                room: 'Chambre :',
-                roomType: 'Type de chambre :',
-                departure: 'Départ :',
-                logout: 'Changer de chambre',
-                orderReceived: 'Commande reçue',
-                beingPrepared: 'En préparation',
-                readyForDelivery: 'Prête pour livraison',
-                orderDelivered: 'Livrée',
-                noOffers: 'Aucune offre disponible',
-                featured: 'En vedette'
-            },
-            ar: {
-                hotelName: 'فندق وفلل رمال',
-                hotelLocation: 'فندق وفلل رمال • مدينة الظنة',
-                guestId: '🔒 تعريف النزيل',
-                welcomeTitle: 'مرحباً بكم في Guest Hub',
-                verifyPrompt: 'يرجى التحقق من هويتك للوصول إلى الخدمات',
-                roomNumber: 'رقم الغرفة',
-                yourName: 'اسمك',
-                nameHint: 'أدخل أي اسم من حجزك',
-                verifying: 'جارٍ التحقق من سجلات الفندق...',
-                notFound: 'رقم الغرفة أو الاسم غير موجود',
-                verifyAccess: 'تحقق وادخل',
-                services: 'الخدمات',
-                offers: 'العروض',
-                faq: 'الأسئلة',
-                selectService: 'اختر خدمة',
-                roomService: 'خدمة الغرف / طلب طعام',
-                roomServiceDesc: 'تناول الطعام في الغرفة',
-                tableReservation: 'حجز طاولة',
-                tableReservationDesc: 'حجز المطعم والصالة',
-                wakeupCall: 'خدمة الإيقاظ',
-                wakeupCallDesc: 'خدمة الاستيقاظ الصباحي',
-                lateCheckout: 'مغادرة متأخرة / تمديد',
-                lateCheckoutDesc: 'تمديد إقامتك',
-                housekeeping: 'التنظيف / خدمة الغرف',
-                housekeepingDesc: 'خدمة تنظيف الغرف',
-                frontDesk: 'الاستفسار من الاستقبال',
-                frontDeskDesc: 'مساعدة عامة',
-                luggage: 'مساعدة الأمتعة',
-                luggageDesc: 'معالجة الأمتعة',
-                maintenance: 'الصيانة / الدعم الفني',
-                maintenanceDesc: 'إصلاحات ومساعدة فنية',
-                backToServices: 'العودة إلى الخدمات',
-                orderTracking: 'تتبع الطلب',
-                received: 'تم الاستلام',
-                preparing: 'قيد التحضير',
-                ready: 'جاهز',
-                delivered: 'تم التسليم',
-                mealPeriod: 'فترة الوجبة',
-                browseMenu: 'تصفح القائمة',
-                specialInstructions: 'تعليمات خاصة / حساسية',
-                deliveryTime: 'وقت التسليم',
-                directOrder: 'طلب مباشر للمطبخ',
-                whatsappOrder: 'إرسال عبر واتساب',
-                additionalNotes: 'ملاحظات إضافية',
-                submitRequest: 'إرسال الطلب',
-                exclusiveOffers: 'عروض حصرية',
-                faqTitle: 'الأسئلة الشائعة',
-                restaurantMenu: 'قائمة المطعم',
-                total: 'المجموع:',
-                confirmSelection: 'تأكيد الاختيار',
-                room: 'الغرفة:',
-                roomType: 'نوع الغرفة:',
-                departure: 'المغادرة:',
-                logout: 'تغيير الغرفة',
-                orderReceived: 'تم استلام الطلب',
-                beingPrepared: 'قيد التحضير',
-                readyForDelivery: 'جاهز للتسليم',
-                orderDelivered: 'تم التسليم',
-                noOffers: 'لا توجد عروض متاحة',
-                featured: 'مميز'
-            },
-            hi: {
-                hotelName: 'रेमल होटल और विला',
-                hotelLocation: 'रेमल होटल और विला • अल धन्ना सिटी',
-                guestId: '🔒 अतिथि पहचान',
-                welcomeTitle: 'गेस्ट हब में आपका स्वागत है',
-                verifyPrompt: 'सेवाओं तक पहुंचने के लिए कृपया अपनी पहचान सत्यापित करें',
-                roomNumber: 'कमरा संख्या',
-                yourName: 'आपका नाम',
-                nameHint: 'अपने आरक्षण से कोई भी नाम दर्ज करें',
-                verifying: 'होटल रिकॉर्ड से सत्यापित किया जा रहा है...',
-                notFound: 'कमरा संख्या या नाम नहीं मिला',
-                verifyAccess: 'सत्यापित करें और प्रवेश करें',
-                services: 'सेवाएं',
-                offers: 'ऑफ़र',
-                faq: 'प्रश्न',
-                selectService: 'एक सेवा चुनें',
-                roomService: 'रूम सर्विस / खाना ऑर्डर',
-                roomServiceDesc: 'कमरे में भोजन',
-                tableReservation: 'टेबल आरक्षण',
-                tableReservationDesc: 'रेस्तरां बुकिंग',
-                wakeupCall: 'वेक-अप कॉल',
-                wakeupCallDesc: 'सुबह जगाने की सेवा',
-                lateCheckout: 'लेट चेक-आउट',
-                lateCheckoutDesc: 'अपने प्रवास को बढ़ाएं',
-                housekeeping: 'हाउसकीपिंग',
-                housekeepingDesc: 'कमरे की सफाई',
-                frontDesk: 'फ्रंट डेस्क',
-                frontDeskDesc: 'सामान्य सहायता',
-                luggage: 'सामान सहायता',
-                luggageDesc: 'सामान संभालना',
-                maintenance: 'रखरखाव / तकनीकी सहायता',
-                maintenanceDesc: 'मरम्मत और तकनीकी मदद',
-                backToServices: 'सेवाओं पर वापस',
-                orderTracking: 'ऑर्डर ट्रैकिंग',
-                received: 'प्राप्त हुआ',
-                preparing: 'तैयार हो रहा है',
-                ready: 'तैयार',
-                delivered: 'वितरित',
-                mealPeriod: 'भोजन अवधि',
-                browseMenu: 'मेनू ब्राउज़ करें',
-                specialInstructions: 'विशेष निर्देश / एलर्जी',
-                deliveryTime: 'डिलीवरी का समय',
-                directOrder: 'सीधे रसोई में ऑर्डर',
-                whatsappOrder: 'व्हाट्सएप से भेजें',
-                additionalNotes: 'अतिरिक्त नोट्स',
-                submitRequest: 'अनुरोध भेजें',
-                exclusiveOffers: 'विशेष ऑफ़र',
-                faqTitle: 'अक्सर पूछे जाने वाले प्रश्न',
-                restaurantMenu: 'रेस्तरां मेनू',
-                total: 'कुल:',
-                confirmSelection: 'चयन की पुष्टि करें',
-                room: 'कमरा:',
-                roomType: 'कमरे का प्रकार:',
-                departure: 'प्रस्थान:',
-                logout: 'कमरा बदलें',
-                orderReceived: 'ऑर्डर प्राप्त हुआ',
-                beingPrepared: 'तैयार हो रहा है',
-                readyForDelivery: 'डिलीवरी के लिए तैयार',
-                orderDelivered: 'वितरित',
-                noOffers: 'कोई ऑफ़र उपलब्ध नहीं',
-                featured: 'विशेष'
-            }
+            en: { hotelName:'Remal Hotel & Villas', hotelLocation:'Remal Hotel & Villas • Al Dhannah City', guestId:'🔒 Guest Identification', welcomeTitle:'Welcome to Guest Hub', verifyPrompt:'Please verify your identity', roomNumber:'Room Number', yourName:'Your Name', verifying:'Verifying...', notFound:'Room number or name not found', verifyAccess:'Verify & Access', services:'Services', offers:'Offers', faq:'FAQ', selectService:'Select a Service', roomService:'Room Service', roomServiceDesc:'In-room dining', tableReservation:'Table Reservation', tableReservationDesc:'Restaurant booking', wakeupCall:'Wake-up Call', wakeupCallDesc:'Morning alarm', lateCheckout:'Late Check-out', lateCheckoutDesc:'Extend stay', housekeeping:'Housekeeping', housekeepingDesc:'Room cleaning', frontDesk:'Front Desk', frontDeskDesc:'Assistance', luggage:'Luggage', luggageDesc:'Baggage help', maintenance:'Maintenance', maintenanceDesc:'Technical help', backToServices:'Back', orderTracking:'Tracking', received:'Received', preparing:'Preparing', ready:'Ready', delivered:'Delivered', mealPeriod:'Meal Period', browseMenu:'Browse Menu', specialInstructions:'Instructions', deliveryTime:'Delivery Time', directOrder:'Direct Order', whatsappOrder:'WhatsApp', additionalNotes:'Notes', submitRequest:'Submit', exclusiveOffers:'Exclusive Offers', faqTitle:'FAQ', restaurantMenu:'Menu', total:'Total:', confirmSelection:'Confirm', room:'Room:', roomType:'Room Type:', departure:'Departure:', logout:'Logout' },
+            fr: { hotelName:'Remal Hotel & Villas', hotelLocation:'Remal Hotel & Villas • Al Dhannah City', guestId:'🔒 Identification', welcomeTitle:'Bienvenue au Guest Hub', verifyPrompt:'Vérifiez votre identité', roomNumber:'Numéro de chambre', yourName:'Votre nom', verifying:'Vérification...', notFound:'Chambre ou nom introuvable', verifyAccess:'Vérifier & Accéder', services:'Services', offers:'Offres', faq:'FAQ', selectService:'Choisissez un service', roomService:'Service de chambre', roomServiceDesc:'Restauration en chambre', tableReservation:'Réservation de table', tableReservationDesc:'Réservation restaurant', wakeupCall:'Réveil', wakeupCallDesc:'Alarme matinale', lateCheckout:'Départ tardif', lateCheckoutDesc:'Prolonger le séjour', housekeeping:'Ménage', housekeepingDesc:'Nettoyage', frontDesk:'Réception', frontDeskDesc:'Assistance', luggage:'Bagages', luggageDesc:'Aide bagages', maintenance:'Maintenance', maintenanceDesc:'Aide technique', backToServices:'Retour', orderTracking:'Suivi', received:'Reçue', preparing:'En préparation', ready:'Prête', delivered:'Livrée', mealPeriod:'Période de repas', browseMenu:'Voir le menu', specialInstructions:'Instructions', deliveryTime:'Heure de livraison', directOrder:'Commande directe', whatsappOrder:'WhatsApp', additionalNotes:'Notes', submitRequest:'Envoyer', exclusiveOffers:'Offres exclusives', faqTitle:'FAQ', restaurantMenu:'Menu', total:'Total :', confirmSelection:'Confirmer', room:'Chambre :', roomType:'Type :', departure:'Départ :', logout:'Déconnexion' },
+            ar: { hotelName:'فندق وفلل رمال', hotelLocation:'فندق وفلل رمال • الظنة', guestId:'🔒 تعريف', welcomeTitle:'مرحباً', verifyPrompt:'تحقق من هويتك', roomNumber:'رقم الغرفة', yourName:'اسمك', verifying:'تحقق...', notFound:'غير موجود', verifyAccess:'دخول', services:'خدمات', offers:'عروض', faq:'أسئلة', selectService:'اختر خدمة', roomService:'خدمة الغرف', roomServiceDesc:'طعام', tableReservation:'حجز طاولة', tableReservationDesc:'مطعم', wakeupCall:'إيقاظ', wakeupCallDesc:'منبه', lateCheckout:'مغادرة متأخرة', lateCheckoutDesc:'تمديد', housekeeping:'تنظيف', housekeepingDesc:'نظافة', frontDesk:'استقبال', frontDeskDesc:'مساعدة', luggage:'أمتعة', luggageDesc:'مساعدة', maintenance:'صيانة', maintenanceDesc:'دعم فني', backToServices:'رجوع', orderTracking:'تتبع', received:'استلام', preparing:'تحضير', ready:'جاهز', delivered:'تسليم', mealPeriod:'فترة', browseMenu:'القائمة', specialInstructions:'تعليمات', deliveryTime:'وقت', directOrder:'طلب', whatsappOrder:'واتساب', additionalNotes:'ملاحظات', submitRequest:'إرسال', exclusiveOffers:'عروض حصرية', faqTitle:'أسئلة', restaurantMenu:'قائمة', total:'المجموع:', confirmSelection:'تأكيد', room:'غرفة:', roomType:'نوع:', departure:'مغادرة:', logout:'خروج' },
+            hi: { hotelName:'रेमल होटल', hotelLocation:'रेमल होटल • अल धन्ना', guestId:'🔒 पहचान', welcomeTitle:'स्वागत है', verifyPrompt:'पहचान सत्यापित करें', roomNumber:'कमरा नंबर', yourName:'आपका नाम', verifying:'सत्यापन...', notFound:'नहीं मिला', verifyAccess:'प्रवेश', services:'सेवाएं', offers:'ऑफ़र', faq:'प्रश्न', selectService:'सेवा चुनें', roomService:'रूम सर्विस', roomServiceDesc:'भोजन', tableReservation:'टेबल बुकिंग', tableReservationDesc:'रेस्तरां', wakeupCall:'वेक-अप', wakeupCallDesc:'अलार्म', lateCheckout:'लेट चेक-आउट', lateCheckoutDesc:'विस्तार', housekeeping:'सफाई', housekeepingDesc:'कमरा सफाई', frontDesk:'फ्रंट डेस्क', frontDeskDesc:'सहायता', luggage:'सामान', luggageDesc:'मदद', maintenance:'रखरखाव', maintenanceDesc:'तकनीकी', backToServices:'वापस', orderTracking:'ट्रैकिंग', received:'प्राप्त', preparing:'तैयारी', ready:'तैयार', delivered:'वितरित', mealPeriod:'भोजन समय', browseMenu:'मेनू', specialInstructions:'निर्देश', deliveryTime:'समय', directOrder:'ऑर्डर', whatsappOrder:'व्हाट्सएप', additionalNotes:'नोट्स', submitRequest:'भेजें', exclusiveOffers:'विशेष ऑफ़र', faqTitle:'प्रश्न', restaurantMenu:'मेनू', total:'कुल:', confirmSelection:'पुष्टि', room:'कमरा:', roomType:'प्रकार:', departure:'प्रस्थान:', logout:'लॉगआउट' }
         };
 
-        // ==================== FAQ DATA ====================
         const FAQ_DATA = {
-            en: [
-                { q: 'What is the Wi-Fi password?', a: 'Connect to "Remal_Guest" - no password required.' },
-                { q: 'What are the breakfast hours?', a: 'Daily at Falaj Restaurant from 06:30 AM to 11:00 AM.' },
-                { q: 'How do I request a late check-out?', a: 'Use the Services tab and select "Late Check-out".' },
-                { q: 'What are the pool timings?', a: 'Al Waha Pool is open from 07:00 AM to 08:00 PM.' }
-            ],
-            fr: [
-                { q: 'Quel est le mot de passe Wi-Fi ?', a: 'Connectez-vous à "Remal_Guest" - aucun mot de passe requis.' },
-                { q: 'Quels sont les horaires du petit-déjeuner ?', a: 'Tous les jours au restaurant Falaj de 06h30 à 11h00.' },
-                { q: 'Comment demander un départ tardif ?', a: 'Utilisez l\'onglet Services et sélectionnez "Départ tardif".' },
-                { q: 'Quels sont les horaires de la piscine ?', a: 'La piscine Al Waha est ouverte de 07h00 à 20h00.' }
-            ],
-            ar: [
-                { q: 'ما هي كلمة مرور الواي فاي؟', a: 'اتصل بشبكة "Remal_Guest" - بدون كلمة مرور.' },
-                { q: 'ما هي مواعيد الإفطار؟', a: 'يومياً في مطعم الفلج من 06:30 صباحاً حتى 11:00.' },
-                { q: 'كيف أطلب مغادرة متأخرة؟', a: 'استخدم تبويب الخدمات واختر "مغادرة متأخرة".' },
-                { q: 'ما هي مواعيد المسبح؟', a: 'مسبح الواحة مفتوح من 07:00 صباحاً حتى 08:00 مساءً.' }
-            ],
-            hi: [
-                { q: 'वाई-फाई पासवर्ड क्या है?', a: '"Remal_Guest" से कनेक्ट करें - कोई पासवर्ड नहीं।' },
-                { q: 'नाश्ते का समय क्या है?', a: 'फलज रेस्तरां में रोजाना सुबह 06:30 से 11:00 बजे तक।' },
-                { q: 'लेट चेक-आउट कैसे करें?', a: 'सेवाएं टैब में जाएं और "लेट चेक-आउट" चुनें।' },
-                { q: 'पूल का समय क्या है?', a: 'अल वाहा पूल सुबह 07:00 से रात 08:00 बजे तक खुला है।' }
-            ]
+            en: [{q:'Wi-Fi password?',a:'Connect to "Remal_Guest"'},{q:'Breakfast hours?',a:'06:30 - 11:00'},{q:'Pool timings?',a:'07:00 - 20:00'}],
+            fr: [{q:'Mot de passe Wi-Fi ?',a:'Connectez à "Remal_Guest"'},{q:'Heures petit-déj ?',a:'06h30 - 11h00'},{q:'Horaires piscine ?',a:'07h00 - 20h00'}],
+            ar: [{q:'واي فاي؟',a:'اتصل بـ "Remal_Guest"'},{q:'الإفطار؟',a:'06:30 - 11:00'},{q:'المسبح؟',a:'07:00 - 20:00'}],
+            hi: [{q:'वाई-फाई?',a:'"Remal_Guest"'},{q:'नाश्ता?',a:'06:30 - 11:00'},{q:'पूल?',a:'07:00 - 20:00'}]
         };
 
-        // ==================== FONCTIONS LANGUE ====================
+        const SERVICES_DATA = {
+            table_reservation: { title:'Table Reservation', icon:'fa-calendar-check', fields:[{type:'select',id:'rv',label:'Venue',options:['Falaj Restaurant','Sarab Bar']},{type:'date',id:'rd',label:'Date'},{type:'time',id:'rt',label:'Time'}] },
+            wakeup_call: { title:'Wake-up Call', icon:'fa-alarm-clock', fields:[{type:'time',id:'wt',label:'Alarm Time'}] },
+            late_checkout: { title:'Late Check-out', icon:'fa-clock', fields:[{type:'select',id:'ct',label:'Time',options:['13:00','14:00','15:00','16:00']}] },
+            housekeeping: { title:'Housekeeping', icon:'fa-broom', fields:[{type:'select',id:'hs',label:'Service',options:['Full Cleaning','Towel Change']},{type:'select',id:'ht',label:'Time',options:['Morning','Afternoon','Evening']}] },
+            front_desk: { title:'Front Desk', icon:'fa-headset', fields:[{type:'select',id:'it',label:'Type',options:['Info','Billing','Other']}] },
+            luggage: { title:'Luggage', icon:'fa-suitcase', fields:[{type:'select',id:'lt',label:'Service',options:['Collect','Deliver','Store']},{type:'number',id:'lc',label:'Bags'}] },
+            maintenance: { title:'Maintenance', icon:'fa-tools', fields:[{type:'select',id:'mt',label:'Issue',options:['AC','Plumbing','Electrical','TV']},{type:'select',id:'mu',label:'Urgency',options:['Low','Medium','High']}] }
+        };
+
         function setLanguage(lang) {
             currentLanguage = lang;
             localStorage.setItem('remal_language', lang);
-            
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if (TRANSLATIONS[lang] && TRANSLATIONS[lang][key]) {
-                    el.innerText = TRANSLATIONS[lang][key];
-                }
-            });
-            
+            document.querySelectorAll('[data-i18n]').forEach(el => { const k = el.getAttribute('data-i18n'); if (TRANSLATIONS[lang] && TRANSLATIONS[lang][k]) el.innerText = TRANSLATIONS[lang][k]; });
             document.getElementById('htmlRoot').setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
-            
-            // Mettre à jour les boutons de langue
-            ['en', 'fr', 'ar', 'hi'].forEach(l => {
-                const btn = document.getElementById(`lang${l.charAt(0).toUpperCase() + l.slice(1)}`);
-                const btnMain = document.getElementById(`lang${l.charAt(0).toUpperCase() + l.slice(1)}Main`);
-                if (btn) {
-                    if (l === lang) { btn.classList.add('active'); } else { btn.classList.remove('active'); }
-                }
-                if (btnMain) {
-                    if (l === lang) { btnMain.classList.add('active'); } else { btnMain.classList.remove('active'); }
-                }
-            });
-            
+            ['en','fr','ar','hi'].forEach(l => { const btn = document.getElementById('lang' + l.charAt(0).toUpperCase() + l.slice(1)); if (btn) { if (l === lang) btn.classList.add('active'); else btn.classList.remove('active'); } });
             renderFaqList();
-            updateGreeting();
         }
 
-        function updateGreeting() {
-            const greeting = getGreeting();
-            const greetings = {
-                en: { text: greeting.text, emoji: greeting.emoji },
-                fr: { text: greeting.text === 'Good Morning' ? 'Bonjour' : greeting.text === 'Good Afternoon' ? 'Bon après-midi' : 'Bonsoir', emoji: greeting.emoji },
-                ar: { text: greeting.text === 'Good Morning' ? 'صباح الخير' : greeting.text === 'Good Afternoon' ? 'مساء الخير' : 'مساء الخير', emoji: greeting.emoji },
-                hi: { text: greeting.text === 'Good Morning' ? 'सुप्रभात' : greeting.text === 'Good Afternoon' ? 'नमस्कार' : 'शुभ संध्या', emoji: greeting.emoji }
-            };
-            
-            const g = greetings[currentLanguage] || greetings.en;
-            document.getElementById('greetingText').innerText = `${g.emoji} ${g.text} - ${TRANSLATIONS[currentLanguage].welcomeTitle}`;
-            
-            if (document.getElementById('greetingTime')) {
-                document.getElementById('greetingTime').innerText = `${g.emoji} ${g.text}`;
-            }
-        }
+        function renderFaqList() { const c = document.getElementById('faqContainer'); const faqs = FAQ_DATA[currentLanguage] || FAQ_DATA.en; c.innerHTML = faqs.map(f => `<div class="p-3.5 bg-[var(--bg-card-hover)] border border-[var(--border-gold-strong)] rounded-2xl"><p class="text-[11px] font-bold text-[var(--text-gold)]">❓ ${f.q}</p><p class="text-[10px] text-muted-custom mt-1">${f.a}</p></div>`).join(''); }
 
-        function renderFaqList() {
-            const container = document.getElementById('faqContainer');
-            const faqs = FAQ_DATA[currentLanguage] || FAQ_DATA.en;
-            
-            container.innerHTML = faqs.map(faq => `
-                <div class="p-3.5 bg-[var(--bg-card-hover)] border border-[var(--border-gold-strong)] rounded-2xl">
-                    <p class="text-[11px] font-bold text-[var(--text-gold)]">❓ ${faq.q}</p>
-                    <p class="text-[10px] text-muted-custom mt-1">${faq.a}</p>
-                </div>
-            `).join('');
-        }
+        function getGreeting() { const h = new Date().getHours(); if (h < 12) return 'Good Morning 🌅'; if (h < 18) return 'Good Afternoon ☀️'; return 'Good Evening 🌙'; }
 
-        // ==================== SERVICES DATA ====================
-        const SERVICES_DATA = {
-            table_reservation: {
-                title: 'Table Reservation',
-                subtitle: 'Book a table at our restaurants',
-                icon: 'fa-calendar-check',
-                fields: [
-                    { type: 'select', id: 'reservation_venue', label: 'Venue', options: ['Falaj Restaurant', 'Sarab Bar & Lounge', 'Al Waha Pool Cabana'] },
-                    { type: 'select', id: 'reservation_guests', label: 'Number of Guests', options: ['1 Person', '2 Persons', '3 Persons', '4 Persons', '5+ Persons'] },
-                    { type: 'date', id: 'reservation_date', label: 'Date' },
-                    { type: 'time', id: 'reservation_time', label: 'Preferred Time' }
-                ]
-            },
-            wakeup_call: {
-                title: 'Wake-up Call / Alarm Service',
-                subtitle: 'Set your morning wake-up call',
-                icon: 'fa-alarm-clock',
-                fields: [{ type: 'time', id: 'wakeup_time', label: 'Alarm Time' }]
-            },
-            late_checkout: {
-                title: 'Late Check-out / Extension',
-                subtitle: 'Request extended departure time',
-                icon: 'fa-clock',
-                fields: [{ type: 'select', id: 'checkout_time', label: 'Requested Departure Time', options: ['13:00 PM', '14:00 PM', '15:00 PM', '16:00 PM (Max)'] }]
-            },
-            housekeeping: {
-                title: 'Housekeeping / Room Cleaning',
-                subtitle: 'Request room cleaning service',
-                icon: 'fa-broom',
-                fields: [
-                    { type: 'select', id: 'cleaning_type', label: 'Service Type', options: ['Full Cleaning', 'Towel Change Only', 'Bed Linen Change', 'Turndown Service'] },
-                    { type: 'select', id: 'cleaning_time', label: 'Preferred Time', options: ['Morning (8AM-12PM)', 'Afternoon (12PM-4PM)', 'Evening (4PM-8PM)'] }
-                ]
-            },
-            front_desk: {
-                title: 'Front Desk Inquiry',
-                subtitle: 'General assistance & information',
-                icon: 'fa-headset',
-                fields: [{ type: 'select', id: 'inquiry_type', label: 'Inquiry Type', options: ['General Information', 'Billing Question', 'Complaint', 'Suggestion', 'Other'] }]
-            },
-            luggage: {
-                title: 'Luggage Assistance',
-                subtitle: 'Baggage handling & storage',
-                icon: 'fa-suitcase',
-                fields: [
-                    { type: 'select', id: 'luggage_type', label: 'Service Type', options: ['Collect from Room', 'Deliver to Room', 'Store Luggage', 'Transport to Lobby'] },
-                    { type: 'number', id: 'luggage_count', label: 'Number of Bags' }
-                ]
-            },
-            maintenance: {
-                title: 'Maintenance / Technical Support',
-                subtitle: 'Repairs & technical assistance',
-                icon: 'fa-tools',
-                fields: [
-                    { type: 'select', id: 'maintenance_type', label: 'Issue Type', options: ['Air Conditioning', 'Plumbing', 'Electrical', 'TV / Internet', 'Lighting', 'Other'] },
-                    { type: 'select', id: 'maintenance_urgency', label: 'Urgency', options: ['Low', 'Medium', 'High'] }
-                ]
-            }
-        };
+        async function fetchOffers() { try { const { data } = await supabaseClient.from('offers').select('*').eq('is_active', true).order('created_at', { ascending: false }).limit(10); if (data && data.length) { currentOffers = data; renderOffers(data); } else renderOffers([]); } catch(e) { renderOffers([]); } }
 
-        // ==================== OFFRES ====================
-        async function fetchOffers() {
-            try {
-                const { data, error } = await supabaseClient
-                    .from('offers')
-                    .select('*')
-                    .eq('is_active', true)
-                    .order('created_at', { ascending: false })
-                    .limit(10);
-                if (data && data.length > 0) { currentOffers = data; renderOffers(data); } else { renderOffers([]); }
-            } catch (err) { renderOffers([]); }
-        }
+        function renderOffers(offers) { const c = document.getElementById('offersContainer'); if (!offers.length) { c.innerHTML = `<p class="text-center text-[10px] text-muted-custom py-8">No offers</p>`; return; } const first = offers[0]; let html = `<div class="featured-offer"><img src="${first.image}" onerror="this.src='logo.png'"><div class="featured-offer-overlay"><p class="text-sm font-serif-luxury font-bold text-white">${first.title}</p><p class="text-[10px] text-muted-custom">${first.description}</p><p class="text-lg font-serif-luxury font-bold text-[var(--text-gold)]">${first.price}</p></div></div>`; html += `<div class="grid grid-cols-2 gap-3">` + offers.slice(1).map(o => `<div class="offer-card remal-card rounded-2xl overflow-hidden"><img src="${o.image}" class="w-full h-24 object-cover" onerror="this.src='logo.png'"><div class="p-3"><p class="text-[10px] font-bold">${o.title}</p><p class="text-xs font-serif-luxury font-bold text-[var(--text-gold)]">${o.price}</p></div></div>`).join('') + `</div>`; c.innerHTML = html; }
 
-        function renderOffers(offers) {
-            const container = document.getElementById('offersContainer');
-            if (!offers || offers.length === 0) {
-                container.innerHTML = `<div class="text-center py-8"><i class="fas fa-tags text-3xl text-muted-custom mb-2"></i><p class="text-[10px] text-muted-custom">${TRANSLATIONS[currentLanguage].noOffers}</p></div>`;
-                return;
-            }
-            const firstOffer = offers[0];
-            const otherOffers = offers.slice(1);
-            let html = `
-                <div class="featured-offer">
-                    <img src="${firstOffer.image}" alt="${firstOffer.title}" onerror="this.src='logo.png'">
-                    <div class="featured-offer-overlay">
-                        <span class="inline-block text-[8px] bg-[var(--text-gold)] text-stone-950 font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider mb-1">${TRANSLATIONS[currentLanguage].featured}</span>
-                        <p class="text-sm font-serif-luxury font-bold text-white">${firstOffer.title}</p>
-                        <p class="text-[10px] text-muted-custom">${firstOffer.description}</p>
-                        <p class="text-lg font-serif-luxury font-bold text-[var(--text-gold)] mt-1">${firstOffer.price}</p>
-                    </div>
-                </div>
-            `;
-            if (otherOffers.length > 0) {
-                html += `<div class="grid grid-cols-2 gap-3">`;
-                otherOffers.forEach(offer => {
-                    html += `
-                        <div class="offer-card remal-card rounded-2xl overflow-hidden cursor-pointer">
-                            <img src="${offer.image}" alt="${offer.title}" class="w-full h-24 object-cover" onerror="this.src='logo.png'">
-                            <div class="p-3 space-y-1">
-                                <p class="text-[10px] font-bold text-[var(--text-main)]">${offer.title}</p>
-                                <p class="text-[8px] text-muted-custom">${offer.category}</p>
-                                <p class="text-xs font-serif-luxury font-bold text-[var(--text-gold)]">${offer.price}</p>
-                            </div>
-                        </div>
-                    `;
-                });
-                html += `</div>`;
-            }
-            container.innerHTML = html;
-        }
+        function switchTab(tab) { currentTab = tab; ['services','offers','faq'].forEach(t => { document.getElementById(t + 'Section').classList.add('hidden'); document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1)).classList.remove('active'); }); if (tab === 'services') { document.getElementById('servicesSection').classList.remove('hidden'); document.getElementById('tabServices').classList.add('active'); } else if (tab === 'offers') { document.getElementById('offersSection').classList.remove('hidden'); document.getElementById('tabOffers').classList.add('active'); fetchOffers(); } else { document.getElementById('faqSection').classList.remove('hidden'); document.getElementById('tabFaq').classList.add('active'); renderFaqList(); } }
 
-        // ==================== ONGLETS ====================
-        function switchTab(tab) {
-            currentTab = tab;
-            document.getElementById('servicesSection').classList.add('hidden');
-            document.getElementById('offersSection').classList.add('hidden');
-            document.getElementById('faqSection').classList.add('hidden');
-            document.getElementById('tabServices').classList.remove('active');
-            document.getElementById('tabOffers').classList.remove('active');
-            document.getElementById('tabFaq').classList.remove('active');
-            if (tab === 'services') {
-                document.getElementById('servicesSection').classList.remove('hidden');
-                document.getElementById('tabServices').classList.add('active');
-            } else if (tab === 'offers') {
-                document.getElementById('offersSection').classList.remove('hidden');
-                document.getElementById('tabOffers').classList.add('active');
-                fetchOffers();
-            } else if (tab === 'faq') {
-                document.getElementById('faqSection').classList.remove('hidden');
-                document.getElementById('tabFaq').classList.add('active');
-                renderFaqList();
-            }
-        }
+        function showService(id) { currentService = id; document.getElementById('servicesList').classList.add('hidden'); if (id === 'room_service') { document.getElementById('roomServiceSection').classList.remove('hidden'); document.getElementById('otherServiceSection').classList.add('hidden'); renderMenuItems(); } else { document.getElementById('roomServiceSection').classList.add('hidden'); document.getElementById('otherServiceSection').classList.remove('hidden'); const sd = SERVICES_DATA[id]; if (sd) { document.getElementById('otherServiceTitle').innerText = sd.title; document.getElementById('otherServiceIcon').innerHTML = `<i class="fas ${sd.icon}"></i>`; renderServiceFields(sd.fields); } } }
 
-        // ==================== SERVICES ====================
-        function showService(serviceId) {
-            currentService = serviceId;
-            document.getElementById('servicesList').classList.add('hidden');
-            if (serviceId === 'room_service') {
-                document.getElementById('roomServiceSection').classList.remove('hidden');
-                document.getElementById('otherServiceSection').classList.add('hidden');
-                renderMenuItems();
-            } else {
-                document.getElementById('roomServiceSection').classList.add('hidden');
-                document.getElementById('otherServiceSection').classList.remove('hidden');
-                const serviceData = SERVICES_DATA[serviceId];
-                if (serviceData) {
-                    document.getElementById('otherServiceTitle').innerText = serviceData.title;
-                    document.getElementById('otherServiceSubtitle').innerText = serviceData.subtitle;
-                    document.getElementById('otherServiceIcon').innerHTML = `<i class="fas ${serviceData.icon}"></i>`;
-                    renderServiceFields(serviceData.fields);
-                }
-            }
-        }
+        function backToServices() { document.getElementById('servicesList').classList.remove('hidden'); document.getElementById('roomServiceSection').classList.add('hidden'); document.getElementById('otherServiceSection').classList.add('hidden'); currentService = null; }
 
-        function backToServices() {
-            document.getElementById('servicesList').classList.remove('hidden');
-            document.getElementById('roomServiceSection').classList.add('hidden');
-            document.getElementById('otherServiceSection').classList.add('hidden');
-            currentService = null;
-        }
+        function renderServiceFields(fields) { const c = document.getElementById('otherServiceFields'); c.innerHTML = fields.map(f => { if (f.type === 'select') return `<div><label class="block font-bold text-[var(--text-gold)] text-[10px] mb-1.5">${f.label}</label><select id="${f.id}" class="w-full remal-input rounded-2xl p-3.5 text-xs">${f.options.map(o => `<option>${o}</option>`).join('')}</select></div>`; if (f.type === 'date') return `<div><label class="block font-bold text-[var(--text-gold)] text-[10px] mb-1.5">${f.label}</label><input type="date" id="${f.id}" class="w-full remal-input rounded-2xl p-3.5 text-xs"></div>`; if (f.type === 'time') return `<div><label class="block font-bold text-[var(--text-gold)] text-[10px] mb-1.5">${f.label}</label><input type="time" id="${f.id}" value="19:30" class="w-full remal-input rounded-2xl p-3.5 text-xs"></div>`; if (f.type === 'number') return `<div><label class="block font-bold text-[var(--text-gold)] text-[10px] mb-1.5">${f.label}</label><input type="number" id="${f.id}" min="1" value="1" class="w-full remal-input rounded-2xl p-3.5 text-xs"></div>`; return ''; }).join(''); }
 
-        function renderServiceFields(fields) {
-            const container = document.getElementById('otherServiceFields');
-            container.innerHTML = fields.map(field => {
-                if (field.type === 'select') {
-                    return `<div><label class="block font-bold text-[var(--text-gold)] mb-1.5 uppercase tracking-wider text-[10px]">${field.label}</label><select id="${field.id}" class="w-full remal-input rounded-2xl p-3.5 font-bold cursor-pointer text-xs">${field.options.map(opt => `<option value="${opt}">${opt}</option>`).join('')}</select></div>`;
-                } else if (field.type === 'date') {
-                    const today = new Date().toISOString().split('T')[0];
-                    return `<div><label class="block font-bold text-[var(--text-gold)] mb-1.5 uppercase tracking-wider text-[10px]">${field.label}</label><input type="date" id="${field.id}" value="${today}" class="w-full remal-input rounded-2xl p-3.5 font-bold text-xs"></div>`;
-                } else if (field.type === 'time') {
-                    return `<div><label class="block font-bold text-[var(--text-gold)] mb-1.5 uppercase tracking-wider text-[10px]">${field.label}</label><input type="time" id="${field.id}" value="19:30" class="w-full remal-input rounded-2xl p-3.5 font-bold text-xs"></div>`;
-                } else if (field.type === 'number') {
-                    return `<div><label class="block font-bold text-[var(--text-gold)] mb-1.5 uppercase tracking-wider text-[10px]">${field.label}</label><input type="number" id="${field.id}" min="1" max="10" value="1" class="w-full remal-input rounded-2xl p-3.5 font-bold text-xs"></div>`;
-                }
-                return '';
-            }).join('');
-        }
+        async function submitOtherService() { const room = cachedGuestData?.room || localStorage.getItem('remal_guest_room'); const notes = document.getElementById('otherServiceNotes').value.trim(); const sd = SERVICES_DATA[currentService]; if (!sd) return; let details = []; sd.fields.forEach(f => { const el = document.getElementById(f.id); if (el) details.push(`${f.label}: ${el.value}`); }); const full = details.join('\n') + (notes ? `\nNotes: ${notes}` : ''); const { error } = await supabaseClient.from('guest_requests').insert([{ room_number: room, guest_name: cachedGuestData.guest_name, service_type: sd.title, details: full, status: 'Pending', created_at: new Date().toISOString() }]); if (error) { showToast('Error: ' + error.message, 'error'); return; } showToast('✅ Request submitted!', 'success'); backToServices(); }
 
-        // ==================== SOUMISSION ====================
-        async function submitOtherService() {
-            const room = cachedGuestData?.room || localStorage.getItem('remal_guest_room');
-            const notes = document.getElementById('otherServiceNotes').value.trim();
-            const serviceData = SERVICES_DATA[currentService];
-            if (!serviceData) return;
-            let details = [];
-            serviceData.fields.forEach(field => {
-                const element = document.getElementById(field.id);
-                if (element) details.push(`${field.label}: ${element.value}`);
-            });
-            const fullDetails = details.join('\n') + (notes ? `\n📝 Notes: ${notes}` : '');
-            const requestData = {
-                room_number: room,
-                guest_name: cachedGuestData.guest_name,
-                service_type: serviceData.title,
-                details: fullDetails,
-                status: 'Pending',
-                created_at: new Date().toISOString()
-            };
-            try {
-                const { error } = await supabaseClient.from('guest_requests').insert([requestData]);
-                if (error) { showToast('Error: ' + error.message, 'error'); return; }
-                showToast('✅ Request submitted!', 'success');
-                document.getElementById('otherServiceNotes').value = '';
-                backToServices();
-            } catch (err) { showToast('Error: ' + err.message, 'error'); }
-        }
+        async function submitRoomServiceOrder(method) { const room = cachedGuestData?.room || localStorage.getItem('remal_guest_room'); if (!isGuestVerified) { showToast('Verify first', 'error'); return; } if (!Object.keys(menuCart).length) { showToast('Select items', 'error'); return; } let items = []; let total = 0; for (const [id, qty] of Object.entries(menuCart)) { const item = findMenuItem(id); if (item) { items.push({ name: item.name, quantity: qty, price: item.price, total: qty * item.price }); total += qty * item.price; } } const { data, error } = await supabaseClient.from('food_orders').insert([{ room_number: room, guest_name: cachedGuestData.guest_name, items: items, total_amount: total, status: 'Pending', created_at: new Date().toISOString() }]).select(); if (error) { showToast('Error: ' + error.message, 'error'); return; } if (data && data.length) { currentOrderId = data[0].id; localStorage.setItem('remal_current_order_id', currentOrderId); updateOrderTracking('Pending'); } if (method === 'whatsapp') { const list = items.map(i => `${i.quantity}x ${i.name}`).join('\n'); window.open(`https://wa.me/${SUPABASE_CONFIG.whatsappNumber}?text=${encodeURIComponent('Order Room ' + room + '\n' + list + '\nTotal: AED ' + total)}`, '_blank'); } showToast('✅ Order submitted!', 'success'); menuCart = {}; renderMenuItems(); }
 
-        async function submitRoomServiceOrder(method) {
-            const room = cachedGuestData?.room || localStorage.getItem('remal_guest_room');
-            const instructions = document.getElementById('guestSpecialInstructions').value.trim();
-            if (!isGuestVerified) { showToast('Please verify first', 'error'); return; }
-            if (Object.keys(menuCart).length === 0) { showToast('Select at least one item', 'error'); return; }
-
-            let itemsArray = [];
-            let totalAmount = 0;
-            for (const [itemId, qty] of Object.entries(menuCart)) {
-                const item = findMenuItem(itemId);
-                if (item) {
-                    itemsArray.push({ name: item.name, quantity: qty, price: item.price, total: qty * item.price });
-                    totalAmount += qty * item.price;
-                }
-            }
-
-            const orderData = {
-                room_number: room,
-                guest_name: cachedGuestData.guest_name,
-                items: itemsArray,
-                total_amount: totalAmount,
-                status: 'Pending',
-                created_at: new Date().toISOString()
-            };
-
-            try {
-                const { data, error } = await supabaseClient.from('food_orders').insert([orderData]).select();
-                if (error) { showToast('Error: ' + error.message, 'error'); return; }
-                if (data && data.length > 0) {
-                    currentOrderId = data[0].id;
-                    localStorage.setItem('remal_current_order_id', currentOrderId);
-                    updateOrderTracking('Pending');
-                }
-                if (method === 'whatsapp') {
-                    const itemsList = itemsArray.map(i => `${i.quantity}x ${i.name} (AED ${i.total})`).join('\n');
-                    const message = `🛎️ ORDER\n\nRoom: ${room}\nGuest: ${cachedGuestData.guest_name}\n\n${itemsList}\n\nTotal: AED ${totalAmount}`;
-                    window.open(`https://wa.me/${SUPABASE_CONFIG.whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank');
-                }
-                showToast('✅ Order submitted!', 'success');
-                menuCart = {};
-                document.getElementById('guestSpecialInstructions').value = '';
-                renderMenuItems();
-            } catch (err) { showToast('Error: ' + err.message, 'error'); }
-        }
-
-        // ==================== MENU ====================
         function openMenuModal() { document.getElementById('menuModal').classList.remove('hidden'); renderMenuItems(); }
         function closeMenuModal() { document.getElementById('menuModal').classList.add('hidden'); }
         function confirmMenuSelection() { closeMenuModal(); }
-        
-        function renderMenuItems() {
-            const container = document.getElementById('menuItemsContainer');
-            const searchQuery = document.getElementById('menuSearchInput')?.value?.toLowerCase() || '';
-            let html = '';
-            let totalPcs = 0;
-            let totalPrice = 0;
-            for (const [category, items] of Object.entries(MENU_DATA)) {
-                const filteredItems = items.filter(item => item.name.toLowerCase().includes(searchQuery) || item.desc.toLowerCase().includes(searchQuery));
-                if (filteredItems.length === 0) continue;
-                html += `<div class="menu-category-header px-3 py-2 rounded-xl font-bold text-[10px] uppercase tracking-widest text-[var(--text-gold)] mb-2">${category}</div>`;
-                filteredItems.forEach(item => {
-                    const qty = menuCart[item.id] || 0;
-                    totalPcs += qty;
-                    totalPrice += qty * item.price;
-                    const badgesHTML = getBadgeHTML(item.badges);
-                    const isFavorite = favoritesList[item.id] ? 'active' : '';
-                    html += `
-                        <div class="flex justify-between items-center py-2.5 border-b border-[var(--border-gold)]">
-                            <div class="flex-1 pr-2">
-                                <div class="flex items-center gap-2 mb-1">
-                                    <button onclick="toggleFavorite('${item.id}')" class="favorite-heart ${isFavorite}"><i class="fas fa-heart"></i></button>
-                                    <p class="font-bold text-[var(--text-main)] text-xs">${item.name}</p>
-                                </div>
-                                ${badgesHTML}
-                                <p class="text-[10px] text-muted-custom mt-1">${item.desc}</p>
-                                <div class="flex items-center gap-2 mt-1">
-                                    <p class="text-[var(--text-gold)] font-bold text-xs">AED ${item.price}</p>
-                                    <span class="text-[8px] text-muted-custom">•</span>
-                                    <span class="text-[8px] text-muted-custom">⏱️ ${item.prepTime}</span>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-2 bg-[var(--bg-input)] p-1 rounded-xl border border-[var(--border-gold)]">
-                                <button onclick="updateCart('${item.id}', -1)" class="w-6 h-6 bg-[var(--bg-card-hover)] rounded-lg font-bold">-</button>
-                                <span class="font-bold px-1 w-6 text-center">${qty}</span>
-                                <button onclick="updateCart('${item.id}', 1)" class="w-6 h-6 bg-[var(--text-gold)] text-stone-950 rounded-lg font-bold">+</button>
-                            </div>
-                        </div>
-                    `;
-                });
-            }
-            container.innerHTML = html || '<p class="text-center text-muted-custom py-8">No items found</p>';
-            document.getElementById('modalMenuTotalSummary').innerText = `${totalPcs} items · ${totalPrice.toFixed(2)} AED`;
-            document.getElementById('selectedBadgeCount').innerText = `${totalPcs}`;
-        }
+        function renderMenuItems() { const c = document.getElementById('menuItemsContainer'); const q = (document.getElementById('menuSearchInput')?.value || '').toLowerCase(); let html = ''; let pcs = 0; let price = 0; for (const [cat, items] of Object.entries(MENU_DATA)) { const filtered = items.filter(i => i.name.toLowerCase().includes(q) || i.desc.toLowerCase().includes(q)); if (!filtered.length) continue; html += `<div class="menu-category-header px-3 py-2 rounded-xl font-bold text-[10px] uppercase text-[var(--text-gold)] mb-2">${cat}</div>`; filtered.forEach(item => { const qty = menuCart[item.id] || 0; pcs += qty; price += qty * item.price; html += `<div class="flex justify-between items-center py-2.5 border-b border-[var(--border-gold)]"><div class="flex-1 pr-2"><p class="font-bold text-xs">${item.name}</p><p class="text-[10px] text-muted-custom">${item.desc}</p><p class="text-[var(--text-gold)] font-bold text-xs">AED ${item.price} • ⏱️ ${item.prepTime}</p></div><div class="flex items-center gap-2 bg-[var(--bg-input)] p-1 rounded-xl border border-[var(--border-gold)]"><button onclick="updateCart('${item.id}',-1)" class="w-6 h-6 bg-[var(--bg-card-hover)] rounded-lg font-bold">-</button><span class="font-bold px-1 w-6 text-center">${qty}</span><button onclick="updateCart('${item.id}',1)" class="w-6 h-6 bg-[var(--text-gold)] text-stone-950 rounded-lg font-bold">+</button></div></div>`; }); } c.innerHTML = html || '<p class="text-center text-muted-custom py-8">No items</p>'; document.getElementById('modalMenuTotalSummary').innerText = `${pcs} items · ${price.toFixed(2)} AED`; document.getElementById('selectedBadgeCount').innerText = pcs; }
+        function updateCart(id, delta) { if (!menuCart[id]) menuCart[id] = 0; menuCart[id] = Math.max(0, menuCart[id] + delta); if (!menuCart[id]) delete menuCart[id]; renderMenuItems(); }
+        function toggleFavorite(id) { if (favoritesList[id]) delete favoritesList[id]; else favoritesList[id] = true; localStorage.setItem('remal_favorites', JSON.stringify(favoritesList)); }
 
-        function updateCart(itemId, delta) {
-            if (!menuCart[itemId]) menuCart[itemId] = 0;
-            menuCart[itemId] = Math.max(0, menuCart[itemId] + delta);
-            if (menuCart[itemId] === 0) delete menuCart[itemId];
-            renderMenuItems();
-        }
+        function updateOrderTracking(status) { const section = document.getElementById('orderTrackingSection'); section.classList.remove('hidden'); if (trackingTimeout) clearTimeout(trackingTimeout); const map = { 'Pending': { step: 'received', text: TRANSLATIONS[currentLanguage].received }, 'Preparing': { step: 'preparing', text: TRANSLATIONS[currentLanguage].preparing }, 'Ready': { step: 'ready', text: TRANSLATIONS[currentLanguage].ready }, 'Delivered': { step: 'delivered', text: TRANSLATIONS[currentLanguage].delivered } }; const config = map[status] || map['Pending']; document.getElementById('orderStatusText').innerText = config.text; const steps = ['received','preparing','ready','delivered']; const idx = steps.indexOf(config.step); steps.forEach((s, i) => { const dot = document.getElementById('step' + s.charAt(0).toUpperCase() + s.slice(1)); const line = document.getElementById('line' + s.charAt(0).toUpperCase() + s.slice(1)); if (i <= idx) { dot.classList.add('completed','active'); if (line) line.classList.add('completed'); } else { dot.classList.remove('completed','active'); if (line) line.classList.remove('completed'); } }); if (status === 'Delivered' || status === 'Completed') { trackingTimeout = setTimeout(() => { section.classList.add('hidden'); localStorage.removeItem('remal_current_order_id'); currentOrderId = null; }, 600000); } }
 
-        function toggleFavorite(itemId) {
-            if (favoritesList[itemId]) { delete favoritesList[itemId]; } else { favoritesList[itemId] = true; }
-            localStorage.setItem('remal_favorites', JSON.stringify(favoritesList));
-            renderMenuItems();
-        }
+        function toggleTheme() { document.body.classList.toggle('light-mode'); const isLight = document.body.classList.contains('light-mode'); const icon = document.getElementById('themeIconMain'); if (icon) icon.className = isLight ? 'fas fa-moon text-sm' : 'fas fa-sun text-sm'; localStorage.setItem('remal_theme', isLight ? 'light' : 'dark'); }
+        function initTheme() { const saved = localStorage.getItem('remal_theme'); if (saved === 'light') document.body.classList.add('light-mode'); const isLight = document.body.classList.contains('light-mode'); const icon = document.getElementById('themeIconMain'); if (icon) icon.className = isLight ? 'fas fa-moon text-sm' : 'fas fa-sun text-sm'; }
+        function showToast(msg, type = 'info') { const t = document.createElement('div'); t.className = 'toast-notification toast-in'; t.innerHTML = `<span>${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</span><span class="text-xs font-bold">${msg}</span>`; document.body.appendChild(t); setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity 0.3s'; setTimeout(() => t.remove(), 300); }, 3000); }
 
-        // ==================== SUIVI DE COMMANDE ====================
-        function updateOrderTracking(status) {
-            const trackingSection = document.getElementById('orderTrackingSection');
-            trackingSection.classList.remove('hidden');
-            
-            // Annuler le timeout précédent
-            if (trackingTimeout) clearTimeout(trackingTimeout);
-            
-            const statusMap = {
-                'Pending': { step: 'received', text: TRANSLATIONS[currentLanguage].orderReceived, color: 'text-amber-400' },
-                'Preparing': { step: 'preparing', text: TRANSLATIONS[currentLanguage].beingPrepared, color: 'text-blue-400' },
-                'Ready': { step: 'ready', text: TRANSLATIONS[currentLanguage].readyForDelivery, color: 'text-purple-400' },
-                'Delivered': { step: 'delivered', text: TRANSLATIONS[currentLanguage].orderDelivered, color: 'text-emerald-400' }
-            };
-            
-            const config = statusMap[status] || statusMap['Pending'];
-            document.getElementById('orderStatusText').innerText = config.text;
-            document.getElementById('orderStatusText').className = `text-[10px] font-bold ${config.color}`;
-            
-            const steps = ['received', 'preparing', 'ready', 'delivered'];
-            const currentIndex = steps.indexOf(config.step);
-            
-            steps.forEach((step, index) => {
-                const dot = document.getElementById(`step${step.charAt(0).toUpperCase() + step.slice(1)}`);
-                const line = document.getElementById(`line${step.charAt(0).toUpperCase() + step.slice(1)}`);
-                if (index <= currentIndex) {
-                    dot.classList.add('completed'); dot.classList.add('active');
-                    if (line) line.classList.add('completed');
-                } else {
-                    dot.classList.remove('completed'); dot.classList.remove('active');
-                    if (line) line.classList.remove('completed');
-                }
-            });
-            
-            // Si livré, masquer après 10 minutes
-            if (status === 'Delivered' || status === 'Completed') {
-                trackingTimeout = setTimeout(() => {
-                    trackingSection.classList.add('hidden');
-                    localStorage.removeItem('remal_current_order_id');
-                    currentOrderId = null;
-                }, 10 * 60 * 1000); // 10 minutes
-            }
-        }
+        async function verifierIdentiteClient() { const room = document.getElementById('lockRoomInput').value.trim(); const name = document.getElementById('lockNameInput').value.trim(); const err = document.getElementById('lockErrorMsg'); const load = document.getElementById('lockLoadingIndicator'); err.classList.add('hidden'); if (!room) { err.innerText = '⚠️ ' + TRANSLATIONS[currentLanguage].roomNumber; err.classList.remove('hidden'); return; } if (!name || name.length < 2) { err.innerText = '⚠️ ' + TRANSLATIONS[currentLanguage].yourName; err.classList.remove('hidden'); return; } load.classList.remove('hidden'); try { const { data, error } = await pmsSupabaseClient.from('pms_guests').select('*').ilike('room', `%${room}%`).maybeSingle(); if (error || !data) { err.innerText = '❌ ' + TRANSLATIONS[currentLanguage].notFound; err.classList.remove('hidden'); return; } const cleanInput = name.toLowerCase().replace(SALUTATIONS_REGEX,'').normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]/g,"").trim(); const cleanPms = (data.guest_name||'').toLowerCase().replace(SALUTATIONS_REGEX,'').normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim(); const words = cleanPms.split(/[\s\-_,/]+/).filter(w => w.length > 1); const match = words.some(w => cleanInput.length <= 3 ? w === cleanInput : w === cleanInput || w.includes(cleanInput) || cleanInput.includes(w)); if (!match) { err.innerText = '❌ ' + TRANSLATIONS[currentLanguage].notFound; err.classList.remove('hidden'); return; } cachedGuestData = data; isGuestVerified = true; localStorage.setItem('remal_guest_room', data.room); localStorage.setItem('remal_guest_data', JSON.stringify(data)); afficher(data, data.room); document.getElementById('lockScreen').classList.add('screen-exit'); setTimeout(() => { document.getElementById('lockScreen').classList.add('hidden'); document.getElementById('mainScreen').classList.remove('hidden'); document.getElementById('mainScreen').classList.add('screen-enter'); }, 400); } catch(e) { err.innerText = '❌ Error'; err.classList.remove('hidden'); } finally { load.classList.add('hidden'); } }
 
-        // ==================== THÈME, TOAST, IDENTIFICATION ====================
-        function toggleTheme() {
-            document.body.classList.toggle('light-mode');
-            const isLight = document.body.classList.contains('light-mode');
-            const iconLock = document.getElementById('themeIconLock');
-            const iconMain = document.getElementById('themeIconMain');
-            if (iconLock) iconLock.className = isLight ? 'fas fa-moon text-sm' : 'fas fa-sun text-sm';
-            if (iconMain) iconMain.className = isLight ? 'fas fa-moon text-sm' : 'fas fa-sun text-sm';
-            localStorage.setItem('remal_theme', isLight ? 'light' : 'dark');
-        }
+        function afficher(data, room) { document.getElementById('greetingTime').innerText = getGreeting(); document.getElementById('welcomeGuestName').innerText = data.guest_name || 'Guest'; document.getElementById('displayRoomNumber').innerText = room; document.getElementById('displayRoomType').innerText = data.room_typ || 'Standard'; document.getElementById('displayDeparture').innerText = data.departure || '---'; }
 
-        function initTheme() {
-            const savedTheme = localStorage.getItem('remal_theme');
-            if (savedTheme === 'light') document.body.classList.add('light-mode');
-            else document.body.classList.remove('light-mode');
-            const isLight = document.body.classList.contains('light-mode');
-            const iconLock = document.getElementById('themeIconLock');
-            const iconMain = document.getElementById('themeIconMain');
-            if (iconLock) iconLock.className = isLight ? 'fas fa-moon text-sm' : 'fas fa-sun text-sm';
-            if (iconMain) iconMain.className = isLight ? 'fas fa-moon text-sm' : 'fas fa-sun text-sm';
-        }
+        function changerDeChambre() { isGuestVerified = false; cachedGuestData = null; if (trackingTimeout) clearTimeout(trackingTimeout); localStorage.removeItem('remal_guest_room'); localStorage.removeItem('remal_guest_data'); localStorage.removeItem('remal_current_order_id'); menuCart = {}; document.getElementById('mainScreen').classList.add('hidden'); document.getElementById('lockScreen').classList.remove('hidden'); }
 
-        function showToast(message, type = 'info') {
-            const toast = document.createElement('div');
-            toast.className = 'toast-notification toast-in';
-            const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
-            toast.innerHTML = `<span>${icon}</span><span class="text-xs font-bold text-[var(--text-main)]">${message}</span>`;
-            document.body.appendChild(toast);
-            setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity 0.3s ease'; setTimeout(() => toast.remove(), 300); }, 3000);
-        }
+        function restaurerSession() { const room = localStorage.getItem('remal_guest_room'); const data = localStorage.getItem('remal_guest_data'); if (room && data) { try { const parsed = JSON.parse(data); cachedGuestData = parsed; isGuestVerified = true; afficher(parsed, room); document.getElementById('lockScreen').classList.add('hidden'); document.getElementById('mainScreen').classList.remove('hidden'); } catch(e) {} } }
 
-        function getGreeting() {
-            const hour = new Date().getHours();
-            if (hour < 12) return { text: 'Good Morning', emoji: '🌅' };
-            if (hour < 18) return { text: 'Good Afternoon', emoji: '☀️' };
-            return { text: 'Good Evening', emoji: '🌙' };
-        }
-
-        async function verifierIdentiteClient() {
-            const roomNum = document.getElementById('lockRoomInput').value.trim();
-            const nameInput = document.getElementById('lockNameInput').value.trim();
-            const errorMsg = document.getElementById('lockErrorMsg');
-            const loadingIndicator = document.getElementById('lockLoadingIndicator');
-            errorMsg.classList.add('hidden');
-            if (!roomNum) { errorMsg.innerText = '⚠️ ' + TRANSLATIONS[currentLanguage].roomNumber; errorMsg.classList.remove('hidden'); return; }
-            if (!nameInput || nameInput.length < 2) { errorMsg.innerText = '⚠️ ' + TRANSLATIONS[currentLanguage].yourName; errorMsg.classList.remove('hidden'); return; }
-            loadingIndicator.classList.remove('hidden');
-            try {
-                const { data: pmsData, error: pmsError } = await pmsSupabaseClient.from('pms_guests').select('*').ilike('room', `%${roomNum}%`).maybeSingle();
-                if (pmsError || !pmsData) { errorMsg.innerText = '❌ ' + TRANSLATIONS[currentLanguage].notFound; errorMsg.classList.remove('hidden'); return; }
-                const cleanInputName = nameInput.toLowerCase().replace(SALUTATIONS_REGEX, '').normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "").trim();
-                const cleanPmsName = (pmsData.guest_name || '').toLowerCase().replace(SALUTATIONS_REGEX, '').normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
-                const pmsWords = cleanPmsName.split(/[\s\-_,/]+/).map(w => w.replace(/[^a-z0-9]/g, "")).filter(w => w.length > 1);
-                const isMatch = pmsWords.some(word => { if (cleanInputName.length <= 3) return word === cleanInputName; return word === cleanInputName || word.includes(cleanInputName) || cleanInputName.includes(word); });
-                if (!isMatch) { errorMsg.innerText = '❌ ' + TRANSLATIONS[currentLanguage].notFound; errorMsg.classList.remove('hidden'); return; }
-                cachedGuestData = pmsData;
-                isGuestVerified = true;
-                localStorage.setItem('remal_guest_room', pmsData.room);
-                localStorage.setItem('remal_guest_data', JSON.stringify(pmsData));
-                afficherPagePersonnalisee(pmsData, pmsData.room);
-                const lockScreen = document.getElementById('lockScreen');
-                const mainScreen = document.getElementById('mainScreen');
-                lockScreen.classList.add('screen-exit');
-                setTimeout(() => { lockScreen.classList.add('hidden'); mainScreen.classList.remove('hidden'); mainScreen.classList.add('screen-enter'); }, 400);
-            } catch (error) { errorMsg.innerText = '❌ System error'; errorMsg.classList.remove('hidden'); } finally { loadingIndicator.classList.add('hidden'); }
-        }
-
-        function afficherPagePersonnalisee(pmsData, roomNum) {
-            updateGreeting();
-            document.getElementById('welcomeGuestName').innerText = pmsData.guest_name || 'Guest';
-            document.getElementById('displayRoomNumber').innerText = roomNum;
-            document.getElementById('displayRoomType').innerText = pmsData.room_typ || 'Standard';
-            document.getElementById('displayDeparture').innerText = pmsData.departure || '---';
-        }
-
-        function changerDeChambre() {
-            isGuestVerified = false;
-            cachedGuestData = null;
-            currentOrderId = null;
-            if (trackingTimeout) clearTimeout(trackingTimeout);
-            localStorage.removeItem('remal_guest_room');
-            localStorage.removeItem('remal_guest_data');
-            localStorage.removeItem('remal_current_order_id');
-            document.getElementById('lockRoomInput').value = '';
-            document.getElementById('lockNameInput').value = '';
-            menuCart = {};
-            const lockScreen = document.getElementById('lockScreen');
-            const mainScreen = document.getElementById('mainScreen');
-            mainScreen.classList.add('hidden');
-            lockScreen.classList.remove('hidden');
-            lockScreen.classList.add('screen-enter');
-        }
-
-        function restaurerSession() {
-            const savedRoom = localStorage.getItem('remal_guest_room');
-            const savedData = localStorage.getItem('remal_guest_data');
-            if (savedRoom && savedData) {
-                try {
-                    const parsedData = JSON.parse(savedData);
-                    cachedGuestData = parsedData;
-                    isGuestVerified = true;
-                    afficherPagePersonnalisee(parsedData, savedRoom);
-                    document.getElementById('lockScreen').classList.add('hidden');
-                    document.getElementById('mainScreen').classList.remove('hidden');
-                } catch (e) {}
-            }
-        }
-
-        // ==================== INITIALISATION ====================
         initTheme();
         setLanguage(currentLanguage);
         renderMenuItems();
