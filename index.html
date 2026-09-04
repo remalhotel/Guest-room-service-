@@ -19,154 +19,52 @@
             from { opacity: 1; transform: translateX(0); }
             to { opacity: 0; transform: translateX(-100px); }
         }
-        
         @keyframes slideInRight {
             from { opacity: 0; transform: translateX(100px); }
             to { opacity: 1; transform: translateX(0); }
         }
-        
         .screen-exit { animation: slideOutLeft 0.4s ease forwards; }
         .screen-enter { animation: slideInRight 0.5s ease forwards; }
-        
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
             10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
             20%, 40%, 60%, 80% { transform: translateX(5px); }
         }
-        
         .shake-error { animation: shake 0.5s ease; }
-        
         @keyframes toastIn {
             from { opacity: 0; transform: translateX(100px); }
             to { opacity: 1; transform: translateX(0); }
         }
-        
         .toast-in { animation: toastIn 0.4s ease forwards; }
-
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        
         .animate-fade-in-up { animation: fadeInUp 0.5s ease forwards; }
-
-        .tab-btn {
-            transition: all 0.3s ease;
-        }
-        
-        .tab-btn.active {
-            background: var(--text-gold);
-            color: #1c1917;
-            font-weight: 900;
-            box-shadow: 0 5px 15px rgba(220, 167, 115, 0.3);
-        }
-        
-        .tab-btn:not(.active) {
-            background: var(--bg-card-hover);
-            color: var(--text-muted);
-            border: 1px solid var(--border-gold);
-        }
-        
-        .tab-btn:not(.active):hover {
-            color: var(--text-gold);
-            border-color: var(--text-gold);
-        }
-
-        .service-card {
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        
-        .service-card:hover {
-            transform: translateY(-3px);
-            border-color: var(--text-gold);
-            box-shadow: 0 10px 30px rgba(220, 167, 115, 0.2);
-        }
-
-        /* Style pour les offres */
-        .offer-card {
-            transition: all 0.3s ease;
-            overflow: hidden;
-        }
-        
-        .offer-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(220, 167, 115, 0.3);
-            border-color: var(--text-gold);
-        }
-        
-        .offer-card img {
-            transition: all 0.5s ease;
-        }
-        
-        .offer-card:hover img {
-            transform: scale(1.05);
-        }
-
-        /* Carrousel d'offres */
-        .offers-carousel {
-            display: flex;
-            overflow-x: auto;
-            scroll-snap-type: x mandatory;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-            gap: 1rem;
-            padding: 0.5rem;
-        }
-        
-        .offers-carousel::-webkit-scrollbar {
-            display: none;
-        }
-        
-        .offer-slide {
-            scroll-snap-align: center;
-            flex-shrink: 0;
-            width: 280px;
-        }
-
-        /* Bannière d'offre en vedette */
-        .featured-offer {
-            position: relative;
-            overflow: hidden;
-            border-radius: 1rem;
-            border: 1px solid var(--border-gold-strong);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .featured-offer:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(220, 167, 115, 0.3);
-        }
-        
-        .featured-offer img {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-        }
-        
-        .featured-offer-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 50%, transparent 100%);
-            padding: 20px 15px 15px;
-        }
+        .tab-btn { transition: all 0.3s ease; }
+        .tab-btn.active { background: var(--text-gold); color: #1c1917; font-weight: 900; box-shadow: 0 5px 15px rgba(220, 167, 115, 0.3); }
+        .tab-btn:not(.active) { background: var(--bg-card-hover); color: var(--text-muted); border: 1px solid var(--border-gold); }
+        .tab-btn:not(.active):hover { color: var(--text-gold); border-color: var(--text-gold); }
+        .service-card { transition: all 0.3s ease; cursor: pointer; }
+        .service-card:hover { transform: translateY(-3px); border-color: var(--text-gold); box-shadow: 0 10px 30px rgba(220, 167, 115, 0.2); }
+        .offer-card { transition: all 0.3s ease; overflow: hidden; }
+        .offer-card:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(220, 167, 115, 0.3); border-color: var(--text-gold); }
+        .offer-card img { transition: all 0.5s ease; }
+        .offer-card:hover img { transform: scale(1.05); }
+        .featured-offer { position: relative; overflow: hidden; border-radius: 1rem; border: 1px solid var(--border-gold-strong); cursor: pointer; transition: all 0.3s ease; }
+        .featured-offer:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(220, 167, 115, 0.3); }
+        .featured-offer img { width: 100%; height: 180px; object-fit: cover; }
+        .featured-offer-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 50%, transparent 100%); padding: 20px 15px 15px; }
     </style>
 </head>
 <body class="min-h-screen lock-screen">
 
     <!-- ==================== ÉCRAN 1 : IDENTIFICATION ==================== -->
     <div id="lockScreen" class="min-h-screen flex items-center justify-center p-4 relative">
-        
-        <button onclick="toggleTheme()" id="themeToggleLock" class="theme-toggle-btn fixed top-4 right-4 z-50" title="Toggle Dark/Light Mode">
+        <button onclick="toggleTheme()" id="themeToggleLock" class="theme-toggle-btn fixed top-4 right-4 z-50">
             <i class="fas fa-sun text-sm" id="themeIconLock"></i>
         </button>
-        
         <div class="w-full max-w-md lock-card p-8 rounded-[2rem] space-y-6">
-            
-            <!-- BANNIÈRE GUEST HUB -->
             <div class="remal-banner text-center space-y-2 rounded-2xl p-6 border border-[var(--border-gold-strong)]">
                 <div class="w-20 h-20 mx-auto rounded-full bg-[var(--text-gold)] flex items-center justify-center shadow-2xl">
                     <i class="fas fa-concierge-bell text-2xl text-stone-950"></i>
@@ -179,14 +77,11 @@
                     </span>
                 </div>
             </div>
-
             <div class="text-center space-y-1">
                 <h2 class="text-sm font-bold text-[var(--text-main)]" id="greetingText">Welcome to Guest Hub</h2>
                 <p class="text-[10px] text-muted-custom">Please verify your identity to access all services</p>
             </div>
-
             <div class="space-y-4">
-                
                 <div>
                     <label class="block font-bold text-[var(--text-gold)] uppercase tracking-wider text-[10px] mb-1.5">
                         <i class="fas fa-door-open mr-1"></i> Room Number
@@ -195,7 +90,6 @@
                            class="w-full remal-input rounded-2xl p-4 font-bold text-xl text-[var(--text-gold)] tracking-wide text-center"
                            onkeypress="if(event.key==='Enter') verifierIdentiteClient()">
                 </div>
-
                 <div>
                     <label class="block font-bold text-[var(--text-gold)] uppercase tracking-wider text-[10px] mb-1.5">
                         <i class="fas fa-user mr-1"></i> Your Name
@@ -205,15 +99,12 @@
                            onkeypress="if(event.key==='Enter') verifierIdentiteClient()">
                     <p class="text-[9px] text-muted-custom text-center mt-1">Enter any name on your reservation</p>
                 </div>
-
                 <div id="lockLoadingIndicator" class="hidden text-center text-[10px] text-[var(--text-gold)] py-2">
                     <i class="fas fa-spinner fa-spin mr-1"></i> Verifying with hotel records...
                 </div>
-
                 <div id="lockErrorMsg" class="hidden text-center text-[10px] text-red-400 font-bold py-2">
                     ❌ Room number or name not found. Please try again.
                 </div>
-
                 <button onclick="verifierIdentiteClient()" 
                         class="w-full bg-[#DCA773] hover:bg-[#ebd0b3] text-stone-950 font-black py-4 rounded-2xl text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2.5 shadow-lg hover:scale-[1.02] active:scale-[0.98]">
                     <i class="fas fa-unlock"></i> Verify & Access
@@ -224,29 +115,21 @@
 
     <!-- ==================== ÉCRAN 2 : GUEST HUB PRINCIPAL ==================== -->
     <div id="mainScreen" class="hidden min-h-screen p-3 sm:p-6 pb-24 relative">
-        
-        <button onclick="toggleTheme()" id="themeToggleMain" class="theme-toggle-btn fixed top-4 right-4 z-50" title="Toggle Dark/Light Mode">
+        <button onclick="toggleTheme()" id="themeToggleMain" class="theme-toggle-btn fixed top-4 right-4 z-50">
             <i class="fas fa-sun text-sm" id="themeIconMain"></i>
         </button>
-        
-        <!-- Bouton appel réception -->
         <a href="tel:+971526966865" class="fixed bottom-4 right-4 z-50 bg-emerald-600 hover:bg-emerald-700 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-2xl transition hover:scale-110">
             <i class="fas fa-phone-alt text-lg"></i>
         </a>
-        
         <div class="w-full max-w-md mx-auto remal-card p-6 sm:p-8 rounded-[2rem] space-y-6">
-            
-            <!-- BANNIÈRE GUEST HUB -->
             <div class="remal-banner text-center border border-[var(--border-gold-strong)] pb-6 pt-7 rounded-2xl overflow-hidden">
                 <div class="space-y-2">
                     <h1 class="text-2xl font-serif-luxury font-bold text-gold-gradient tracking-[0.15em] drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">GUEST HUB</h1>
                     <p class="text-[9px] text-muted-custom uppercase tracking-[0.2em] font-bold drop-shadow-md">Remal Hotel & Villas • Al Dhannah City</p>
-                    
                     <div class="pt-3">
                         <p class="text-[10px] text-muted-custom uppercase tracking-wider drop-shadow-md" id="greetingTime">Welcome</p>
                         <h2 id="welcomeGuestName" class="text-lg font-serif-luxury font-bold text-[var(--text-gold)] tracking-wide uppercase drop-shadow-md">---</h2>
                     </div>
-                    
                     <div class="pt-2">
                         <span id="roomTypeBadge" class="inline-block text-[9px] bg-[var(--bg-card)] text-[var(--text-gold)] border border-[var(--border-gold-strong)] font-extrabold px-4 py-1.5 rounded-full uppercase tracking-[0.15em] shadow-lg backdrop-blur-md">
                             🏨 Guest Hub Services
@@ -274,7 +157,7 @@
                 </button>
             </div>
 
-            <!-- ONGLETS : Services | Offers | FAQ -->
+            <!-- ONGLETS -->
             <div class="flex gap-2">
                 <button onclick="switchTab('services')" id="tabServices" class="tab-btn active flex-1 py-3 rounded-xl text-xs font-bold transition">
                     <i class="fas fa-concierge-bell mr-1"></i> Services
@@ -287,18 +170,14 @@
                 </button>
             </div>
 
-            <!-- ==================== SECTION SERVICES ==================== -->
+            <!-- SECTION SERVICES -->
             <div id="servicesSection" class="space-y-4">
-                
-                <!-- Liste des services -->
                 <div id="servicesList" class="space-y-3">
                     <p class="text-center text-[10px] text-muted-custom font-bold uppercase tracking-wider">Select a Service</p>
                     
                     <div class="service-card p-4 bg-[var(--bg-card-hover)] border border-[var(--border-gold-strong)] rounded-2xl" onclick="showService('room_service')">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold)] text-stone-950 flex items-center justify-center">
-                                <i class="fas fa-utensils"></i>
-                            </div>
+                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold)] text-stone-950 flex items-center justify-center"><i class="fas fa-utensils"></i></div>
                             <div>
                                 <p class="font-bold text-[var(--text-main)] text-xs">Room Service / Order Food</p>
                                 <p class="text-[9px] text-muted-custom">In-room dining & beverages</p>
@@ -308,9 +187,7 @@
 
                     <div class="service-card p-4 bg-[var(--bg-card-hover)] border border-[var(--border-gold-strong)] rounded-2xl" onclick="showService('table_reservation')">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold)] text-stone-950 flex items-center justify-center">
-                                <i class="fas fa-calendar-check"></i>
-                            </div>
+                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold)] text-stone-950 flex items-center justify-center"><i class="fas fa-calendar-check"></i></div>
                             <div>
                                 <p class="font-bold text-[var(--text-main)] text-xs">Table Reservation</p>
                                 <p class="text-[9px] text-muted-custom">Restaurant & lounge booking</p>
@@ -320,9 +197,7 @@
 
                     <div class="service-card p-4 bg-[var(--bg-card-hover)] border border-[var(--border-gold-strong)] rounded-2xl" onclick="showService('wakeup_call')">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold)] text-stone-950 flex items-center justify-center">
-                                <i class="fas fa-alarm-clock"></i>
-                            </div>
+                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold)] text-stone-950 flex items-center justify-center"><i class="fas fa-alarm-clock"></i></div>
                             <div>
                                 <p class="font-bold text-[var(--text-main)] text-xs">Wake-up Call / Alarm</p>
                                 <p class="text-[9px] text-muted-custom">Morning wake-up service</p>
@@ -332,9 +207,7 @@
 
                     <div class="service-card p-4 bg-[var(--bg-card-hover)] border border-[var(--border-gold-strong)] rounded-2xl" onclick="showService('late_checkout')">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold)] text-stone-950 flex items-center justify-center">
-                                <i class="fas fa-clock"></i>
-                            </div>
+                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold)] text-stone-950 flex items-center justify-center"><i class="fas fa-clock"></i></div>
                             <div>
                                 <p class="font-bold text-[var(--text-main)] text-xs">Late Check-out / Extension</p>
                                 <p class="text-[9px] text-muted-custom">Extend your stay</p>
@@ -344,9 +217,7 @@
 
                     <div class="service-card p-4 bg-[var(--bg-card-hover)] border border-[var(--border-gold-strong)] rounded-2xl" onclick="showService('housekeeping')">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold)] text-stone-950 flex items-center justify-center">
-                                <i class="fas fa-broom"></i>
-                            </div>
+                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold)] text-stone-950 flex items-center justify-center"><i class="fas fa-broom"></i></div>
                             <div>
                                 <p class="font-bold text-[var(--text-main)] text-xs">Housekeeping / Room Cleaning</p>
                                 <p class="text-[9px] text-muted-custom">Room cleaning service</p>
@@ -356,9 +227,7 @@
 
                     <div class="service-card p-4 bg-[var(--bg-card-hover)] border border-[var(--border-gold-strong)] rounded-2xl" onclick="showService('front_desk')">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold)] text-stone-950 flex items-center justify-center">
-                                <i class="fas fa-headset"></i>
-                            </div>
+                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold)] text-stone-950 flex items-center justify-center"><i class="fas fa-headset"></i></div>
                             <div>
                                 <p class="font-bold text-[var(--text-main)] text-xs">Front Desk Inquiry</p>
                                 <p class="text-[9px] text-muted-custom">General assistance</p>
@@ -368,9 +237,7 @@
 
                     <div class="service-card p-4 bg-[var(--bg-card-hover)] border border-[var(--border-gold-strong)] rounded-2xl" onclick="showService('luggage')">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold)] text-stone-950 flex items-center justify-center">
-                                <i class="fas fa-suitcase"></i>
-                            </div>
+                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold)] text-stone-950 flex items-center justify-center"><i class="fas fa-suitcase"></i></div>
                             <div>
                                 <p class="font-bold text-[var(--text-main)] text-xs">Luggage Assistance</p>
                                 <p class="text-[9px] text-muted-custom">Baggage handling</p>
@@ -380,9 +247,7 @@
 
                     <div class="service-card p-4 bg-[var(--bg-card-hover)] border border-[var(--border-gold-strong)] rounded-2xl" onclick="showService('maintenance')">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold)] text-stone-950 flex items-center justify-center">
-                                <i class="fas fa-tools"></i>
-                            </div>
+                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold)] text-stone-950 flex items-center justify-center"><i class="fas fa-tools"></i></div>
                             <div>
                                 <p class="font-bold text-[var(--text-main)] text-xs">Maintenance / Technical Support</p>
                                 <p class="text-[9px] text-muted-custom">Repairs & technical help</p>
@@ -391,7 +256,7 @@
                     </div>
                 </div>
 
-                <!-- Room Service Section -->
+                <!-- ROOM SERVICE SECTION -->
                 <div id="roomServiceSection" class="hidden space-y-4 animate-fade-in-up">
                     <button onclick="backToServices()" class="text-[10px] text-muted-custom hover:text-[var(--text-gold)] font-bold transition">
                         <i class="fas fa-arrow-left mr-1"></i> Back to Services
@@ -471,12 +336,11 @@
                     </div>
                 </div>
 
-                <!-- Other Services Section -->
+                <!-- OTHER SERVICES SECTION -->
                 <div id="otherServiceSection" class="hidden space-y-4 animate-fade-in-up">
                     <button onclick="backToServices()" class="text-[10px] text-muted-custom hover:text-[var(--text-gold)] font-bold transition">
                         <i class="fas fa-arrow-left mr-1"></i> Back to Services
                     </button>
-
                     <div class="p-4 bg-[var(--bg-card-hover)] border border-[var(--border-gold-strong)] rounded-2xl space-y-3">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-xl bg-[var(--text-gold)] text-stone-950 flex items-center justify-center" id="otherServiceIcon">
@@ -487,14 +351,11 @@
                                 <p class="text-[9px] text-muted-custom" id="otherServiceSubtitle">Description</p>
                             </div>
                         </div>
-
                         <div id="otherServiceFields" class="space-y-3"></div>
-
                         <div>
                             <label class="block font-bold text-[var(--text-gold)] mb-1.5 uppercase tracking-wider text-[10px]">Additional Notes</label>
                             <textarea id="otherServiceNotes" placeholder="Any specific details..." class="w-full h-20 remal-input rounded-2xl p-3.5 outline-none resize-none text-xs"></textarea>
                         </div>
-
                         <button onclick="submitOtherService()" class="w-full bg-[#DCA773] hover:bg-[#ebd0b3] text-stone-950 font-black py-4 rounded-2xl text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2.5 shadow-lg">
                             <i class="fas fa-paper-plane"></i> Submit Request
                         </button>
@@ -502,23 +363,19 @@
                 </div>
             </div>
 
-            <!-- ==================== SECTION OFFERS (DYNAMIQUE) ==================== -->
+            <!-- SECTION OFFERS -->
             <div id="offersSection" class="hidden space-y-4">
                 <p class="text-center text-[10px] text-muted-custom font-bold uppercase tracking-wider">
                     <i class="fas fa-star mr-1"></i> Exclusive Offers
                 </p>
-                
-                <!-- Indicateur de chargement -->
                 <div id="offersLoading" class="text-center py-4">
                     <i class="fas fa-spinner fa-spin text-[var(--text-gold)]"></i>
                     <p class="text-[10px] text-muted-custom mt-2">Loading offers...</p>
                 </div>
-                
-                <!-- Container des offres -->
                 <div id="offersContainer" class="space-y-4"></div>
             </div>
 
-            <!-- ==================== SECTION FAQ ==================== -->
+            <!-- SECTION FAQ -->
             <div id="faqSection" class="hidden space-y-4">
                 <p class="text-center text-[10px] text-muted-custom font-bold uppercase tracking-wider">Frequently Asked Questions</p>
                 <div class="space-y-3">
@@ -533,10 +390,6 @@
                     <div class="p-3.5 bg-[var(--bg-card-hover)] border border-[var(--border-gold-strong)] rounded-2xl">
                         <p class="text-[11px] font-bold text-[var(--text-gold)]">❓ How do I request a late check-out?</p>
                         <p class="text-[10px] text-muted-custom mt-1">Use the Services tab and select 'Late Check-out'.</p>
-                    </div>
-                    <div class="p-3.5 bg-[var(--bg-card-hover)] border border-[var(--border-gold-strong)] rounded-2xl">
-                        <p class="text-[11px] font-bold text-[var(--text-gold)]">❓ What are the pool timings?</p>
-                        <p class="text-[10px] text-muted-custom mt-1">Al Waha Pool is open from 07:00 AM to 08:00 PM.</p>
                     </div>
                 </div>
             </div>
@@ -573,7 +426,6 @@
     <script src="assets/js/config.js"></script>
     <script src="assets/js/menu.js"></script>
     <script>
-        // ==================== INITIALISATION ====================
         const supabaseClient = initSupabaseClient();
         const pmsSupabaseClient = initPmsSupabaseClient();
         
@@ -589,7 +441,6 @@
 
         const SALUTATIONS_REGEX = /\b(mr|mrs|ms|miss|mme|mlle|dr|prof|eng|sir|madam|lady|lord|sheikh|sheikha)\.?\b/gi;
 
-        // ==================== SERVICES DATA ====================
         const SERVICES_DATA = {
             table_reservation: {
                 title: 'Table Reservation',
@@ -606,17 +457,13 @@
                 title: 'Wake-up Call / Alarm Service',
                 subtitle: 'Set your morning wake-up call',
                 icon: 'fa-alarm-clock',
-                fields: [
-                    { type: 'time', id: 'wakeup_time', label: 'Alarm Time' }
-                ]
+                fields: [{ type: 'time', id: 'wakeup_time', label: 'Alarm Time' }]
             },
             late_checkout: {
                 title: 'Late Check-out / Extension',
                 subtitle: 'Request extended departure time',
                 icon: 'fa-clock',
-                fields: [
-                    { type: 'select', id: 'checkout_time', label: 'Requested Departure Time', options: ['13:00 PM', '14:00 PM', '15:00 PM', '16:00 PM (Max)'] }
-                ]
+                fields: [{ type: 'select', id: 'checkout_time', label: 'Requested Departure Time', options: ['13:00 PM', '14:00 PM', '15:00 PM', '16:00 PM (Max)'] }]
             },
             housekeeping: {
                 title: 'Housekeeping / Room Cleaning',
@@ -631,9 +478,7 @@
                 title: 'Front Desk Inquiry',
                 subtitle: 'General assistance & information',
                 icon: 'fa-headset',
-                fields: [
-                    { type: 'select', id: 'inquiry_type', label: 'Inquiry Type', options: ['General Information', 'Billing Question', 'Complaint', 'Suggestion', 'Other'] }
-                ]
+                fields: [{ type: 'select', id: 'inquiry_type', label: 'Inquiry Type', options: ['General Information', 'Billing Question', 'Complaint', 'Suggestion', 'Other'] }]
             },
             luggage: {
                 title: 'Luggage Assistance',
@@ -655,19 +500,24 @@
             }
         };
 
-        // ==================== FONCTIONS OFFRES ====================
+        // ==================== OFFRES ====================
         async function fetchOffers() {
-            const { data, error } = await supabaseClient
-                .from('offers')
-                .select('*')
-                .eq('is_active', true)
-                .order('created_at', { ascending: false })
-                .limit(10);
-            
-            if (data && data.length > 0) {
-                currentOffers = data;
-                renderOffers(data);
-            } else {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('offers')
+                    .select('*')
+                    .eq('is_active', true)
+                    .order('created_at', { ascending: false })
+                    .limit(10);
+                
+                if (data && data.length > 0) {
+                    currentOffers = data;
+                    renderOffers(data);
+                } else {
+                    renderOffers([]);
+                }
+            } catch (err) {
+                console.error('Error fetching offers:', err);
                 renderOffers([]);
             }
         }
@@ -675,25 +525,17 @@
         function renderOffers(offers) {
             const container = document.getElementById('offersContainer');
             const loading = document.getElementById('offersLoading');
-            
             if (loading) loading.classList.add('hidden');
             
             if (!offers || offers.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center py-8">
-                        <i class="fas fa-tags text-3xl text-muted-custom mb-2"></i>
-                        <p class="text-[10px] text-muted-custom">No offers available at the moment</p>
-                    </div>
-                `;
+                container.innerHTML = `<div class="text-center py-8"><i class="fas fa-tags text-3xl text-muted-custom mb-2"></i><p class="text-[10px] text-muted-custom">No offers available at the moment</p></div>`;
                 return;
             }
             
-            // Première offre en vedette (grande carte)
             const firstOffer = offers[0];
             const otherOffers = offers.slice(1);
             
             let html = `
-                <!-- Offre en vedette -->
                 <div class="featured-offer" onclick="showOfferDetail('${firstOffer.id}')">
                     <img src="${firstOffer.image}" alt="${firstOffer.title}" onerror="this.src='logo.png'">
                     <div class="featured-offer-overlay">
@@ -705,7 +547,6 @@
                 </div>
             `;
             
-            // Autres offres en grille
             if (otherOffers.length > 0) {
                 html += `<div class="grid grid-cols-2 gap-3">`;
                 otherOffers.forEach(offer => {
@@ -729,18 +570,15 @@
         function showOfferDetail(offerId) {
             const offer = currentOffers.find(o => o.id == offerId);
             if (!offer) return;
-            
             showToast(`${offer.title} - ${offer.price}`, 'info');
         }
 
-        // ==================== FONCTIONS ONGLETS ====================
+        // ==================== ONGLETS ====================
         function switchTab(tab) {
             currentTab = tab;
-            
             document.getElementById('servicesSection').classList.add('hidden');
             document.getElementById('offersSection').classList.add('hidden');
             document.getElementById('faqSection').classList.add('hidden');
-            
             document.getElementById('tabServices').classList.remove('active');
             document.getElementById('tabOffers').classList.remove('active');
             document.getElementById('tabFaq').classList.remove('active');
@@ -758,7 +596,7 @@
             }
         }
 
-        // ==================== FONCTIONS SERVICES ====================
+        // ==================== SERVICES ====================
         function showService(serviceId) {
             currentService = serviceId;
             document.getElementById('servicesList').classList.add('hidden');
@@ -770,7 +608,6 @@
             } else {
                 document.getElementById('roomServiceSection').classList.add('hidden');
                 document.getElementById('otherServiceSection').classList.remove('hidden');
-                
                 const serviceData = SERVICES_DATA[serviceId];
                 if (serviceData) {
                     document.getElementById('otherServiceTitle').innerText = serviceData.title;
@@ -792,36 +629,14 @@
             const container = document.getElementById('otherServiceFields');
             container.innerHTML = fields.map(field => {
                 if (field.type === 'select') {
-                    return `
-                        <div>
-                            <label class="block font-bold text-[var(--text-gold)] mb-1.5 uppercase tracking-wider text-[10px]">${field.label}</label>
-                            <select id="${field.id}" class="w-full remal-input rounded-2xl p-3.5 font-bold cursor-pointer text-xs">
-                                ${field.options.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
-                            </select>
-                        </div>
-                    `;
+                    return `<div><label class="block font-bold text-[var(--text-gold)] mb-1.5 uppercase tracking-wider text-[10px]">${field.label}</label><select id="${field.id}" class="w-full remal-input rounded-2xl p-3.5 font-bold cursor-pointer text-xs">${field.options.map(opt => `<option value="${opt}">${opt}</option>`).join('')}</select></div>`;
                 } else if (field.type === 'date') {
                     const today = new Date().toISOString().split('T')[0];
-                    return `
-                        <div>
-                            <label class="block font-bold text-[var(--text-gold)] mb-1.5 uppercase tracking-wider text-[10px]">${field.label}</label>
-                            <input type="date" id="${field.id}" value="${today}" class="w-full remal-input rounded-2xl p-3.5 font-bold text-xs">
-                        </div>
-                    `;
+                    return `<div><label class="block font-bold text-[var(--text-gold)] mb-1.5 uppercase tracking-wider text-[10px]">${field.label}</label><input type="date" id="${field.id}" value="${today}" class="w-full remal-input rounded-2xl p-3.5 font-bold text-xs"></div>`;
                 } else if (field.type === 'time') {
-                    return `
-                        <div>
-                            <label class="block font-bold text-[var(--text-gold)] mb-1.5 uppercase tracking-wider text-[10px]">${field.label}</label>
-                            <input type="time" id="${field.id}" value="19:30" class="w-full remal-input rounded-2xl p-3.5 font-bold text-xs">
-                        </div>
-                    `;
+                    return `<div><label class="block font-bold text-[var(--text-gold)] mb-1.5 uppercase tracking-wider text-[10px]">${field.label}</label><input type="time" id="${field.id}" value="19:30" class="w-full remal-input rounded-2xl p-3.5 font-bold text-xs"></div>`;
                 } else if (field.type === 'number') {
-                    return `
-                        <div>
-                            <label class="block font-bold text-[var(--text-gold)] mb-1.5 uppercase tracking-wider text-[10px]">${field.label}</label>
-                            <input type="number" id="${field.id}" min="1" max="10" value="1" class="w-full remal-input rounded-2xl p-3.5 font-bold text-xs">
-                        </div>
-                    `;
+                    return `<div><label class="block font-bold text-[var(--text-gold)] mb-1.5 uppercase tracking-wider text-[10px]">${field.label}</label><input type="number" id="${field.id}" min="1" max="10" value="1" class="w-full remal-input rounded-2xl p-3.5 font-bold text-xs"></div>`;
                 }
                 return '';
             }).join('');
@@ -832,15 +647,12 @@
             const room = cachedGuestData?.room || localStorage.getItem('remal_guest_room');
             const notes = document.getElementById('otherServiceNotes').value.trim();
             const serviceData = SERVICES_DATA[currentService];
-            
             if (!serviceData) return;
             
             let details = [];
             serviceData.fields.forEach(field => {
                 const element = document.getElementById(field.id);
-                if (element) {
-                    details.push(`${field.label}: ${element.value}`);
-                }
+                if (element) details.push(`${field.label}: ${element.value}`);
             });
             
             const fullDetails = details.join('\n') + (notes ? `\n📝 Notes: ${notes}` : '');
@@ -854,19 +666,25 @@
                 created_at: new Date().toISOString()
             };
             
-            const { data, error } = await supabaseClient
-                .from('guest_requests')
-                .insert([requestData])
-                .select();
-            
-            if (error) {
-                showToast('Error submitting request', 'error');
-                return;
+            try {
+                const { data, error } = await supabaseClient
+                    .from('guest_requests')
+                    .insert([requestData])
+                    .select();
+                
+                if (error) {
+                    console.error('Supabase Error:', error);
+                    showToast('Error submitting request: ' + error.message, 'error');
+                    return;
+                }
+                
+                showToast('✅ Request submitted successfully!', 'success');
+                document.getElementById('otherServiceNotes').value = '';
+                backToServices();
+            } catch (err) {
+                console.error('Fatal error:', err);
+                showToast('Error: ' + err.message, 'error');
             }
-            
-            showToast('✅ Request submitted successfully!', 'success');
-            document.getElementById('otherServiceNotes').value = '';
-            backToServices();
         }
 
         async function submitRoomServiceOrder(method) {
@@ -889,7 +707,7 @@
                         quantity: qty, 
                         price: item.price, 
                         total: qty * item.price,
-                        prepTime: item.prepTime,
+                        prepTime: item.prepTime || '10-15 min',
                         badges: item.badges || [],
                         allergens: item.allergens || []
                     });
@@ -910,37 +728,48 @@
                 vat: vat,
                 total_amount: grandTotal,
                 details: instructions || 'None',
-                delivery_time: deliveryTime,
+                delivery_time: deliveryTime || 'As soon as possible',
                 status: 'Pending',
                 created_at: new Date().toISOString()
             };
 
-            const { data, error } = await supabaseClient
-                .from('food_orders')
-                .insert([orderData])
-                .select();
+            console.log('📦 Sending order:', orderData);
 
-            if (error) {
-                showToast('Error submitting order', 'error');
-                return;
+            try {
+                const { data, error } = await supabaseClient
+                    .from('food_orders')
+                    .insert([orderData])
+                    .select();
+
+                if (error) {
+                    console.error('❌ Supabase Error:', error);
+                    showToast('Error submitting order: ' + error.message, 'error');
+                    return;
+                }
+
+                console.log('✅ Order saved:', data);
+
+                if (data && data.length > 0) {
+                    currentOrderId = data[0].id;
+                    localStorage.setItem('remal_current_order_id', currentOrderId);
+                    updateOrderTracking('Pending');
+                }
+
+                if (method === 'whatsapp') {
+                    const itemsList = itemsArray.map(i => `${i.quantity}x ${i.name} (AED ${i.total})`).join('\n');
+                    const message = `🛎️ NEW ROOM SERVICE ORDER\n\n🏨 Room: ${room}\n👤 Guest: ${cachedGuestData.guest_name}\n\n📋 Items:\n${itemsList}\n\n💰 Total: AED ${grandTotal.toFixed(2)}\n\n📝 Notes: ${instructions || 'None'}`;
+                    window.open(`https://wa.me/${SUPABASE_CONFIG.whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank');
+                }
+
+                showToast('✅ Order submitted successfully!', 'success');
+                menuCart = {};
+                document.getElementById('guestSpecialInstructions').value = '';
+                renderMenuItems();
+                
+            } catch (err) {
+                console.error('❌ Fatal error:', err);
+                showToast('Error: ' + err.message, 'error');
             }
-
-            if (data && data.length > 0) {
-                currentOrderId = data[0].id;
-                localStorage.setItem('remal_current_order_id', currentOrderId);
-                updateOrderTracking('Pending');
-            }
-
-            if (method === 'whatsapp') {
-                const itemsList = itemsArray.map(i => `${i.quantity}x ${i.name} (AED ${i.total})`).join('\n');
-                const message = `🛎️ NEW ROOM SERVICE ORDER\n\n🏨 Room: ${room}\n👤 Guest: ${cachedGuestData.guest_name}\n\n📋 Items:\n${itemsList}\n\n💰 Total: AED ${grandTotal.toFixed(2)}\n\n📝 Notes: ${instructions || 'None'}`;
-                window.open(`https://wa.me/${SUPABASE_CONFIG.whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank');
-            }
-
-            showToast('✅ Order submitted successfully!', 'success');
-            menuCart = {};
-            document.getElementById('guestSpecialInstructions').value = '';
-            renderMenuItems();
         }
 
         // ==================== MENU ====================
@@ -951,7 +780,6 @@
         function renderMenuItems() {
             const container = document.getElementById('menuItemsContainer');
             const searchQuery = document.getElementById('menuSearchInput')?.value?.toLowerCase() || '';
-            
             let html = '';
             let totalPcs = 0;
             let totalPrice = 0;
@@ -961,16 +789,13 @@
                     item.name.toLowerCase().includes(searchQuery) || 
                     item.desc.toLowerCase().includes(searchQuery)
                 );
-
                 if (filteredItems.length === 0) continue;
-
                 html += `<div class="menu-category-header px-3 py-2 rounded-xl font-bold text-[10px] uppercase tracking-widest text-[var(--text-gold)] mb-2">${category}</div>`;
 
                 filteredItems.forEach(item => {
                     const qty = menuCart[item.id] || 0;
                     totalPcs += qty;
                     totalPrice += qty * item.price;
-                    
                     const badgesHTML = getBadgeHTML(item.badges);
                     const allergensHTML = getAllergensHTML(item.allergens);
                     const isFavorite = favoritesList[item.id] ? 'active' : '';
@@ -979,9 +804,7 @@
                         <div class="flex justify-between items-center py-2.5 border-b border-[var(--border-gold)]">
                             <div class="flex-1 pr-2">
                                 <div class="flex items-center gap-2 mb-1">
-                                    <button onclick="toggleFavorite('${item.id}')" class="favorite-heart ${isFavorite}">
-                                        <i class="fas fa-heart"></i>
-                                    </button>
+                                    <button onclick="toggleFavorite('${item.id}')" class="favorite-heart ${isFavorite}"><i class="fas fa-heart"></i></button>
                                     <p class="font-bold text-[var(--text-main)] text-xs">${item.name}</p>
                                 </div>
                                 ${badgesHTML}
