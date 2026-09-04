@@ -32,12 +32,6 @@
         }
         .shake-alert { animation: shake-alert 0.5s ease; }
         
-        @keyframes flash-bg {
-            0%, 100% { background: transparent; }
-            50% { background: rgba(239, 68, 68, 0.2); }
-        }
-        .flash-alert { animation: flash-bg 1s ease 3; }
-        
         .staff-tab-btn { transition: all 0.3s ease; cursor: pointer; }
         .staff-tab-btn.active { background: var(--text-gold); color: #1c1917; font-weight: 900; box-shadow: 0 5px 15px rgba(220, 167, 115, 0.3); }
         .staff-tab-btn:not(.active) { background: var(--bg-card-hover); color: var(--text-muted); border: 1px solid var(--border-gold); }
@@ -45,7 +39,6 @@
         
         .service-type-badge { display: inline-block; padding: 3px 10px; border-radius: 9999px; font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; border: 1px solid; margin-right: 4px; }
         
-        /* Badge de notification sur les onglets */
         .tab-notification-badge {
             display: inline-block;
             background: #ef4444;
@@ -58,7 +51,6 @@
             animation: pulse-ring 1.5s infinite;
         }
         
-        /* Notification popup */
         .notification-popup {
             position: fixed;
             top: 70px;
@@ -89,18 +81,41 @@
             animation: pulse-ring 1s infinite;
         }
         
-        /* Bouton d'activation du son */
-        .sound-toggle-btn {
-            transition: all 0.3s ease;
+        .sound-toggle-btn { transition: all 0.3s ease; }
+        .sound-toggle-btn.active { background: #10b981; color: white; border-color: #10b981; }
+        
+        /* Section Impression */
+        #printTicketSection { display: none; }
+        
+        @media print {
+            body * { visibility: hidden !important; }
+            #printTicketSection, #printTicketSection * { visibility: visible !important; }
+            #printTicketSection {
+                display: block !important;
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                padding: 20px !important;
+                box-sizing: border-box !important;
+                background: #ffffff !important;
+                color: #000000 !important;
+            }
         }
-        .sound-toggle-btn.active {
-            background: #10b981;
-            color: white;
-            border-color: #10b981;
+        
+        /* Statistiques supplémentaires */
+        .mini-stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-gold);
+            border-radius: 1rem;
+            padding: 0.75rem;
+            text-align: center;
         }
     </style>
 </head>
 <body class="min-h-screen p-3 sm:p-6">
+
+    <div id="printTicketSection"></div>
 
     <div class="max-w-7xl mx-auto space-y-6">
         
@@ -113,6 +128,7 @@
                 <div>
                     <h1 class="text-lg font-serif-luxury font-bold text-[var(--text-gold)]">GUEST HUB DASHBOARD</h1>
                     <p class="text-[10px] text-muted-custom uppercase">Remal Hotel & Villas • All Services</p>
+                    <p class="text-[10px] text-muted-custom font-mono" id="currentDateTimeDisplay"></p>
                 </div>
             </div>
             <div class="flex items-center gap-3">
@@ -120,7 +136,6 @@
                     <span class="w-2 h-2 bg-emerald-400 rounded-full pulse-notification"></span>
                     LIVE
                 </span>
-                <!-- Bouton son avec état visuel -->
                 <button onclick="enableSoundAlerts()" id="btnSoundToggle" class="sound-toggle-btn text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-3 py-2 rounded-xl font-bold hover:bg-amber-500/40 transition">
                     🔊 Sound ON
                 </button>
@@ -133,7 +148,7 @@
             </div>
         </div>
 
-        <!-- ONGLETS STAFF : 5 onglets avec badges de notification -->
+        <!-- ONGLETS STAFF -->
         <div class="grid grid-cols-2 md:grid-cols-5 gap-2">
             <button onclick="switchStaffTab('front_desk')" id="staffTabFrontDesk" class="staff-tab-btn active px-4 py-3 rounded-xl text-xs font-bold whitespace-nowrap relative">
                 🛎️ Front Desk
@@ -168,13 +183,13 @@
                         <label class="block text-[10px] font-bold text-[var(--text-gold)] uppercase tracking-wider">
                             <i class="fas fa-image mr-1"></i> Offer Photo
                         </label>
-                        <div id="uploadZone" class="upload-zone" onclick="document.getElementById('offerImageInput').click()">
+                        <div id="uploadZone" class="upload-zone" onclick="document.getElementById('offerImageInput').click()" style="border:2px dashed var(--border-gold-strong);border-radius:1rem;padding:2rem;text-align:center;cursor:pointer;">
                             <div id="uploadPlaceholder">
                                 <i class="fas fa-cloud-upload-alt text-3xl text-[var(--text-gold)] mb-2"></i>
                                 <p class="text-xs font-bold text-[var(--text-main)]">Click to upload or drag & drop</p>
                                 <p class="text-[9px] text-muted-custom mt-1">JPG, PNG, WEBP (Max 5MB)</p>
                             </div>
-                            <img id="offerImagePreview" class="offer-image-preview hidden" alt="Preview">
+                            <img id="offerImagePreview" class="hidden w-full h-40 object-cover rounded-xl" alt="Preview">
                         </div>
                         <input type="file" id="offerImageInput" accept="image/*" class="hidden" onchange="handleOfferImageSelect(event)">
                     </div>
@@ -228,7 +243,8 @@
 
         <!-- SECTION REQUÊTES -->
         <div id="requestsSection" class="space-y-6">
-            <!-- Statistiques -->
+            
+            <!-- STATISTIQUES PRINCIPALES -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div class="stat-card remal-card rounded-2xl p-4 text-center">
                     <div class="text-3xl font-serif-luxury font-bold text-[var(--text-gold)]" id="statTotalOrders">0</div>
@@ -245,6 +261,26 @@
                 <div class="stat-card remal-card rounded-2xl p-4 text-center">
                     <div class="text-3xl font-serif-luxury font-bold text-emerald-400" id="statCompletedOrders">0</div>
                     <p class="text-[10px] text-muted-custom uppercase mt-1 font-bold">Completed</p>
+                </div>
+            </div>
+
+            <!-- STATISTIQUES SUPPLÉMENTAIRES F&B -->
+            <div id="foodBeverageStats" class="hidden grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div class="mini-stat-card">
+                    <div class="text-lg font-serif-luxury font-bold text-[var(--text-gold)]" id="fbStatTotalOrders">0</div>
+                    <p class="text-[8px] text-muted-custom uppercase font-bold">F&B Orders</p>
+                </div>
+                <div class="mini-stat-card">
+                    <div class="text-lg font-serif-luxury font-bold text-green-400" id="fbStatRevenue">AED 0</div>
+                    <p class="text-[8px] text-muted-custom uppercase font-bold">Revenue</p>
+                </div>
+                <div class="mini-stat-card">
+                    <div class="text-lg font-serif-luxury font-bold text-purple-400" id="fbStatAvgOrder">AED 0</div>
+                    <p class="text-[8px] text-muted-custom uppercase font-bold">Avg Order</p>
+                </div>
+                <div class="mini-stat-card">
+                    <div class="text-lg font-serif-luxury font-bold text-blue-400" id="fbStatTopItem">---</div>
+                    <p class="text-[8px] text-muted-custom uppercase font-bold">Top Item</p>
                 </div>
             </div>
 
@@ -277,6 +313,28 @@
         let realtimeChannel = null;
         let audioContext = null;
         let soundEnabled = false;
+
+        // ==================== HEURE DE L'APPAREIL ====================
+        function updateDateTimeDisplay() {
+            const now = new Date();
+            const options = { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric', 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit',
+                hour12: false 
+            };
+            const dateTimeStr = now.toLocaleString(undefined, options);
+            const displayEl = document.getElementById('currentDateTimeDisplay');
+            if (displayEl) {
+                displayEl.innerText = '🕒 ' + dateTimeStr;
+            }
+        }
+        
+        setInterval(updateDateTimeDisplay, 1000);
+        updateDateTimeDisplay();
 
         // ==================== MAPPING DES SERVICES ====================
         const SERVICE_TAB_MAPPING = {
@@ -312,7 +370,6 @@
         function playNotificationSound() {
             if (!soundEnabled || !audioContext) return;
             try {
-                // Son principal
                 const osc1 = audioContext.createOscillator();
                 const gain1 = audioContext.createGain();
                 osc1.type = 'sine';
@@ -325,7 +382,6 @@
                 osc1.start();
                 osc1.stop(audioContext.currentTime + 0.6);
                 
-                // Son secondaire (double bip)
                 setTimeout(() => {
                     const osc2 = audioContext.createOscillator();
                     const gain2 = audioContext.createGain();
@@ -353,10 +409,7 @@
                 </div>
             `;
             document.body.appendChild(popup);
-            
-            // Animation de secousse
             popup.classList.add('shake-alert');
-            
             setTimeout(() => {
                 popup.style.opacity = '0';
                 popup.style.transition = 'opacity 0.5s ease';
@@ -364,15 +417,13 @@
             }, 5000);
         }
 
-        // ==================== MISE À JOUR DES BADGES D'ONGLETS ====================
+        // ==================== MISE À JOUR DES BADGES ====================
         function updateTabBadges() {
             const tabs = ['front_desk', 'food_beverage', 'housekeeping', 'maintenance'];
-            
             tabs.forEach(tab => {
                 const pendingCount = allRequests.filter(r => 
                     r.tabCategory === tab && (r.status === 'Pending' || !r.status)
                 ).length;
-                
                 const badge = document.getElementById(`badge${tab.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('')}`);
                 if (badge) {
                     if (pendingCount > 0) {
@@ -383,6 +434,167 @@
                     }
                 }
             });
+        }
+
+        // ==================== STATISTIQUES F&B ====================
+        function updateFoodBeverageStats() {
+            const fbOrders = allRequests.filter(r => r.tabCategory === 'food_beverage' && r.requestType === 'food');
+            const statsContainer = document.getElementById('foodBeverageStats');
+            
+            if (currentStaffTab === 'food_beverage') {
+                statsContainer.classList.remove('hidden');
+            } else {
+                statsContainer.classList.add('hidden');
+                return;
+            }
+            
+            const totalOrders = fbOrders.length;
+            const totalRevenue = fbOrders.reduce((sum, o) => sum + (parseFloat(o.total_amount) || 0), 0);
+            const avgOrder = totalOrders > 0 ? totalRevenue / totalOrders : 0;
+            
+            // Trouver l'article le plus commandé
+            const itemCounts = {};
+            fbOrders.forEach(order => {
+                const items = Array.isArray(order.items) ? order.items : [];
+                items.forEach(item => {
+                    const itemName = item.name || 'Unknown';
+                    const qty = item.quantity || 1;
+                    itemCounts[itemName] = (itemCounts[itemName] || 0) + qty;
+                });
+            });
+            
+            let topItem = '---';
+            let topCount = 0;
+            for (const [name, count] of Object.entries(itemCounts)) {
+                if (count > topCount) {
+                    topCount = count;
+                    topItem = name;
+                }
+            }
+            
+            document.getElementById('fbStatTotalOrders').innerText = totalOrders;
+            document.getElementById('fbStatRevenue').innerText = 'AED ' + totalRevenue.toFixed(2);
+            document.getElementById('fbStatAvgOrder').innerText = 'AED ' + avgOrder.toFixed(2);
+            document.getElementById('fbStatTopItem').innerText = topItem.length > 15 ? topItem.substring(0, 15) + '...' : topItem;
+        }
+
+        // ==================== IMPRESSION TICKET ====================
+        function printFoodOrderTicket(orderId) {
+            const order = allRequests.find(r => r.id == orderId && r.requestType === 'food');
+            if (!order) return;
+            
+            const items = Array.isArray(order.items) ? order.items : [];
+            const now = new Date();
+            const dateStr = now.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+            const timeStr = now.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+            
+            const printSection = document.getElementById('printTicketSection');
+            
+            printSection.innerHTML = `
+                <div style="font-family: 'Courier New', monospace; max-width: 320px; margin: 0 auto; border: 2px dashed #333; padding: 20px; background: #fff; color: #000;">
+                    <div style="text-align: center; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 10px;">
+                        <h2 style="margin: 0; font-size: 18px; font-weight: bold; letter-spacing: 2px;">REMAL HOTEL</h2>
+                        <p style="margin: 2px 0; font-size: 10px;">Al Dhannah City</p>
+                        <p style="margin: 2px 0; font-size: 10px; font-weight: bold;">ROOM SERVICE TICKET</p>
+                    </div>
+                    
+                    <div style="margin-bottom: 10px; font-size: 11px;">
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>Ticket #:</span><span style="font-weight: bold;">${order.id}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>Date:</span><span>${dateStr} ${timeStr}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>Room:</span><span style="font-weight: bold;">${order.room_number || 'N/A'}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>Guest:</span><span>${order.guest_name || 'Guest'}</span>
+                        </div>
+                    </div>
+                    
+                    <div style="border-top: 1px dashed #333; border-bottom: 1px dashed #333; padding: 10px 0; margin-bottom: 10px; font-size: 11px;">
+                        ${items.map(item => `
+                            <div style="display: flex; justify-content: space-between; margin: 3px 0;">
+                                <span>${item.quantity}x ${item.name}</span>
+                                <span>AED ${(item.total || item.price * item.quantity || 0).toFixed(2)}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <div style="font-size: 12px; font-weight: bold; display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span>TOTAL:</span>
+                        <span>AED ${(parseFloat(order.total_amount) || 0).toFixed(2)}</span>
+                    </div>
+                    
+                    ${order.details && order.details !== 'None' ? `
+                        <div style="font-size: 10px; background: #f5f5f5; padding: 8px; border-radius: 4px; margin-bottom: 10px;">
+                            <strong>Notes:</strong> ${order.details}
+                        </div>
+                    ` : ''}
+                    
+                    <div style="text-align: center; font-size: 9px; border-top: 1px solid #333; padding-top: 10px; margin-top: 10px;">
+                        <p style="margin: 0;">Merci de votre visite !</p>
+                        <p style="margin: 2px 0;">Remal Hotel & Villas</p>
+                    </div>
+                </div>
+            `;
+            
+            setTimeout(() => {
+                window.print();
+            }, 300);
+        }
+
+        // ==================== TÉLÉCHARGEMENT TICKET ====================
+        function downloadFoodOrderTicket(orderId) {
+            const order = allRequests.find(r => r.id == orderId && r.requestType === 'food');
+            if (!order) return;
+            
+            const items = Array.isArray(order.items) ? order.items : [];
+            const now = new Date();
+            const dateStr = now.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+            const timeStr = now.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+            
+            let ticketText = '═══════════════════════════════════════\n';
+            ticketText += '         REMAL HOTEL & VILLAS\n';
+            ticketText += '         Al Dhannah City\n';
+            ticketText += '       ROOM SERVICE TICKET\n';
+            ticketText += '═══════════════════════════════════════\n\n';
+            ticketText += 'Ticket #: ' + order.id + '\n';
+            ticketText += 'Date: ' + dateStr + ' ' + timeStr + '\n';
+            ticketText += 'Room: ' + (order.room_number || 'N/A') + '\n';
+            ticketText += 'Guest: ' + (order.guest_name || 'Guest') + '\n';
+            ticketText += '\n───────────────────────────────────────\n';
+            ticketText += 'ITEMS:\n';
+            ticketText += '───────────────────────────────────────\n';
+            
+            items.forEach(item => {
+                const line = `${item.quantity}x ${item.name}`;
+                const price = `AED ${(item.total || item.price * item.quantity || 0).toFixed(2)}`;
+                const dots = '.'.repeat(Math.max(1, 40 - line.length - price.length));
+                ticketText += line + dots + price + '\n';
+            });
+            
+            ticketText += '───────────────────────────────────────\n';
+            ticketText += 'TOTAL: AED ' + (parseFloat(order.total_amount) || 0).toFixed(2) + '\n';
+            ticketText += '═══════════════════════════════════════\n';
+            
+            if (order.details && order.details !== 'None') {
+                ticketText += 'Notes: ' + order.details + '\n';
+            }
+            
+            ticketText += 'Merci de votre visite !\n';
+            ticketText += 'Remal Hotel & Villas\n';
+            
+            const blob = new Blob([ticketText], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Remal_Ticket_${order.room_number}_${order.id}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
         }
 
         // ==================== RÉCUPÉRATION DES DONNÉES ====================
@@ -429,6 +641,7 @@
             ].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
             updateTabBadges();
+            updateFoodBeverageStats();
             renderStaffOrders();
         }
 
@@ -473,10 +686,12 @@
             if (tab === 'offers') {
                 document.getElementById('offersManagementSection').classList.remove('hidden');
                 document.getElementById('requestsSection').classList.add('hidden');
+                document.getElementById('foodBeverageStats').classList.add('hidden');
                 fetchOffers();
             } else {
                 document.getElementById('offersManagementSection').classList.add('hidden');
                 document.getElementById('requestsSection').classList.remove('hidden');
+                updateFoodBeverageStats();
                 renderStaffOrders();
             }
         }
@@ -561,7 +776,16 @@
                                     `<button onclick="updateFoodOrderStatus(${request.id}, 'Delivered')" class="flex-1 bg-emerald-500/20 text-emerald-400 py-2.5 rounded-xl text-xs font-bold hover:bg-emerald-500/40 transition">🚚 Mark Delivered</button>` :
                                     `<span class="flex-1 text-center text-[10px] text-emerald-400 font-bold py-2.5">✅ Completed</span>`
                                 }
-                                <button onclick="deleteFoodOrder(${request.id})" class="bg-red-500/10 text-red-400 px-3 py-2.5 rounded-xl text-xs font-bold hover:bg-red-500/30 transition">🗑️</button>
+                            </div>
+                            <!-- Boutons Impression et Téléchargement -->
+                            <div class="flex gap-2 pt-1">
+                                <button onclick="printFoodOrderTicket(${request.id})" class="flex-1 bg-stone-800 text-stone-200 py-2 rounded-xl text-[10px] font-bold hover:bg-stone-700 transition">
+                                    🖨️ Print
+                                </button>
+                                <button onclick="downloadFoodOrderTicket(${request.id})" class="flex-1 bg-stone-800 text-stone-200 py-2 rounded-xl text-[10px] font-bold hover:bg-stone-700 transition">
+                                    ⬇️ Download
+                                </button>
+                                <button onclick="deleteFoodOrder(${request.id})" class="bg-red-500/10 text-red-400 px-3 py-2 rounded-xl text-xs font-bold hover:bg-red-500/30 transition">🗑️</button>
                             </div>
                         </div>
                     `;
@@ -598,6 +822,8 @@
                     `;
                 }
             }).join('');
+            
+            updateFoodBeverageStats();
         }
 
         // ==================== FILTRES ====================
@@ -779,6 +1005,7 @@
             }
             
             initTheme();
+            updateDateTimeDisplay();
             fetchAllData();
             fetchOffers();
             setupRealtime();
