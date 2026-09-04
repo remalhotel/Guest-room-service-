@@ -51,6 +51,9 @@
                     <span class="w-2 h-2 bg-emerald-400 rounded-full pulse-notification"></span>
                     LIVE
                 </span>
+                <button onclick="enableSoundAlerts()" class="text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-3 py-2 rounded-xl font-bold hover:bg-amber-500/40 transition">
+                    🔊 Sound
+                </button>
                 <button onclick="toggleTheme()" class="theme-toggle-btn" title="Toggle Theme">
                     <i class="fas fa-sun text-sm" id="themeIconStaff"></i>
                 </button>
@@ -230,7 +233,7 @@
                 .on('postgres_changes', 
                     { event: '*', schema: 'public', table: 'food_orders' }, 
                     (payload) => {
-                        console.log('Realtime update:', payload.eventType, payload.new);
+                        console.log('Realtime update:', payload.eventType);
                         
                         if (payload.eventType === 'INSERT') {
                             playNotificationSound();
@@ -417,16 +420,44 @@
 
         // ==================== DÉCONNEXION ====================
         function logoutStaff() {
+            sessionStorage.removeItem('staff_authorized');
+            sessionStorage.removeItem('staff_login_time');
+            
             if (realtimeChannel) {
                 supabaseClient.removeChannel(realtimeChannel);
             }
+            
             window.location.href = 'staff-login.html';
         }
 
-        // ==================== INITIALISATION ====================
-        initTheme();
-        fetchAllOrders();
-        setupRealtime();
+        // ==================== VÉRIFICATION DE SESSION ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            const isAuthorized = sessionStorage.getItem('staff_authorized');
+            
+            if (!isAuthorized) {
+                window.location.href = 'staff-login.html';
+                return;
+            }
+            
+            // Vérifier si la session n'a pas expiré (8 heures)
+            const loginTime = sessionStorage.getItem('staff_login_time');
+            if (loginTime) {
+                const elapsed = Date.now() - new Date(loginTime).getTime();
+                const maxDuration = 8 * 60 * 60 * 1000; // 8 heures
+                
+                if (elapsed > maxDuration) {
+                    sessionStorage.removeItem('staff_authorized');
+                    sessionStorage.removeItem('staff_login_time');
+                    window.location.href = 'staff-login.html';
+                    return;
+                }
+            }
+            
+            // Initialiser l'application
+            initTheme();
+            fetchAllOrders();
+            setupRealtime();
+        });
     </script>
 </body>
 </html>
