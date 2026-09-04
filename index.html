@@ -56,15 +56,15 @@
         
         <div class="w-full max-w-md lock-card p-8 rounded-[2rem] space-y-6">
             
-            <!-- Logo et titre -->
-            <div class="text-center space-y-2">
+            <!-- BANNIÈRE REMAL AVEC IMAGE DE FOND -->
+            <div class="remal-banner text-center space-y-2 rounded-2xl p-6 border border-[var(--border-gold-strong)]">
                 <div class="w-20 h-20 mx-auto rounded-full bg-[var(--text-gold)] flex items-center justify-center shadow-2xl">
                     <i class="fas fa-key text-2xl text-stone-950"></i>
                 </div>
-                <h1 class="text-2xl font-serif-luxury font-bold text-gold-gradient tracking-[0.2em]">REMAL</h1>
-                <p class="text-[10px] text-muted-custom uppercase tracking-[0.3em] font-bold">Hotel & Villas</p>
+                <h1 class="text-2xl font-serif-luxury font-bold text-gold-gradient tracking-[0.2em] drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">REMAL</h1>
+                <p class="text-[10px] text-muted-custom uppercase tracking-[0.3em] font-bold drop-shadow-md">Hotel & Villas</p>
                 <div class="pt-2">
-                    <span class="inline-block text-[9px] bg-[var(--bg-card)] text-[var(--text-gold)] border border-[var(--border-gold-strong)] font-extrabold px-4 py-1.5 rounded-full uppercase tracking-[0.15em]">
+                    <span class="inline-block text-[9px] bg-[var(--bg-card)] text-[var(--text-gold)] border border-[var(--border-gold-strong)] font-extrabold px-4 py-1.5 rounded-full uppercase tracking-[0.15em] shadow-lg backdrop-blur-md">
                         🔒 Guest Identification
                     </span>
                 </div>
@@ -133,19 +133,19 @@
         
         <div class="w-full max-w-md remal-card p-6 sm:p-8 rounded-[2rem] space-y-6">
             
-            <!-- Bannière personnalisée -->
-            <div class="relative text-center border border-[var(--border-gold-strong)] pb-6 pt-7 rounded-2xl overflow-hidden">
-                <div class="relative z-10 space-y-2">
-                    <h1 class="text-2xl font-serif-luxury font-bold text-gold-gradient tracking-[0.15em]">REMAL</h1>
-                    <p class="text-[9px] text-muted-custom uppercase tracking-[0.2em] font-bold">Hotel & Villas • Al Dhannah City</p>
+            <!-- BANNIÈRE REMAL AVEC IMAGE DE FOND -->
+            <div class="remal-banner text-center border border-[var(--border-gold-strong)] pb-6 pt-7 rounded-2xl overflow-hidden">
+                <div class="space-y-2">
+                    <h1 class="text-2xl font-serif-luxury font-bold text-gold-gradient tracking-[0.15em] drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">REMAL</h1>
+                    <p class="text-[9px] text-muted-custom uppercase tracking-[0.2em] font-bold drop-shadow-md">Hotel & Villas • Al Dhannah City</p>
                     
                     <div class="pt-3">
-                        <p class="text-[10px] text-muted-custom uppercase tracking-wider" id="greetingTime">Welcome</p>
-                        <h2 id="welcomeGuestName" class="text-lg font-serif-luxury font-bold text-[var(--text-gold)] tracking-wide uppercase">---</h2>
+                        <p class="text-[10px] text-muted-custom uppercase tracking-wider drop-shadow-md" id="greetingTime">Welcome</p>
+                        <h2 id="welcomeGuestName" class="text-lg font-serif-luxury font-bold text-[var(--text-gold)] tracking-wide uppercase drop-shadow-md">---</h2>
                     </div>
                     
                     <div class="pt-2">
-                        <span id="roomTypeBadge" class="inline-block text-[9px] bg-[var(--bg-card)] text-[var(--text-gold)] border border-[var(--border-gold-strong)] font-extrabold px-4 py-1.5 rounded-full uppercase tracking-[0.15em]">
+                        <span id="roomTypeBadge" class="inline-block text-[9px] bg-[var(--bg-card)] text-[var(--text-gold)] border border-[var(--border-gold-strong)] font-extrabold px-4 py-1.5 rounded-full uppercase tracking-[0.15em] shadow-lg backdrop-blur-md">
                             🍽️ In-Room Dining
                         </span>
                     </div>
@@ -161,7 +161,6 @@
                     <span id="orderStatusText" class="text-[10px] font-bold text-amber-400">---</span>
                 </div>
                 
-                <!-- Barre de progression -->
                 <div class="order-progress">
                     <div class="order-progress-step">
                         <div class="order-progress-dot active" id="stepReceived">
@@ -192,7 +191,6 @@
                     </div>
                 </div>
                 
-                <!-- Temps estimé -->
                 <div class="text-center text-[10px] text-muted-custom">
                     Estimated time: <span id="estimatedTime" class="font-bold text-[var(--text-gold)]">--</span>
                 </div>
@@ -655,7 +653,6 @@
             document.getElementById('orderStatusText').innerText = config.text;
             document.getElementById('orderStatusText').className = `text-[10px] font-bold ${config.color}`;
             
-            // Mettre à jour la barre de progression
             const steps = ['received', 'preparing', 'ready', 'delivered'];
             const currentIndex = steps.indexOf(config.step);
             
@@ -721,7 +718,6 @@
 
             let itemsArray = [];
             let totalAmount = 0;
-            let estimatedTotalTime = 0;
 
             for (const [itemId, qty] of Object.entries(menuCart)) {
                 const item = findMenuItem(itemId);
