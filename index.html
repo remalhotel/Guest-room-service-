@@ -42,11 +42,13 @@
     <!-- ==================== ÉCRAN 1 : IDENTIFICATION ==================== -->
     <div id="lockScreen" class="min-h-screen">
         
-        <!-- EN-TÊTE AVEC BOUTON THÈME -->
+        <!-- EN-TÊTE AVEC IMAGE D'HÔTEL -->
         <header class="app-header">
-            <div class="flex items-center gap-2">
-                <h1 class="text-sm font-serif-luxury font-bold text-[var(--text-gold)] tracking-widest">REMAL</h1>
-                <span class="text-[9px] text-muted-custom uppercase tracking-wider">Hotel & Villas</span>
+            <div class="header-logo">
+                <div>
+                    <h1>REMAL</h1>
+                    <span>Hotel & Villas • Al Dhannah City</span>
+                </div>
             </div>
             <button onclick="toggleTheme()" class="theme-toggle-btn" title="Toggle Dark/Light Mode">
                 <i class="fas fa-sun" id="themeIconLock"></i>
@@ -54,7 +56,7 @@
         </header>
 
         <!-- Contenu de l'écran de verrouillage -->
-        <div class="flex items-center justify-center p-4 min-h-[calc(100vh-70px)]">
+        <div class="flex items-center justify-center p-4 min-h-[calc(100vh-80px)]">
             <div class="w-full max-w-md lock-card p-8 rounded-[2rem] space-y-6">
                 
                 <!-- Logo et titre -->
@@ -128,11 +130,13 @@
     <!-- ==================== ÉCRAN 2 : PAGE PERSONNALISÉE ==================== -->
     <div id="mainScreen" class="hidden min-h-screen">
         
-        <!-- EN-TÊTE AVEC BOUTON THÈME -->
+        <!-- EN-TÊTE AVEC IMAGE D'HÔTEL -->
         <header class="app-header">
-            <div class="flex items-center gap-2">
-                <h1 class="text-sm font-serif-luxury font-bold text-[var(--text-gold)] tracking-widest">REMAL</h1>
-                <span class="text-[9px] text-muted-custom uppercase tracking-wider">Hotel & Villas</span>
+            <div class="header-logo">
+                <div>
+                    <h1>REMAL</h1>
+                    <span>Hotel & Villas • Al Dhannah City</span>
+                </div>
             </div>
             <button onclick="toggleTheme()" class="theme-toggle-btn" title="Toggle Dark/Light Mode">
                 <i class="fas fa-sun" id="themeIconMain"></i>
