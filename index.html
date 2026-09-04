@@ -49,7 +49,6 @@
     <!-- ==================== ÉCRAN 1 : IDENTIFICATION ==================== -->
     <div id="lockScreen" class="min-h-screen flex items-center justify-center p-4 relative">
         
-        <!-- Bouton de basculement de thème -->
         <button onclick="toggleTheme()" id="themeToggleLock" class="theme-toggle-btn fixed top-4 right-4 z-50" title="Toggle Dark/Light Mode">
             <i class="fas fa-sun text-sm" id="themeIconLock"></i>
         </button>
@@ -70,16 +69,13 @@
                 </div>
             </div>
 
-            <!-- Salutation personnalisée -->
             <div class="text-center space-y-1">
                 <h2 class="text-sm font-bold text-[var(--text-main)]" id="greetingText">Welcome to In-Room Dining</h2>
                 <p class="text-[10px] text-muted-custom">Please verify your identity to access the menu</p>
             </div>
 
-            <!-- Formulaire -->
             <div class="space-y-4">
                 
-                <!-- Numéro de chambre -->
                 <div>
                     <label class="block font-bold text-[var(--text-gold)] uppercase tracking-wider text-[10px] mb-1.5">
                         <i class="fas fa-door-open mr-1"></i> Room Number
@@ -89,7 +85,6 @@
                            onkeypress="if(event.key==='Enter') verifierIdentiteClient()">
                 </div>
 
-                <!-- Nom -->
                 <div>
                     <label class="block font-bold text-[var(--text-gold)] uppercase tracking-wider text-[10px] mb-1.5">
                         <i class="fas fa-user mr-1"></i> Your Name
@@ -100,17 +95,14 @@
                     <p class="text-[9px] text-muted-custom text-center mt-1">Enter any name on your reservation</p>
                 </div>
 
-                <!-- Indicateur de chargement -->
                 <div id="lockLoadingIndicator" class="hidden text-center text-[10px] text-[var(--text-gold)] py-2">
                     <i class="fas fa-spinner fa-spin mr-1"></i> Verifying with hotel records...
                 </div>
 
-                <!-- Message d'erreur -->
                 <div id="lockErrorMsg" class="hidden text-center text-[10px] text-red-400 font-bold py-2">
                     ❌ Room number or name not found. Please try again.
                 </div>
 
-                <!-- Bouton -->
                 <button onclick="verifierIdentiteClient()" 
                         class="w-full bg-[#DCA773] hover:bg-[#ebd0b3] text-stone-950 font-black py-4 rounded-2xl text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2.5 shadow-lg hover:scale-[1.02] active:scale-[0.98]">
                     <i class="fas fa-unlock"></i> Verify & Access
@@ -126,7 +118,6 @@
     <!-- ==================== ÉCRAN 2 : PAGE PERSONNALISÉE ==================== -->
     <div id="mainScreen" class="hidden min-h-screen p-3 sm:p-6 flex items-center justify-center pb-24 relative">
         
-        <!-- Bouton de basculement de thème -->
         <button onclick="toggleTheme()" id="themeToggleMain" class="theme-toggle-btn fixed top-4 right-4 z-50" title="Toggle Dark/Light Mode">
             <i class="fas fa-sun text-sm" id="themeIconMain"></i>
         </button>
@@ -306,7 +297,7 @@
         let menuCart = {};
         let cachedGuestData = null;
         let isGuestVerified = false;
-        let currentOrderId = null;
+        let currentOrderId = localStorage.getItem('remal_current_order_id') || null;
         let favoritesList = JSON.parse(localStorage.getItem('remal_favorites') || '{}');
         let realtimeChannel = null;
 
@@ -558,6 +549,7 @@
 
                 afficherPagePersonnalisee(pmsData, pmsData.room);
                 setupRealtimeTracking(pmsData.room);
+                restaurerSuiviCommande();
 
                 const lockScreen = document.getElementById('lockScreen');
                 const mainScreen = document.getElementById('mainScreen');
@@ -595,15 +587,19 @@
         function changerDeChambre() {
             isGuestVerified = false;
             cachedGuestData = null;
+            currentOrderId = null;
             
             localStorage.removeItem('remal_guest_room');
             localStorage.removeItem('remal_guest_data');
+            localStorage.removeItem('remal_current_order_id');
             
             document.getElementById('lockRoomInput').value = '';
             document.getElementById('lockNameInput').value = '';
             
             menuCart = {};
             renderMenuItems();
+            
+            document.getElementById('orderTrackingSection').classList.add('hidden');
             
             if (realtimeChannel) {
                 supabaseClient.removeChannel(realtimeChannel);
@@ -629,7 +625,7 @@
                 .on('postgres_changes', 
                     { event: 'UPDATE', schema: 'public', table: 'food_orders', filter: `room_number=eq.${roomNumber}` },
                     (payload) => {
-                        if (payload.new && payload.new.id === currentOrderId) {
+                        if (payload.new && currentOrderId && payload.new.id == currentOrderId) {
                             updateOrderTracking(payload.new.status);
                         }
                     }
@@ -673,8 +669,44 @@
             
             if (status === 'Delivered') {
                 showToast('✅ Your order has been delivered!', 'success');
+                // Effacer l'ID après livraison
+                setTimeout(() => {
+                    localStorage.removeItem('remal_current_order_id');
+                    currentOrderId = null;
+                    trackingSection.classList.add('hidden');
+                }, 5000);
             } else if (status === 'Ready') {
                 showToast('🔔 Your order is ready!', 'info');
+            }
+        }
+
+        // ==================== RESTAURATION DU SUIVI DE COMMANDE ====================
+        async function restaurerSuiviCommande() {
+            const savedOrderId = localStorage.getItem('remal_current_order_id');
+            
+            if (!savedOrderId) {
+                document.getElementById('orderTrackingSection').classList.add('hidden');
+                return;
+            }
+            
+            try {
+                const { data, error } = await supabaseClient
+                    .from('food_orders')
+                    .select('*')
+                    .eq('id', savedOrderId)
+                    .maybeSingle();
+                
+                if (data && !error) {
+                    currentOrderId = data.id;
+                    updateOrderTracking(data.status);
+                } else {
+                    // La commande n'existe plus
+                    localStorage.removeItem('remal_current_order_id');
+                    currentOrderId = null;
+                    document.getElementById('orderTrackingSection').classList.add('hidden');
+                }
+            } catch (err) {
+                console.error('Error restoring order tracking:', err);
             }
         }
 
@@ -691,6 +723,7 @@
 
                     afficherPagePersonnalisee(parsedData, savedRoom);
                     setupRealtimeTracking(savedRoom);
+                    restaurerSuiviCommande();
 
                     document.getElementById('lockScreen').classList.add('hidden');
                     document.getElementById('mainScreen').classList.remove('hidden');
@@ -760,6 +793,8 @@
 
             if (data && data.length > 0) {
                 currentOrderId = data[0].id;
+                // SAUVEGARDER l'ID de commande dans localStorage
+                localStorage.setItem('remal_current_order_id', currentOrderId);
                 updateOrderTracking('Pending');
             }
 
