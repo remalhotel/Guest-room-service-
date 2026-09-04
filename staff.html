@@ -866,7 +866,7 @@
 
         // ==================== CHAT ====================
         function openChatModal(roomNumber, guestName) {
-            currentChatRoom = roomNumber;
+            currentChatRoom = String(roomNumber);
             currentChatGuest = guestName;
             document.getElementById('chatGuestName').innerText = guestName + ' (Room ' + roomNumber + ')';
             document.getElementById('chatMessagesContainer').innerHTML = '';
@@ -881,10 +881,11 @@
 
         async function loadChatMessages() {
             if (!currentChatRoom || !supabaseClient) return;
+            const targetRoom = String(currentChatRoom);
             const { data } = await supabaseClient
                 .from('chat_messages')
                 .select('*')
-                .or(`room_number.eq.${currentChatRoom},guest_room.eq.${currentChatRoom}`)
+                .or(`room_number.eq.${targetRoom},guest_room.eq.${targetRoom}`)
                 .order('created_at', { ascending: true })
                 .limit(50);
             if (data) {
@@ -895,12 +896,14 @@
 
         function renderChatMessages() {
             const container = document.getElementById('chatMessagesContainer');
+            if (!container) return;
             container.innerHTML = chatMessages.map(msg => `
                 <div class="chat-message ${msg.sender === 'staff' ? 'staff' : 'guest'}">
                     <p>${msg.message}</p>
                     <p class="text-[8px] opacity-60">${new Date(msg.created_at).toLocaleTimeString()}</p>
                 </div>
             `).join('');
+            container.scrollTop = container.scrollHeight;
         }
 
         async function sendChatMessage() {
@@ -908,8 +911,10 @@
             const message = input.value.trim();
             if (!message || !currentChatRoom) return;
             
+            const roomStr = String(currentChatRoom);
             const newMessage = {
-                room_number: currentChatRoom,
+                room_number: roomStr,
+                guest_room: roomStr,
                 sender: 'staff',
                 message: message,
                 created_at: new Date().toISOString()
@@ -981,7 +986,12 @@
                 })
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'offers' }, () => { fetchOffers(); })
                 .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages' }, (payload) => {
-                    if (currentChatRoom && payload.new && payload.new.room_number == currentChatRoom) {
+                    if (payload.new && payload.new.sender === 'guest') {
+                        const senderRoom = payload.new.room_number || payload.new.guest_room;
+                        playNotificationSound();
+                        showNotificationPopup(`💬 Nouveau message de la chambre ${senderRoom}!`);
+                    }
+                    if (currentChatRoom && payload.new && (String(payload.new.room_number) === String(currentChatRoom) || String(payload.new.guest_room) === String(currentChatRoom))) {
                         loadChatMessages();
                     }
                 })
