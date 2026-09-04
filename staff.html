@@ -64,6 +64,37 @@
             border: 1px solid;
             margin-right: 4px;
         }
+
+        /* Zone de téléchargement */
+        .upload-zone {
+            border: 2px dashed var(--border-gold-strong);
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--bg-card-hover);
+        }
+        
+        .upload-zone:hover {
+            border-color: var(--text-gold);
+            background: var(--bg-card);
+            box-shadow: 0 5px 20px rgba(220, 167, 115, 0.2);
+        }
+        
+        .upload-zone.dragover {
+            border-color: #10b981;
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        /* Aperçu de l'image */
+        .offer-image-preview {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 1rem;
+            border: 1px solid var(--border-gold-strong);
+        }
     </style>
 </head>
 <body class="min-h-screen p-3 sm:p-6">
@@ -98,10 +129,10 @@
             </div>
         </div>
 
-        <!-- ONGLETS STAFF : 4 catégories -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+        <!-- ONGLETS STAFF : 5 onglets -->
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-2">
             <button onclick="switchStaffTab('front_desk')" id="staffTabFrontDesk" class="staff-tab-btn active px-4 py-3 rounded-xl text-xs font-bold whitespace-nowrap">
-                🛎️ Front Desk & Guest Services
+                🛎️ Front Desk
             </button>
             <button onclick="switchStaffTab('food_beverage')" id="staffTabFoodBeverage" class="staff-tab-btn px-4 py-3 rounded-xl text-xs font-bold whitespace-nowrap">
                 🍽️ Food & Beverage
@@ -112,41 +143,132 @@
             <button onclick="switchStaffTab('maintenance')" id="staffTabMaintenance" class="staff-tab-btn px-4 py-3 rounded-xl text-xs font-bold whitespace-nowrap">
                 🔧 Maintenance
             </button>
+            <button onclick="switchStaffTab('offers')" id="staffTabOffers" class="staff-tab-btn px-4 py-3 rounded-xl text-xs font-bold whitespace-nowrap">
+                🏷️ Offers
+            </button>
         </div>
 
-        <!-- Statistiques -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div class="stat-card remal-card rounded-2xl p-4 text-center">
-                <div class="text-3xl font-serif-luxury font-bold text-[var(--text-gold)]" id="statTotalOrders">0</div>
-                <p class="text-[10px] text-muted-custom uppercase mt-1 font-bold">Total Requests</p>
+        <!-- SECTION OFFRES (visible uniquement quand onglet Offers actif) -->
+        <div id="offersManagementSection" class="hidden space-y-6">
+            
+            <!-- Formulaire de création d'offre -->
+            <div class="remal-card rounded-2xl p-6 space-y-4">
+                <h2 class="text-sm font-serif-luxury font-bold text-[var(--text-gold)] border-b border-[var(--border-gold)] pb-3">
+                    <i class="fas fa-plus-circle mr-2"></i> Create New Offer
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Zone de téléchargement de photo -->
+                    <div class="space-y-3">
+                        <label class="block text-[10px] font-bold text-[var(--text-gold)] uppercase tracking-wider">
+                            <i class="fas fa-image mr-1"></i> Offer Photo
+                        </label>
+                        
+                        <!-- Zone de drop -->
+                        <div id="uploadZone" class="upload-zone" onclick="document.getElementById('offerImageInput').click()">
+                            <div id="uploadPlaceholder">
+                                <i class="fas fa-cloud-upload-alt text-3xl text-[var(--text-gold)] mb-2"></i>
+                                <p class="text-xs font-bold text-[var(--text-main)]">Click to upload or drag & drop</p>
+                                <p class="text-[9px] text-muted-custom mt-1">JPG, PNG, WEBP (Max 5MB)</p>
+                            </div>
+                            <img id="offerImagePreview" class="offer-image-preview hidden" alt="Preview">
+                        </div>
+                        
+                        <input type="file" id="offerImageInput" accept="image/*" class="hidden" onchange="handleOfferImageSelect(event)">
+                    </div>
+                    
+                    <!-- Champs de l'offre -->
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-[10px] font-bold text-[var(--text-gold)] uppercase tracking-wider mb-1">
+                                <i class="fas fa-heading mr-1"></i> Title
+                            </label>
+                            <input type="text" id="offerTitle" placeholder="e.g., Pool Day Pass Special" class="w-full remal-input rounded-xl p-3 text-xs font-bold">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-[10px] font-bold text-[var(--text-gold)] uppercase tracking-wider mb-1">
+                                <i class="fas fa-tag mr-1"></i> Price
+                            </label>
+                            <input type="text" id="offerPrice" placeholder="e.g., AED 75" class="w-full remal-input rounded-xl p-3 text-xs font-bold">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-[10px] font-bold text-[var(--text-gold)] uppercase tracking-wider mb-1">
+                                <i class="fas fa-align-left mr-1"></i> Description / Accroche
+                            </label>
+                            <textarea id="offerDescription" rows="3" placeholder="e.g., Full day access to Al Waha Pool with complimentary towel service..." class="w-full remal-input rounded-xl p-3 text-xs"></textarea>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-[10px] font-bold text-[var(--text-gold)] uppercase tracking-wider mb-1">
+                                <i class="fas fa-folder mr-1"></i> Category
+                            </label>
+                            <select id="offerCategory" class="w-full remal-input rounded-xl p-3 text-xs font-bold">
+                                <option value="Pool & Beach">🏖️ Pool & Beach</option>
+                                <option value="Spa & Wellness">💆 Spa & Wellness</option>
+                                <option value="Dining">🍽️ Dining</option>
+                                <option value="Activities">🎯 Activities</option>
+                                <option value="Special Events">🎉 Special Events</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Bouton de publication -->
+                <button onclick="publishOffer()" class="w-full bg-[#DCA773] hover:bg-[#ebd0b3] text-stone-950 font-black py-4 rounded-2xl text-xs uppercase tracking-widest transition-all shadow-lg hover:scale-[1.01]">
+                    <i class="fas fa-rocket mr-2"></i> Publish Offer
+                </button>
             </div>
-            <div class="stat-card remal-card rounded-2xl p-4 text-center">
-                <div class="text-3xl font-serif-luxury font-bold text-amber-400" id="statPendingOrders">0</div>
-                <p class="text-[10px] text-muted-custom uppercase mt-1 font-bold">Pending</p>
-            </div>
-            <div class="stat-card remal-card rounded-2xl p-4 text-center">
-                <div class="text-3xl font-serif-luxury font-bold text-blue-400" id="statPreparingOrders">0</div>
-                <p class="text-[10px] text-muted-custom uppercase mt-1 font-bold">In Progress</p>
-            </div>
-            <div class="stat-card remal-card rounded-2xl p-4 text-center">
-                <div class="text-3xl font-serif-luxury font-bold text-emerald-400" id="statCompletedOrders">0</div>
-                <p class="text-[10px] text-muted-custom uppercase mt-1 font-bold">Completed</p>
+            
+            <!-- Liste des offres actives -->
+            <div class="remal-card rounded-2xl p-6 space-y-4">
+                <h3 class="text-sm font-serif-luxury font-bold text-[var(--text-gold)] border-b border-[var(--border-gold)] pb-3">
+                    <i class="fas fa-list mr-2"></i> Active Offers
+                </h3>
+                
+                <div id="offersListContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Offres injectées dynamiquement -->
+                </div>
             </div>
         </div>
 
-        <!-- Filtres par statut -->
-        <div class="flex gap-2 overflow-x-auto scrollbar-none">
-            <button onclick="filterStaffOrders('all')" id="filterAll" class="px-4 py-2 rounded-xl bg-[var(--text-gold)] text-stone-950 text-xs font-bold whitespace-nowrap">All</button>
-            <button onclick="filterStaffOrders('Pending')" id="filterPending" class="px-4 py-2 rounded-xl remal-card text-muted-custom text-xs font-bold whitespace-nowrap">🕐 Pending</button>
-            <button onclick="filterStaffOrders('Preparing')" id="filterPreparing" class="px-4 py-2 rounded-xl remal-card text-muted-custom text-xs font-bold whitespace-nowrap">👨‍🍳 Preparing</button>
-            <button onclick="filterStaffOrders('Ready')" id="filterReady" class="px-4 py-2 rounded-xl remal-card text-muted-custom text-xs font-bold whitespace-nowrap">✅ Ready</button>
-            <button onclick="filterStaffOrders('Delivered')" id="filterDelivered" class="px-4 py-2 rounded-xl remal-card text-muted-custom text-xs font-bold whitespace-nowrap">🚚 Delivered</button>
-            <button onclick="filterStaffOrders('Completed')" id="filterCompleted" class="px-4 py-2 rounded-xl remal-card text-muted-custom text-xs font-bold whitespace-nowrap">✔️ Completed</button>
-            <button onclick="filterStaffOrders('In Progress')" id="filterInProgress" class="px-4 py-2 rounded-xl remal-card text-muted-custom text-xs font-bold whitespace-nowrap">👨‍💼 In Progress</button>
-        </div>
+        <!-- SECTION REQUÊTES (visible pour les autres onglets) -->
+        <div id="requestsSection" class="space-y-6">
+            <!-- Statistiques -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="stat-card remal-card rounded-2xl p-4 text-center">
+                    <div class="text-3xl font-serif-luxury font-bold text-[var(--text-gold)]" id="statTotalOrders">0</div>
+                    <p class="text-[10px] text-muted-custom uppercase mt-1 font-bold">Total Requests</p>
+                </div>
+                <div class="stat-card remal-card rounded-2xl p-4 text-center">
+                    <div class="text-3xl font-serif-luxury font-bold text-amber-400" id="statPendingOrders">0</div>
+                    <p class="text-[10px] text-muted-custom uppercase mt-1 font-bold">Pending</p>
+                </div>
+                <div class="stat-card remal-card rounded-2xl p-4 text-center">
+                    <div class="text-3xl font-serif-luxury font-bold text-blue-400" id="statPreparingOrders">0</div>
+                    <p class="text-[10px] text-muted-custom uppercase mt-1 font-bold">In Progress</p>
+                </div>
+                <div class="stat-card remal-card rounded-2xl p-4 text-center">
+                    <div class="text-3xl font-serif-luxury font-bold text-emerald-400" id="statCompletedOrders">0</div>
+                    <p class="text-[10px] text-muted-custom uppercase mt-1 font-bold">Completed</p>
+                </div>
+            </div>
 
-        <!-- Commandes et requêtes -->
-        <div id="staffOrdersContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            <!-- Filtres par statut -->
+            <div class="flex gap-2 overflow-x-auto scrollbar-none">
+                <button onclick="filterStaffOrders('all')" id="filterAll" class="px-4 py-2 rounded-xl bg-[var(--text-gold)] text-stone-950 text-xs font-bold whitespace-nowrap">All</button>
+                <button onclick="filterStaffOrders('Pending')" id="filterPending" class="px-4 py-2 rounded-xl remal-card text-muted-custom text-xs font-bold whitespace-nowrap">🕐 Pending</button>
+                <button onclick="filterStaffOrders('Preparing')" id="filterPreparing" class="px-4 py-2 rounded-xl remal-card text-muted-custom text-xs font-bold whitespace-nowrap">👨‍🍳 Preparing</button>
+                <button onclick="filterStaffOrders('Ready')" id="filterReady" class="px-4 py-2 rounded-xl remal-card text-muted-custom text-xs font-bold whitespace-nowrap">✅ Ready</button>
+                <button onclick="filterStaffOrders('Delivered')" id="filterDelivered" class="px-4 py-2 rounded-xl remal-card text-muted-custom text-xs font-bold whitespace-nowrap">🚚 Delivered</button>
+                <button onclick="filterStaffOrders('Completed')" id="filterCompleted" class="px-4 py-2 rounded-xl remal-card text-muted-custom text-xs font-bold whitespace-nowrap">✔️ Completed</button>
+                <button onclick="filterStaffOrders('In Progress')" id="filterInProgress" class="px-4 py-2 rounded-xl remal-card text-muted-custom text-xs font-bold whitespace-nowrap">👨‍💼 In Progress</button>
+            </div>
+
+            <!-- Commandes et requêtes -->
+            <div id="staffOrdersContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        </div>
     </div>
 
     <script src="assets/js/config.js"></script>
@@ -162,23 +284,17 @@
         let realtimeChannel = null;
         let audioContext = null;
         let soundEnabled = false;
+        let selectedOfferImage = null;
 
-        // ==================== MAPPING DES SERVICES VERS LES ONGLETS ====================
+        // ==================== MAPPING DES SERVICES ====================
         const SERVICE_TAB_MAPPING = {
-            // Front Desk & Guest Services
             'Front Desk Inquiry': 'front_desk',
             'Luggage Assistance': 'front_desk',
             'Wake-up Call / Alarm Service': 'front_desk',
             'Late Check-out / Extension': 'front_desk',
-            
-            // Food & Beverage
             'Room Service / Order Food': 'food_beverage',
             'Table Reservation': 'food_beverage',
-            
-            // Housekeeping
             'Housekeeping / Room Cleaning': 'housekeeping',
-            
-            // Maintenance
             'Maintenance / Technical Support': 'maintenance'
         };
 
@@ -243,6 +359,178 @@
             }, 3000);
         }
 
+        // ==================== GESTION DES OFFRES ====================
+        function handleOfferImageSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            // Vérifier la taille (max 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('Image too large. Max 5MB.', 'error');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                selectedOfferImage = e.target.result;
+                const preview = document.getElementById('offerImagePreview');
+                const placeholder = document.getElementById('uploadPlaceholder');
+                
+                preview.src = selectedOfferImage;
+                preview.classList.remove('hidden');
+                placeholder.classList.add('hidden');
+                
+                showToast('Image selected!', 'success');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Drag & drop
+        document.addEventListener('DOMContentLoaded', () => {
+            const uploadZone = document.getElementById('uploadZone');
+            if (uploadZone) {
+                uploadZone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    uploadZone.classList.add('dragover');
+                });
+                
+                uploadZone.addEventListener('dragleave', () => {
+                    uploadZone.classList.remove('dragover');
+                });
+                
+                uploadZone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    uploadZone.classList.remove('dragover');
+                    
+                    const file = e.dataTransfer.files[0];
+                    if (file) {
+                        const input = document.getElementById('offerImageInput');
+                        const dt = new DataTransfer();
+                        dt.items.add(file);
+                        input.files = dt.files;
+                        handleOfferImageSelect({ target: { files: [file] } });
+                    }
+                });
+            }
+        });
+
+        async function publishOffer() {
+            const title = document.getElementById('offerTitle').value.trim();
+            const price = document.getElementById('offerPrice').value.trim();
+            const description = document.getElementById('offerDescription').value.trim();
+            const category = document.getElementById('offerCategory').value;
+            
+            if (!title) { showToast('Please enter a title', 'error'); return; }
+            if (!price) { showToast('Please enter a price', 'error'); return; }
+            if (!description) { showToast('Please enter a description', 'error'); return; }
+            if (!selectedOfferImage) { showToast('Please select an image', 'error'); return; }
+            
+            const offerData = {
+                title: title,
+                price: price,
+                description: description,
+                category: category,
+                image: selectedOfferImage,
+                is_active: true,
+                created_at: new Date().toISOString()
+            };
+            
+            const { data, error } = await supabaseClient
+                .from('offers')
+                .insert([offerData])
+                .select();
+            
+            if (error) {
+                console.error('Supabase Error:', error);
+                showToast('Error publishing offer', 'error');
+                return;
+            }
+            
+            showToast('✅ Offer published successfully!', 'success');
+            
+            // Réinitialiser le formulaire
+            document.getElementById('offerTitle').value = '';
+            document.getElementById('offerPrice').value = '';
+            document.getElementById('offerDescription').value = '';
+            document.getElementById('offerCategory').value = 'Pool & Beach';
+            selectedOfferImage = null;
+            document.getElementById('offerImagePreview').classList.add('hidden');
+            document.getElementById('uploadPlaceholder').classList.remove('hidden');
+            document.getElementById('offerImageInput').value = '';
+            
+            fetchOffers();
+        }
+
+        async function fetchOffers() {
+            const { data, error } = await supabaseClient
+                .from('offers')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(20);
+            
+            if (data) {
+                renderOffersList(data);
+            }
+        }
+
+        function renderOffersList(offers) {
+            const container = document.getElementById('offersListContainer');
+            
+            if (!offers || offers.length === 0) {
+                container.innerHTML = '<p class="text-center text-muted-custom col-span-full py-8">No offers published yet</p>';
+                return;
+            }
+            
+            container.innerHTML = offers.map(offer => `
+                <div class="order-card remal-card rounded-2xl overflow-hidden">
+                    <img src="${offer.image}" alt="${offer.title}" class="w-full h-40 object-cover" onerror="this.src='logo.png'">
+                    <div class="p-4 space-y-2">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="font-bold text-[var(--text-gold)] text-xs">${offer.title}</p>
+                                <p class="text-[9px] text-muted-custom">${offer.category}</p>
+                            </div>
+                            <span class="font-bold text-[var(--text-gold)] text-sm">${offer.price}</span>
+                        </div>
+                        <p class="text-[10px] text-muted-custom">${offer.description}</p>
+                        <div class="flex gap-2 pt-2">
+                            <button onclick="toggleOfferActive(${offer.id}, ${!offer.is_active})" class="flex-1 ${offer.is_active ? 'bg-emerald-500/20 text-emerald-400' : 'bg-gray-500/20 text-gray-400'} py-2 rounded-xl text-xs font-bold transition">
+                                ${offer.is_active ? '✅ Active' : '❌ Inactive'}
+                            </button>
+                            <button onclick="deleteOffer(${offer.id})" class="bg-red-500/10 text-red-400 px-3 py-2 rounded-xl text-xs font-bold hover:bg-red-500/30 transition">
+                                🗑️
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function toggleOfferActive(offerId, isActive) {
+            const { error } = await supabaseClient
+                .from('offers')
+                .update({ is_active: isActive })
+                .eq('id', offerId);
+            
+            if (!error) {
+                showToast(`Offer ${isActive ? 'activated' : 'deactivated'}`, 'success');
+                fetchOffers();
+            }
+        }
+
+        async function deleteOffer(offerId) {
+            if (!confirm('Delete this offer?')) return;
+            const { error } = await supabaseClient
+                .from('offers')
+                .delete()
+                .eq('id', offerId);
+            
+            if (!error) {
+                showToast('Offer deleted', 'info');
+                fetchOffers();
+            }
+        }
+
         // ==================== RÉCUPÉRATION DES DONNÉES ====================
         async function fetchAllData() {
             const { data: foodData } = await supabaseClient
@@ -281,7 +569,6 @@
                 guestRequests = requestData;
             }
 
-            // Fusionner avec le mapping des onglets
             allRequests = [
                 ...foodOrders.map(o => ({ 
                     ...o, 
@@ -312,14 +599,17 @@
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'guest_requests' }, () => {
                     fetchAllData();
                 })
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'offers' }, () => {
+                    fetchOffers();
+                })
                 .subscribe();
         }
 
-        // ==================== ONGLETS STAFF ====================
+        // ==================== ONGLETS ====================
         function switchStaffTab(tab) {
             currentStaffTab = tab;
             
-            const tabs = ['front_desk', 'food_beverage', 'housekeeping', 'maintenance'];
+            const tabs = ['front_desk', 'food_beverage', 'housekeeping', 'maintenance', 'offers'];
             tabs.forEach(t => {
                 const btn = document.getElementById(`staffTab${t.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('')}`);
                 if (btn) {
@@ -331,22 +621,28 @@
                 }
             });
             
-            renderStaffOrders();
+            // Afficher/masquer les sections
+            if (tab === 'offers') {
+                document.getElementById('offersManagementSection').classList.remove('hidden');
+                document.getElementById('requestsSection').classList.add('hidden');
+                fetchOffers();
+            } else {
+                document.getElementById('offersManagementSection').classList.add('hidden');
+                document.getElementById('requestsSection').classList.remove('hidden');
+                renderStaffOrders();
+            }
         }
 
-        // ==================== AFFICHAGE ====================
+        // ==================== AFFICHAGE DES REQUÊTES ====================
         function renderStaffOrders() {
             const container = document.getElementById('staffOrdersContainer');
             
-            // Filtrer selon l'onglet sélectionné
             let filteredRequests = allRequests.filter(r => r.tabCategory === currentStaffTab);
             
-            // Filtrer selon le statut
             if (currentFilter !== 'all') {
                 filteredRequests = filteredRequests.filter(r => r.status === currentFilter);
             }
 
-            // Statistiques (sur l'onglet actuel)
             const tabRequests = allRequests.filter(r => r.tabCategory === currentStaffTab);
             document.getElementById('statTotalOrders').innerText = tabRequests.length;
             document.getElementById('statPendingOrders').innerText = tabRequests.filter(o => o.status === 'Pending').length;
@@ -387,36 +683,28 @@
                                 </div>
                                 <span class="status-badge ${statusColor}">${request.status || 'Pending'}</span>
                             </div>
-                            
                             ${serviceTypeBadge}
-                            
                             <div class="space-y-1.5 text-xs">
                                 ${items.map(item => `
                                     <div class="flex justify-between items-start border-b border-[var(--border-gold)] pb-1.5">
                                         <div>
                                             <p class="font-bold text-[var(--text-main)]">${item.quantity}x ${item.name}</p>
                                             ${item.prepTime ? `<p class="text-[9px] text-muted-custom">⏱️ ${item.prepTime}</p>` : ''}
-                                            ${item.allergens && item.allergens.length > 0 ? `<p class="text-[8px] text-red-400">⚠️ ${item.allergens.join(', ')}</p>` : ''}
                                         </div>
                                         <span class="font-bold text-[var(--text-gold)]">AED ${item.total || item.price * item.quantity}</span>
                                     </div>
                                 `).join('')}
                             </div>
-                            
                             <div class="flex justify-between items-center text-xs border-t border-[var(--border-gold)] pt-2">
                                 <span class="font-bold text-[var(--text-gold)]">Total: AED ${request.total_amount || request.subtotal || 0}</span>
                                 <span class="text-[10px] text-muted-custom">${timeAgo}</span>
                             </div>
-                            
                             ${request.details && request.details !== 'None' ? `
                                 <div class="bg-amber-500/10 border border-amber-500/20 p-2.5 rounded-xl">
                                     <p class="text-[10px] font-bold text-amber-400">📝 Notes:</p>
                                     <p class="text-[10px] text-amber-300">${request.details}</p>
                                 </div>
                             ` : ''}
-                            
-                            ${request.meal_type ? `<p class="text-[9px] text-muted-custom">🍽️ ${request.meal_type} • 🕒 ${request.delivery_time || 'ASAP'}</p>` : ''}
-                            
                             <div class="flex gap-2 pt-1">
                                 ${request.status === 'Pending' ? 
                                     `<button onclick="updateFoodOrderStatus(${request.id}, 'Preparing')" class="flex-1 bg-blue-500/20 text-blue-400 py-2.5 rounded-xl text-xs font-bold hover:bg-blue-500/40 transition">👨‍🍳 Start Preparing</button>` :
@@ -440,21 +728,16 @@
                                 </div>
                                 <span class="status-badge ${statusColor}">${request.status || 'Pending'}</span>
                             </div>
-                            
                             ${serviceTypeBadge}
-                            
                             <p class="text-xs font-bold text-[var(--text-main)]">${request.serviceLabel}</p>
-                            
                             ${request.details ? `
                                 <div class="bg-[var(--bg-dark)] p-3 rounded-xl text-[10px] text-muted-custom whitespace-pre-line">
                                     ${request.details}
                                 </div>
                             ` : ''}
-                            
                             <div class="flex justify-between items-center text-xs">
                                 <span class="text-[10px] text-muted-custom">${timeAgo}</span>
                             </div>
-                            
                             <div class="flex gap-2 pt-1">
                                 ${request.status === 'Pending' ? 
                                     `<button onclick="updateGuestRequestStatus(${request.id}, 'In Progress')" class="flex-1 bg-blue-500/20 text-blue-400 py-2.5 rounded-xl text-xs font-bold hover:bg-blue-500/40 transition">👨‍💼 Start Handling</button>` :
@@ -473,43 +756,18 @@
         // ==================== FILTRES ====================
         function filterStaffOrders(filter) {
             currentFilter = filter;
-            
-            const filters = ['all', 'Pending', 'Preparing', 'Ready', 'Delivered', 'Completed', 'In Progress'];
-            filters.forEach(f => {
-                const btn = document.getElementById(`filter${f.charAt(0).toUpperCase() + f.slice(1).replace(' ', '')}`);
-                if (btn) {
-                    if (f === filter) {
-                        btn.className = 'px-4 py-2 rounded-xl bg-[var(--text-gold)] text-stone-950 text-xs font-bold whitespace-nowrap transition';
-                    } else {
-                        btn.className = 'px-4 py-2 rounded-xl remal-card text-muted-custom text-xs font-bold whitespace-nowrap transition';
-                    }
-                }
-            });
-            
             renderStaffOrders();
         }
 
         // ==================== MISE À JOUR DES STATUTS ====================
         async function updateFoodOrderStatus(orderId, newStatus) {
-            const { error } = await supabaseClient
-                .from('food_orders')
-                .update({ status: newStatus })
-                .eq('id', orderId);
-            if (!error) {
-                showToast(`Order #${orderId} → ${newStatus}`, 'success');
-                fetchAllData();
-            }
+            const { error } = await supabaseClient.from('food_orders').update({ status: newStatus }).eq('id', orderId);
+            if (!error) { showToast(`Order #${orderId} → ${newStatus}`, 'success'); fetchAllData(); }
         }
 
         async function updateGuestRequestStatus(requestId, newStatus) {
-            const { error } = await supabaseClient
-                .from('guest_requests')
-                .update({ status: newStatus })
-                .eq('id', requestId);
-            if (!error) {
-                showToast(`Request #${requestId} → ${newStatus}`, 'success');
-                fetchAllData();
-            }
+            const { error } = await supabaseClient.from('guest_requests').update({ status: newStatus }).eq('id', requestId);
+            if (!error) { showToast(`Request #${requestId} → ${newStatus}`, 'success'); fetchAllData(); }
         }
 
         // ==================== SUPPRESSION ====================
@@ -568,6 +826,7 @@
             
             initTheme();
             fetchAllData();
+            fetchOffers();
             setupRealtime();
         });
     </script>
