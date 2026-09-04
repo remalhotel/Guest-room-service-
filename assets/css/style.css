@@ -13,10 +13,9 @@
     --card-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.8);
     --lock-screen-bg: linear-gradient(135deg, #0a0908 0%, #1a1714 50%, #0a0908 100%);
     
-    /* Bannière REMAL */
+    /* Image de fond de la bannière */
     --banner-img: url('../images/remal-hotel-night.jpg');
-    --banner-overlay: linear-gradient(to top, rgba(22, 20, 18, 0.95) 0%, rgba(22, 20, 18, 0.5) 60%, rgba(22, 20, 18, 0.3) 100%);
-    --banner-img-opacity: 0.6;
+    --banner-overlay: linear-gradient(to top, rgba(22, 20, 18, 0.95) 0%, rgba(22, 20, 18, 0.4) 50%, rgba(22, 20, 18, 0.6) 100%);
 }
 
 /* Mode clair */
@@ -34,10 +33,9 @@
     --card-shadow: 0 25px 50px -12px rgba(180, 122, 62, 0.12);
     --lock-screen-bg: linear-gradient(135deg, #f6f4f0 0%, #e8e4de 50%, #f6f4f0 100%);
     
-    /* Bannière REMAL */
+    /* Image de fond de la bannière */
     --banner-img: url('../images/remal-hotel-day.jpg');
-    --banner-overlay: linear-gradient(to top, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.5) 60%, rgba(255, 255, 255, 0.3) 100%);
-    --banner-img-opacity: 0.7;
+    --banner-overlay: linear-gradient(to top, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.4) 50%, rgba(255, 255, 255, 0.6) 100%);
 }
 
 * {
@@ -111,139 +109,6 @@ body {
 
 .animate-fade-in { 
     animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
-}
-
-@keyframes pulse-red { 
-    0%, 100% { opacity: 1; } 
-    50% { opacity: 0.6; } 
-}
-
-.pulse-notification { 
-    animation: pulse-red 1.5s infinite; 
-}
-
-/* ==================== BANNIÈRE REMAL AVEC IMAGE ==================== */
-.remal-banner {
-    position: relative;
-    text-align: center;
-    border: 1px solid var(--border-gold-strong);
-    padding: 25px 20px;
-    border-radius: 1rem;
-    overflow: hidden;
-    transition: all 0.6s ease;
-    min-height: 150px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-/* Image de fond de la bannière */
-.remal-banner::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: var(--banner-img);
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    opacity: var(--banner-img-opacity);
-    z-index: 1;
-    transition: all 0.6s ease;
-}
-
-/* Overlay pour assombrir/éclaircir l'image */
-.remal-banner::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: var(--banner-overlay);
-    z-index: 2;
-    transition: all 0.6s ease;
-}
-
-/* Contenu de la bannière au-dessus de l'overlay */
-.remal-banner > * {
-    position: relative;
-    z-index: 3;
-}
-
-/* Texte REMAL dans la bannière */
-.remal-banner h1 {
-    font-family: 'Cinzel', serif;
-    font-size: 28px;
-    font-weight: bold;
-    background: var(--gold-gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    letter-spacing: 0.25em;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-    margin-bottom: 5px;
-}
-
-.remal-banner .hotel-subtitle {
-    font-size: 10px;
-    color: var(--text-main);
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
-    font-weight: bold;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
-}
-
-.remal-banner .badge {
-    display: inline-block;
-    font-size: 9px;
-    background: var(--bg-card);
-    color: var(--text-gold);
-    border: 1px solid var(--border-gold-strong);
-    font-weight: 800;
-    padding: 5px 15px;
-    border-radius: 9999px;
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
-    margin-top: 10px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-}
-
-/* ==================== BOUTON THÈME ==================== */
-.theme-toggle-btn {
-    background: var(--bg-card-hover);
-    color: var(--text-gold);
-    border: 2px solid var(--border-gold-strong);
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    position: relative;
-}
-
-.theme-toggle-btn:hover {
-    transform: scale(1.1) rotate(15deg);
-    border-color: var(--text-gold);
-    box-shadow: 0 6px 20px rgba(220, 167, 115, 0.4);
-}
-
-.theme-toggle-btn:active {
-    transform: scale(0.95);
-}
-
-.theme-toggle-btn i {
-    font-size: 18px;
-    transition: all 0.3s ease;
 }
 
 /* Badges de statut */
@@ -320,4 +185,29 @@ body {
     border: 1px solid var(--border-gold-strong);
     box-shadow: var(--card-shadow);
     transition: all 0.4s ease;
+}
+
+/* Bouton de basculement de thème */
+.theme-toggle-btn {
+    background: var(--bg-card-hover);
+    color: var(--text-gold);
+    border: 2px solid var(--border-gold-strong);
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.theme-toggle-btn:hover {
+    transform: scale(1.05);
+    border-color: var(--text-gold);
+}
+
+.theme-toggle-btn i {
+    font-size: 16px;
 }
