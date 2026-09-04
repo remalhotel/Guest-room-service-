@@ -56,35 +56,33 @@
         .featured-offer img { width: 100%; height: 180px; object-fit: cover; }
         .featured-offer-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 50%, transparent 100%); padding: 20px 15px 15px; }
         
-        /* Sélecteur de langue */
-        .lang-btn {
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        .lang-btn.active {
-            background: var(--text-gold);
-            color: #1c1917;
-            font-weight: 900;
-        }
-        .lang-btn:not(.active) {
-            background: var(--bg-card-hover);
-            color: var(--text-muted);
-            border: 1px solid var(--border-gold);
-        }
-        .lang-btn:not(.active):hover {
-            color: var(--text-gold);
-        }
+        /* Boutons de langue compacts pour la barre supérieure */
+        .lang-btn { transition: all 0.3s ease; cursor: pointer; font-size: 9px; padding: 4px 8px; border-radius: 8px; font-weight: 800; letter-spacing: 0.05em; }
+        .lang-btn.active { background: var(--text-gold); color: #1c1917; box-shadow: 0 2px 10px rgba(220, 167, 115, 0.4); }
+        .lang-btn:not(.active) { background: var(--bg-card-hover); color: var(--text-muted); border: 1px solid var(--border-gold); }
+        .lang-btn:not(.active):hover { color: var(--text-gold); border-color: var(--text-gold); }
+        
+        /* Barre supérieure fixe avec langues à gauche et thème à droite */
+        .top-bar { position: fixed; top: 0; left: 0; right: 0; z-index: 50; display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: var(--bg-card); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-bottom: 1px solid var(--border-gold-strong); }
     </style>
 </head>
 <body class="min-h-screen lock-screen">
 
-    <!-- ==================== ÉCRAN 1 : IDENTIFICATION ==================== -->
-    <div id="lockScreen" class="min-h-screen flex items-center justify-center p-4 relative">
-        
-        <button onclick="toggleTheme()" id="themeToggleLock" class="theme-toggle-btn fixed top-4 right-4 z-50">
-            <i class="fas fa-sun text-sm" id="themeIconLock"></i>
+    <!-- ==================== BARRE SUPÉRIEURE FIXE (Langues à gauche + Thème à droite) ==================== -->
+    <div class="top-bar">
+        <div class="flex items-center gap-1">
+            <button onclick="setLanguage('en')" id="langEnTop" class="lang-btn active">EN</button>
+            <button onclick="setLanguage('fr')" id="langFrTop" class="lang-btn">FR</button>
+            <button onclick="setLanguage('ar')" id="langArTop" class="lang-btn">عربي</button>
+            <button onclick="setLanguage('hi')" id="langHiTop" class="lang-btn">हिन्दी</button>
+        </div>
+        <button onclick="toggleTheme()" id="themeToggleTop" class="theme-toggle-btn" title="Toggle Dark/Light Mode">
+            <i class="fas fa-sun text-sm" id="themeIconTop"></i>
         </button>
-        
+    </div>
+
+    <!-- ==================== ÉCRAN 1 : IDENTIFICATION ==================== -->
+    <div id="lockScreen" class="min-h-screen flex items-center justify-center p-4 pt-16">
         <div class="w-full max-w-md lock-card p-8 rounded-[2rem] space-y-6">
             
             <div class="remal-banner text-center space-y-2 rounded-2xl p-6 border border-[var(--border-gold-strong)]">
@@ -101,7 +99,7 @@
             </div>
 
             <div class="text-center space-y-1">
-                <h2 class="text-sm font-bold text-[var(--text-main)]" id="greetingText" data-i18n="welcomeTitle">Welcome to Guest Hub</h2>
+                <h2 class="text-sm font-bold text-[var(--text-main)]" data-i18n="welcomeTitle">Welcome to Guest Hub</h2>
                 <p class="text-[10px] text-muted-custom" data-i18n="verifyPrompt">Please verify your identity to access all services</p>
             </div>
 
@@ -138,23 +136,11 @@
                     <i class="fas fa-unlock"></i> <span data-i18n="verifyAccess">Verify & Access</span>
                 </button>
             </div>
-
-            <!-- Sélecteur de langue -->
-            <div class="flex justify-center gap-2 pt-2">
-                <button onclick="setLanguage('en')" id="langEn" class="lang-btn active text-[10px] px-3 py-1.5 rounded-full font-bold transition">EN</button>
-                <button onclick="setLanguage('fr')" id="langFr" class="lang-btn text-[10px] px-3 py-1.5 rounded-full font-bold transition">FR</button>
-                <button onclick="setLanguage('ar')" id="langAr" class="lang-btn text-[10px] px-3 py-1.5 rounded-full font-bold transition">عربي</button>
-                <button onclick="setLanguage('hi')" id="langHi" class="lang-btn text-[10px] px-3 py-1.5 rounded-full font-bold transition">हिन्दी</button>
-            </div>
         </div>
     </div>
 
     <!-- ==================== ÉCRAN 2 : GUEST HUB PRINCIPAL ==================== -->
-    <div id="mainScreen" class="hidden min-h-screen p-3 sm:p-6 pb-24 relative">
-        
-        <button onclick="toggleTheme()" id="themeToggleMain" class="theme-toggle-btn fixed top-4 right-4 z-50">
-            <i class="fas fa-sun text-sm" id="themeIconMain"></i>
-        </button>
+    <div id="mainScreen" class="hidden min-h-screen p-3 sm:p-6 pb-24 pt-16 relative">
         
         <a href="tel:+971526966865" class="fixed bottom-4 right-4 z-50 bg-emerald-600 hover:bg-emerald-700 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-2xl transition hover:scale-110">
             <i class="fas fa-phone-alt text-lg"></i>
@@ -197,14 +183,6 @@
                 <button onclick="changerDeChambre()" class="w-full text-center text-[10px] text-muted-custom hover:text-[var(--text-gold)] font-bold uppercase tracking-wider transition">
                     <i class="fas fa-sign-out-alt mr-1"></i> <span data-i18n="logout">Change Room / Logout</span>
                 </button>
-            </div>
-
-            <!-- Sélecteur de langue (main screen) -->
-            <div class="flex justify-center gap-2">
-                <button onclick="setLanguage('en')" id="langEnMain" class="lang-btn active text-[10px] px-3 py-1.5 rounded-full font-bold transition">EN</button>
-                <button onclick="setLanguage('fr')" id="langFrMain" class="lang-btn text-[10px] px-3 py-1.5 rounded-full font-bold transition">FR</button>
-                <button onclick="setLanguage('ar')" id="langArMain" class="lang-btn text-[10px] px-3 py-1.5 rounded-full font-bold transition">عربي</button>
-                <button onclick="setLanguage('hi')" id="langHiMain" class="lang-btn text-[10px] px-3 py-1.5 rounded-full font-bold transition">हिन्दी</button>
             </div>
 
             <!-- ONGLETS -->
@@ -312,7 +290,6 @@
                         <i class="fas fa-arrow-left mr-1"></i> <span data-i18n="backToServices">Back to Services</span>
                     </button>
 
-                    <!-- Suivi de commande -->
                     <div id="orderTrackingSection" class="hidden p-4 bg-[var(--bg-card-hover)] border border-[var(--border-gold-strong)] rounded-2xl space-y-3">
                         <div class="flex justify-between items-center">
                             <span class="text-[10px] font-bold text-[var(--text-gold)] uppercase tracking-wider">
@@ -472,317 +449,62 @@
         let currentService = null;
         let currentTab = 'services';
         let currentOffers = [];
-        let currentLanguage = localStorage.getItem('remal_language') || 'en';
         let trackingTimeout = null;
 
+        // ==================== DÉTECTION AUTOMATIQUE DE LA LANGUE ====================
+        function detectPhoneLanguage() {
+            const savedLang = localStorage.getItem('remal_language');
+            if (savedLang) return savedLang;
+            const browserLang = (navigator.language || navigator.userLanguage || 'en').split('-')[0].toLowerCase();
+            if (browserLang === 'fr') return 'fr';
+            if (browserLang === 'ar') return 'ar';
+            if (browserLang === 'hi') return 'hi';
+            return 'en';
+        }
+
+        let currentLanguage = detectPhoneLanguage();
         const SALUTATIONS_REGEX = /\b(mr|mrs|ms|miss|mme|mlle|dr|prof|eng|sir|madam|lady|lord|sheikh|sheikha)\.?\b/gi;
 
         // ==================== TRADUCTIONS ====================
         const TRANSLATIONS = {
-            en: {
-                hotelName: 'Remal Hotel & Villas',
-                hotelLocation: 'Remal Hotel & Villas • Al Dhannah City',
-                guestId: '🔒 Guest Identification',
-                welcomeTitle: 'Welcome to Guest Hub',
-                verifyPrompt: 'Please verify your identity to access all services',
-                roomNumber: 'Room Number',
-                yourName: 'Your Name',
-                nameHint: 'Enter any name on your reservation',
-                verifying: 'Verifying with hotel records...',
-                notFound: 'Room number or name not found. Please try again.',
-                verifyAccess: 'Verify & Access',
-                services: 'Services',
-                offers: 'Offers',
-                faq: 'FAQ',
-                selectService: 'Select a Service',
-                roomService: 'Room Service / Order Food',
-                roomServiceDesc: 'In-room dining & beverages',
-                tableReservation: 'Table Reservation',
-                tableReservationDesc: 'Restaurant & lounge booking',
-                wakeupCall: 'Wake-up Call / Alarm',
-                wakeupCallDesc: 'Morning wake-up service',
-                lateCheckout: 'Late Check-out / Extension',
-                lateCheckoutDesc: 'Extend your stay',
-                housekeeping: 'Housekeeping / Room Cleaning',
-                housekeepingDesc: 'Room cleaning service',
-                frontDesk: 'Front Desk Inquiry',
-                frontDeskDesc: 'General assistance',
-                luggage: 'Luggage Assistance',
-                luggageDesc: 'Baggage handling',
-                maintenance: 'Maintenance / Technical Support',
-                maintenanceDesc: 'Repairs & technical help',
-                backToServices: 'Back to Services',
-                orderTracking: 'Order Tracking',
-                received: 'Received',
-                preparing: 'Preparing',
-                ready: 'Ready',
-                delivered: 'Delivered',
-                mealPeriod: 'Meal Period',
-                browseMenu: 'Browse Menu',
-                specialInstructions: 'Special Instructions / Allergies',
-                deliveryTime: 'Delivery Time',
-                directOrder: 'Direct Order to Kitchen',
-                whatsappOrder: 'Send via WhatsApp',
-                additionalNotes: 'Additional Notes',
-                submitRequest: 'Submit Request',
-                exclusiveOffers: 'Exclusive Offers',
-                faqTitle: 'Frequently Asked Questions',
-                restaurantMenu: 'Restaurant Menu',
-                total: 'Total:',
-                confirmSelection: 'Confirm Selection',
-                room: 'Room:',
-                roomType: 'Room Type:',
-                departure: 'Departure:',
-                logout: 'Change Room / Logout',
-                orderReceived: 'Order Received',
-                beingPrepared: 'Being Prepared',
-                readyForDelivery: 'Ready for Delivery',
-                orderDelivered: 'Delivered',
-                noOffers: 'No offers available at the moment',
-                featured: 'Featured'
-            },
-            fr: {
-                hotelName: 'Remal Hotel & Villas',
-                hotelLocation: 'Remal Hotel & Villas • Al Dhannah City',
-                guestId: '🔒 Identification Client',
-                welcomeTitle: 'Bienvenue au Guest Hub',
-                verifyPrompt: 'Veuillez vérifier votre identité pour accéder aux services',
-                roomNumber: 'Numéro de chambre',
-                yourName: 'Votre nom',
-                nameHint: 'Entrez un nom de votre réservation',
-                verifying: 'Vérification avec les dossiers de l\'hôtel...',
-                notFound: 'Numéro de chambre ou nom introuvable. Veuillez réessayer.',
-                verifyAccess: 'Vérifier & Accéder',
-                services: 'Services',
-                offers: 'Offres',
-                faq: 'FAQ',
-                selectService: 'Sélectionnez un service',
-                roomService: 'Service de chambre / Commander',
-                roomServiceDesc: 'Restauration en chambre',
-                tableReservation: 'Réservation de table',
-                tableReservationDesc: 'Réservation restaurant & lounge',
-                wakeupCall: 'Réveil / Alarme',
-                wakeupCallDesc: 'Service de réveil matinal',
-                lateCheckout: 'Départ tardif / Extension',
-                lateCheckoutDesc: 'Prolongez votre séjour',
-                housekeeping: 'Ménage / Nettoyage',
-                housekeepingDesc: 'Service de nettoyage',
-                frontDesk: 'Réception',
-                frontDeskDesc: 'Assistance générale',
-                luggage: 'Aide bagages',
-                luggageDesc: 'Manutention des bagages',
-                maintenance: 'Maintenance / Support technique',
-                maintenanceDesc: 'Réparations & aide technique',
-                backToServices: 'Retour aux services',
-                orderTracking: 'Suivi de commande',
-                received: 'Reçue',
-                preparing: 'En préparation',
-                ready: 'Prête',
-                delivered: 'Livrée',
-                mealPeriod: 'Période de repas',
-                browseMenu: 'Parcourir le menu',
-                specialInstructions: 'Instructions spéciales / Allergies',
-                deliveryTime: 'Heure de livraison',
-                directOrder: 'Commande directe',
-                whatsappOrder: 'Envoyer via WhatsApp',
-                additionalNotes: 'Notes supplémentaires',
-                submitRequest: 'Envoyer la demande',
-                exclusiveOffers: 'Offres exclusives',
-                faqTitle: 'Questions fréquentes',
-                restaurantMenu: 'Menu du restaurant',
-                total: 'Total :',
-                confirmSelection: 'Confirmer la sélection',
-                room: 'Chambre :',
-                roomType: 'Type de chambre :',
-                departure: 'Départ :',
-                logout: 'Changer de chambre',
-                orderReceived: 'Commande reçue',
-                beingPrepared: 'En préparation',
-                readyForDelivery: 'Prête pour livraison',
-                orderDelivered: 'Livrée',
-                noOffers: 'Aucune offre disponible',
-                featured: 'En vedette'
-            },
-            ar: {
-                hotelName: 'فندق وفلل رمال',
-                hotelLocation: 'فندق وفلل رمال • مدينة الظنة',
-                guestId: '🔒 تعريف النزيل',
-                welcomeTitle: 'مرحباً بكم في Guest Hub',
-                verifyPrompt: 'يرجى التحقق من هويتك للوصول إلى الخدمات',
-                roomNumber: 'رقم الغرفة',
-                yourName: 'اسمك',
-                nameHint: 'أدخل أي اسم من حجزك',
-                verifying: 'جارٍ التحقق من سجلات الفندق...',
-                notFound: 'رقم الغرفة أو الاسم غير موجود',
-                verifyAccess: 'تحقق وادخل',
-                services: 'الخدمات',
-                offers: 'العروض',
-                faq: 'الأسئلة',
-                selectService: 'اختر خدمة',
-                roomService: 'خدمة الغرف / طلب طعام',
-                roomServiceDesc: 'تناول الطعام في الغرفة',
-                tableReservation: 'حجز طاولة',
-                tableReservationDesc: 'حجز المطعم والصالة',
-                wakeupCall: 'خدمة الإيقاظ',
-                wakeupCallDesc: 'خدمة الاستيقاظ الصباحي',
-                lateCheckout: 'مغادرة متأخرة / تمديد',
-                lateCheckoutDesc: 'تمديد إقامتك',
-                housekeeping: 'التنظيف / خدمة الغرف',
-                housekeepingDesc: 'خدمة تنظيف الغرف',
-                frontDesk: 'الاستفسار من الاستقبال',
-                frontDeskDesc: 'مساعدة عامة',
-                luggage: 'مساعدة الأمتعة',
-                luggageDesc: 'معالجة الأمتعة',
-                maintenance: 'الصيانة / الدعم الفني',
-                maintenanceDesc: 'إصلاحات ومساعدة فنية',
-                backToServices: 'العودة إلى الخدمات',
-                orderTracking: 'تتبع الطلب',
-                received: 'تم الاستلام',
-                preparing: 'قيد التحضير',
-                ready: 'جاهز',
-                delivered: 'تم التسليم',
-                mealPeriod: 'فترة الوجبة',
-                browseMenu: 'تصفح القائمة',
-                specialInstructions: 'تعليمات خاصة / حساسية',
-                deliveryTime: 'وقت التسليم',
-                directOrder: 'طلب مباشر للمطبخ',
-                whatsappOrder: 'إرسال عبر واتساب',
-                additionalNotes: 'ملاحظات إضافية',
-                submitRequest: 'إرسال الطلب',
-                exclusiveOffers: 'عروض حصرية',
-                faqTitle: 'الأسئلة الشائعة',
-                restaurantMenu: 'قائمة المطعم',
-                total: 'المجموع:',
-                confirmSelection: 'تأكيد الاختيار',
-                room: 'الغرفة:',
-                roomType: 'نوع الغرفة:',
-                departure: 'المغادرة:',
-                logout: 'تغيير الغرفة',
-                orderReceived: 'تم استلام الطلب',
-                beingPrepared: 'قيد التحضير',
-                readyForDelivery: 'جاهز للتسليم',
-                orderDelivered: 'تم التسليم',
-                noOffers: 'لا توجد عروض متاحة',
-                featured: 'مميز'
-            },
-            hi: {
-                hotelName: 'रेमल होटल और विला',
-                hotelLocation: 'रेमल होटल और विला • अल धन्ना सिटी',
-                guestId: '🔒 अतिथि पहचान',
-                welcomeTitle: 'गेस्ट हब में आपका स्वागत है',
-                verifyPrompt: 'सेवाओं तक पहुंचने के लिए कृपया अपनी पहचान सत्यापित करें',
-                roomNumber: 'कमरा संख्या',
-                yourName: 'आपका नाम',
-                nameHint: 'अपने आरक्षण से कोई भी नाम दर्ज करें',
-                verifying: 'होटल रिकॉर्ड से सत्यापित किया जा रहा है...',
-                notFound: 'कमरा संख्या या नाम नहीं मिला',
-                verifyAccess: 'सत्यापित करें और प्रवेश करें',
-                services: 'सेवाएं',
-                offers: 'ऑफ़र',
-                faq: 'प्रश्न',
-                selectService: 'एक सेवा चुनें',
-                roomService: 'रूम सर्विस / खाना ऑर्डर',
-                roomServiceDesc: 'कमरे में भोजन',
-                tableReservation: 'टेबल आरक्षण',
-                tableReservationDesc: 'रेस्तरां बुकिंग',
-                wakeupCall: 'वेक-अप कॉल',
-                wakeupCallDesc: 'सुबह जगाने की सेवा',
-                lateCheckout: 'लेट चेक-आउट',
-                lateCheckoutDesc: 'अपने प्रवास को बढ़ाएं',
-                housekeeping: 'हाउसकीपिंग',
-                housekeepingDesc: 'कमरे की सफाई',
-                frontDesk: 'फ्रंट डेस्क',
-                frontDeskDesc: 'सामान्य सहायता',
-                luggage: 'सामान सहायता',
-                luggageDesc: 'सामान संभालना',
-                maintenance: 'रखरखाव / तकनीकी सहायता',
-                maintenanceDesc: 'मरम्मत और तकनीकी मदद',
-                backToServices: 'सेवाओं पर वापस',
-                orderTracking: 'ऑर्डर ट्रैकिंग',
-                received: 'प्राप्त हुआ',
-                preparing: 'तैयार हो रहा है',
-                ready: 'तैयार',
-                delivered: 'वितरित',
-                mealPeriod: 'भोजन अवधि',
-                browseMenu: 'मेनू ब्राउज़ करें',
-                specialInstructions: 'विशेष निर्देश / एलर्जी',
-                deliveryTime: 'डिलीवरी का समय',
-                directOrder: 'सीधे रसोई में ऑर्डर',
-                whatsappOrder: 'व्हाट्सएप से भेजें',
-                additionalNotes: 'अतिरिक्त नोट्स',
-                submitRequest: 'अनुरोध भेजें',
-                exclusiveOffers: 'विशेष ऑफ़र',
-                faqTitle: 'अक्सर पूछे जाने वाले प्रश्न',
-                restaurantMenu: 'रेस्तरां मेनू',
-                total: 'कुल:',
-                confirmSelection: 'चयन की पुष्टि करें',
-                room: 'कमरा:',
-                roomType: 'कमरे का प्रकार:',
-                departure: 'प्रस्थान:',
-                logout: 'कमरा बदलें',
-                orderReceived: 'ऑर्डर प्राप्त हुआ',
-                beingPrepared: 'तैयार हो रहा है',
-                readyForDelivery: 'डिलीवरी के लिए तैयार',
-                orderDelivered: 'वितरित',
-                noOffers: 'कोई ऑफ़र उपलब्ध नहीं',
-                featured: 'विशेष'
-            }
+            en: { hotelName: 'Remal Hotel & Villas', hotelLocation: 'Remal Hotel & Villas • Al Dhannah City', guestId: '🔒 Guest Identification', welcomeTitle: 'Welcome to Guest Hub', verifyPrompt: 'Please verify your identity to access all services', roomNumber: 'Room Number', yourName: 'Your Name', nameHint: 'Enter any name on your reservation', verifying: 'Verifying with hotel records...', notFound: 'Room number or name not found. Please try again.', verifyAccess: 'Verify & Access', services: 'Services', offers: 'Offers', faq: 'FAQ', selectService: 'Select a Service', roomService: 'Room Service / Order Food', roomServiceDesc: 'In-room dining & beverages', tableReservation: 'Table Reservation', tableReservationDesc: 'Restaurant & lounge booking', wakeupCall: 'Wake-up Call / Alarm', wakeupCallDesc: 'Morning wake-up service', lateCheckout: 'Late Check-out / Extension', lateCheckoutDesc: 'Extend your stay', housekeeping: 'Housekeeping / Room Cleaning', housekeepingDesc: 'Room cleaning service', frontDesk: 'Front Desk Inquiry', frontDeskDesc: 'General assistance', luggage: 'Luggage Assistance', luggageDesc: 'Baggage handling', maintenance: 'Maintenance / Technical Support', maintenanceDesc: 'Repairs & technical help', backToServices: 'Back to Services', orderTracking: 'Order Tracking', received: 'Received', preparing: 'Preparing', ready: 'Ready', delivered: 'Delivered', mealPeriod: 'Meal Period', browseMenu: 'Browse Menu', specialInstructions: 'Special Instructions / Allergies', deliveryTime: 'Delivery Time', directOrder: 'Direct Order to Kitchen', whatsappOrder: 'Send via WhatsApp', additionalNotes: 'Additional Notes', submitRequest: 'Submit Request', exclusiveOffers: 'Exclusive Offers', faqTitle: 'Frequently Asked Questions', restaurantMenu: 'Restaurant Menu', total: 'Total:', confirmSelection: 'Confirm Selection', room: 'Room:', roomType: 'Room Type:', departure: 'Departure:', logout: 'Change Room / Logout', orderReceived: 'Order Received', beingPrepared: 'Being Prepared', readyForDelivery: 'Ready for Delivery', orderDelivered: 'Delivered', noOffers: 'No offers available at the moment', featured: 'Featured' },
+            fr: { hotelName: 'Remal Hotel & Villas', hotelLocation: 'Remal Hotel & Villas • Al Dhannah City', guestId: '🔒 Identification Client', welcomeTitle: 'Bienvenue au Guest Hub', verifyPrompt: 'Veuillez vérifier votre identité pour accéder aux services', roomNumber: 'Numéro de chambre', yourName: 'Votre nom', nameHint: 'Entrez un nom de votre réservation', verifying: 'Vérification avec les dossiers de l\'hôtel...', notFound: 'Numéro de chambre ou nom introuvable. Veuillez réessayer.', verifyAccess: 'Vérifier & Accéder', services: 'Services', offers: 'Offres', faq: 'FAQ', selectService: 'Sélectionnez un service', roomService: 'Service de chambre / Commander', roomServiceDesc: 'Restauration en chambre', tableReservation: 'Réservation de table', tableReservationDesc: 'Réservation restaurant & lounge', wakeupCall: 'Réveil / Alarme', wakeupCallDesc: 'Service de réveil matinal', lateCheckout: 'Départ tardif / Extension', lateCheckoutDesc: 'Prolongez votre séjour', housekeeping: 'Ménage / Nettoyage', housekeepingDesc: 'Service de nettoyage', frontDesk: 'Réception', frontDeskDesc: 'Assistance générale', luggage: 'Aide bagages', luggageDesc: 'Manutention des bagages', maintenance: 'Maintenance / Support technique', maintenanceDesc: 'Réparations & aide technique', backToServices: 'Retour aux services', orderTracking: 'Suivi de commande', received: 'Reçue', preparing: 'En préparation', ready: 'Prête', delivered: 'Livrée', mealPeriod: 'Période de repas', browseMenu: 'Parcourir le menu', specialInstructions: 'Instructions spéciales / Allergies', deliveryTime: 'Heure de livraison', directOrder: 'Commande directe', whatsappOrder: 'Envoyer via WhatsApp', additionalNotes: 'Notes supplémentaires', submitRequest: 'Envoyer la demande', exclusiveOffers: 'Offres exclusives', faqTitle: 'Questions fréquentes', restaurantMenu: 'Menu du restaurant', total: 'Total :', confirmSelection: 'Confirmer la sélection', room: 'Chambre :', roomType: 'Type de chambre :', departure: 'Départ :', logout: 'Changer de chambre', orderReceived: 'Commande reçue', beingPrepared: 'En préparation', readyForDelivery: 'Prête pour livraison', orderDelivered: 'Livrée', noOffers: 'Aucune offre disponible', featured: 'En vedette' },
+            ar: { hotelName: 'فندق وفلل رمال', hotelLocation: 'فندق وفلل رمال • مدينة الظنة', guestId: '🔒 تعريف النزيل', welcomeTitle: 'مرحباً بكم في Guest Hub', verifyPrompt: 'يرجى التحقق من هويتك للوصول إلى الخدمات', roomNumber: 'رقم الغرفة', yourName: 'اسمك', nameHint: 'أدخل أي اسم من حجزك', verifying: 'جارٍ التحقق من سجلات الفندق...', notFound: 'رقم الغرفة أو الاسم غير موجود', verifyAccess: 'تحقق وادخل', services: 'الخدمات', offers: 'العروض', faq: 'الأسئلة', selectService: 'اختر خدمة', roomService: 'خدمة الغرف / طلب طعام', roomServiceDesc: 'تناول الطعام في الغرفة', tableReservation: 'حجز طاولة', tableReservationDesc: 'حجز المطعم والصالة', wakeupCall: 'خدمة الإيقاظ', wakeupCallDesc: 'خدمة الاستيقاظ الصباحي', lateCheckout: 'مغادرة متأخرة / تمديد', lateCheckoutDesc: 'تمديد إقامتك', housekeeping: 'التنظيف / خدمة الغرف', housekeepingDesc: 'خدمة تنظيف الغرف', frontDesk: 'الاستفسار من الاستقبال', frontDeskDesc: 'مساعدة عامة', luggage: 'مساعدة الأمتعة', luggageDesc: 'معالجة الأمتعة', maintenance: 'الصيانة / الدعم الفني', maintenanceDesc: 'إصلاحات ومساعدة فنية', backToServices: 'العودة إلى الخدمات', orderTracking: 'تتبع الطلب', received: 'تم الاستلام', preparing: 'قيد التحضير', ready: 'جاهز', delivered: 'تم التسليم', mealPeriod: 'فترة الوجبة', browseMenu: 'تصفح القائمة', specialInstructions: 'تعليمات خاصة / حساسية', deliveryTime: 'وقت التسليم', directOrder: 'طلب مباشر للمطبخ', whatsappOrder: 'إرسال عبر واتساب', additionalNotes: 'ملاحظات إضافية', submitRequest: 'إرسال الطلب', exclusiveOffers: 'عروض حصرية', faqTitle: 'الأسئلة الشائعة', restaurantMenu: 'قائمة المطعم', total: 'المجموع:', confirmSelection: 'تأكيد الاختيار', room: 'الغرفة:', roomType: 'نوع الغرفة:', departure: 'المغادرة:', logout: 'تغيير الغرفة', orderReceived: 'تم استلام الطلب', beingPrepared: 'قيد التحضير', readyForDelivery: 'جاهز للتسليم', orderDelivered: 'تم التسليم', noOffers: 'لا توجد عروض متاحة', featured: 'مميز' },
+            hi: { hotelName: 'रेमल होटल और विला', hotelLocation: 'रेमल होटल और विला • अल धन्ना सिटी', guestId: '🔒 अतिथि पहचान', welcomeTitle: 'गेस्ट हब में आपका स्वागत है', verifyPrompt: 'सेवाओं तक पहुंचने के लिए कृपया अपनी पहचान सत्यापित करें', roomNumber: 'कमरा संख्या', yourName: 'आपका नाम', nameHint: 'अपने आरक्षण से कोई भी नाम दर्ज करें', verifying: 'होटल रिकॉर्ड से सत्यापित किया जा रहा है...', notFound: 'कमरा संख्या या नाम नहीं मिला', verifyAccess: 'सत्यापित करें और प्रवेश करें', services: 'सेवाएं', offers: 'ऑफ़र', faq: 'प्रश्न', selectService: 'एक सेवा चुनें', roomService: 'रूम सर्विस / खाना ऑर्डर', roomServiceDesc: 'कमरे में भोजन', tableReservation: 'टेबल आरक्षण', tableReservationDesc: 'रेस्तरां बुकिंग', wakeupCall: 'वेक-अप कॉल', wakeupCallDesc: 'सुबह जगाने की सेवा', lateCheckout: 'लेट चेक-आउट', lateCheckoutDesc: 'अपने प्रवास को बढ़ाएं', housekeeping: 'हाउसकीपिंग', housekeepingDesc: 'कमरे की सफाई', frontDesk: 'फ्रंट डेस्क', frontDeskDesc: 'सामान्य सहायता', luggage: 'सामान सहायता', luggageDesc: 'सामान संभालना', maintenance: 'रखरखाव / तकनीकी सहायता', maintenanceDesc: 'मरम्मत और तकनीकी मदद', backToServices: 'सेवाओं पर वापस', orderTracking: 'ऑर्डर ट्रैकिंग', received: 'प्राप्त हुआ', preparing: 'तैयार हो रहा है', ready: 'तैयार', delivered: 'वितरित', mealPeriod: 'भोजन अवधि', browseMenu: 'मेनू ब्राउज़ करें', specialInstructions: 'विशेष निर्देश / एलर्जी', deliveryTime: 'डिलीवरी का समय', directOrder: 'सीधे रसोई में ऑर्डर', whatsappOrder: 'व्हाट्सएप से भेजें', additionalNotes: 'अतिरिक्त नोट्स', submitRequest: 'अनुरोध भेजें', exclusiveOffers: 'विशेष ऑफ़र', faqTitle: 'अक्सर पूछे जाने वाले प्रश्न', restaurantMenu: 'रेस्तरां मेनू', total: 'कुल:', confirmSelection: 'चयन की पुष्टि करें', room: 'कमरा:', roomType: 'कमरे का प्रकार:', departure: 'प्रस्थान:', logout: 'कमरा बदलें', orderReceived: 'ऑर्डर प्राप्त हुआ', beingPrepared: 'तैयार हो रहा है', readyForDelivery: 'डिलीवरी के लिए तैयार', orderDelivered: 'वितरित', noOffers: 'कोई ऑफ़र उपलब्ध नहीं', featured: 'विशेष' }
         };
 
         // ==================== FAQ DATA ====================
         const FAQ_DATA = {
-            en: [
-                { q: 'What is the Wi-Fi password?', a: 'Connect to "Remal_Guest" - no password required.' },
-                { q: 'What are the breakfast hours?', a: 'Daily at Falaj Restaurant from 06:30 AM to 11:00 AM.' },
-                { q: 'How do I request a late check-out?', a: 'Use the Services tab and select "Late Check-out".' },
-                { q: 'What are the pool timings?', a: 'Al Waha Pool is open from 07:00 AM to 08:00 PM.' }
-            ],
-            fr: [
-                { q: 'Quel est le mot de passe Wi-Fi ?', a: 'Connectez-vous à "Remal_Guest" - aucun mot de passe requis.' },
-                { q: 'Quels sont les horaires du petit-déjeuner ?', a: 'Tous les jours au restaurant Falaj de 06h30 à 11h00.' },
-                { q: 'Comment demander un départ tardif ?', a: 'Utilisez l\'onglet Services et sélectionnez "Départ tardif".' },
-                { q: 'Quels sont les horaires de la piscine ?', a: 'La piscine Al Waha est ouverte de 07h00 à 20h00.' }
-            ],
-            ar: [
-                { q: 'ما هي كلمة مرور الواي فاي؟', a: 'اتصل بشبكة "Remal_Guest" - بدون كلمة مرور.' },
-                { q: 'ما هي مواعيد الإفطار؟', a: 'يومياً في مطعم الفلج من 06:30 صباحاً حتى 11:00.' },
-                { q: 'كيف أطلب مغادرة متأخرة؟', a: 'استخدم تبويب الخدمات واختر "مغادرة متأخرة".' },
-                { q: 'ما هي مواعيد المسبح؟', a: 'مسبح الواحة مفتوح من 07:00 صباحاً حتى 08:00 مساءً.' }
-            ],
-            hi: [
-                { q: 'वाई-फाई पासवर्ड क्या है?', a: '"Remal_Guest" से कनेक्ट करें - कोई पासवर्ड नहीं।' },
-                { q: 'नाश्ते का समय क्या है?', a: 'फलज रेस्तरां में रोजाना सुबह 06:30 से 11:00 बजे तक।' },
-                { q: 'लेट चेक-आउट कैसे करें?', a: 'सेवाएं टैब में जाएं और "लेट चेक-आउट" चुनें।' },
-                { q: 'पूल का समय क्या है?', a: 'अल वाहा पूल सुबह 07:00 से रात 08:00 बजे तक खुला है।' }
-            ]
+            en: [{ q: 'What is the Wi-Fi password?', a: 'Connect to "Remal_Guest" - no password required.' }, { q: 'What are the breakfast hours?', a: 'Daily at Falaj Restaurant from 06:30 AM to 11:00 AM.' }, { q: 'How do I request a late check-out?', a: 'Use the Services tab and select "Late Check-out".' }, { q: 'What are the pool timings?', a: 'Al Waha Pool is open from 07:00 AM to 08:00 PM.' }],
+            fr: [{ q: 'Quel est le mot de passe Wi-Fi ?', a: 'Connectez-vous à "Remal_Guest" - aucun mot de passe requis.' }, { q: 'Quels sont les horaires du petit-déjeuner ?', a: 'Tous les jours au restaurant Falaj de 06h30 à 11h00.' }, { q: 'Comment demander un départ tardif ?', a: 'Utilisez l\'onglet Services et sélectionnez "Départ tardif".' }, { q: 'Quels sont les horaires de la piscine ?', a: 'La piscine Al Waha est ouverte de 07h00 à 20h00.' }],
+            ar: [{ q: 'ما هي كلمة مرور الواي فاي؟', a: 'اتصل بشبكة "Remal_Guest" - بدون كلمة مرور.' }, { q: 'ما هي مواعيد الإفطار؟', a: 'يومياً في مطعم الفلج من 06:30 صباحاً حتى 11:00.' }, { q: 'كيف أطلب مغادرة متأخرة؟', a: 'استخدم تبويب الخدمات واختر "مغادرة متأخرة".' }, { q: 'ما هي مواعيد المسبح؟', a: 'مسبح الواحة مفتوح من 07:00 صباحاً حتى 08:00 مساءً.' }],
+            hi: [{ q: 'वाई-फाई पासवर्ड क्या है?', a: '"Remal_Guest" से कनेक्ट करें - कोई पासवर्ड नहीं।' }, { q: 'नाश्ते का समय क्या है?', a: 'फलज रेस्तरां में रोजाना सुबह 06:30 से 11:00 बजे तक।' }, { q: 'लेट चेक-आउट कैसे करें?', a: 'सेवाएं टैब में जाएं और "लेट चेक-आउट" चुनें।' }, { q: 'पूल का समय क्या है?', a: 'अल वाहा पूल सुबह 07:00 से रात 08:00 बजे तक खुला है।' }]
+        };
+
+        // ==================== SERVICES DATA ====================
+        const SERVICES_DATA = {
+            table_reservation: { title: 'Table Reservation', subtitle: 'Book a table at our restaurants', icon: 'fa-calendar-check', fields: [{ type: 'select', id: 'reservation_venue', label: 'Venue', options: ['Falaj Restaurant', 'Sarab Bar & Lounge', 'Al Waha Pool Cabana'] }, { type: 'select', id: 'reservation_guests', label: 'Number of Guests', options: ['1 Person', '2 Persons', '3 Persons', '4 Persons', '5+ Persons'] }, { type: 'date', id: 'reservation_date', label: 'Date' }, { type: 'time', id: 'reservation_time', label: 'Preferred Time' }] },
+            wakeup_call: { title: 'Wake-up Call / Alarm Service', subtitle: 'Set your morning wake-up call', icon: 'fa-alarm-clock', fields: [{ type: 'time', id: 'wakeup_time', label: 'Alarm Time' }] },
+            late_checkout: { title: 'Late Check-out / Extension', subtitle: 'Request extended departure time', icon: 'fa-clock', fields: [{ type: 'select', id: 'checkout_time', label: 'Requested Departure Time', options: ['13:00 PM', '14:00 PM', '15:00 PM', '16:00 PM (Max)'] }] },
+            housekeeping: { title: 'Housekeeping / Room Cleaning', subtitle: 'Request room cleaning service', icon: 'fa-broom', fields: [{ type: 'select', id: 'cleaning_type', label: 'Service Type', options: ['Full Cleaning', 'Towel Change Only', 'Bed Linen Change', 'Turndown Service'] }, { type: 'select', id: 'cleaning_time', label: 'Preferred Time', options: ['Morning (8AM-12PM)', 'Afternoon (12PM-4PM)', 'Evening (4PM-8PM)'] }] },
+            front_desk: { title: 'Front Desk Inquiry', subtitle: 'General assistance & information', icon: 'fa-headset', fields: [{ type: 'select', id: 'inquiry_type', label: 'Inquiry Type', options: ['General Information', 'Billing Question', 'Complaint', 'Suggestion', 'Other'] }] },
+            luggage: { title: 'Luggage Assistance', subtitle: 'Baggage handling & storage', icon: 'fa-suitcase', fields: [{ type: 'select', id: 'luggage_type', label: 'Service Type', options: ['Collect from Room', 'Deliver to Room', 'Store Luggage', 'Transport to Lobby'] }, { type: 'number', id: 'luggage_count', label: 'Number of Bags' }] },
+            maintenance: { title: 'Maintenance / Technical Support', subtitle: 'Repairs & technical assistance', icon: 'fa-tools', fields: [{ type: 'select', id: 'maintenance_type', label: 'Issue Type', options: ['Air Conditioning', 'Plumbing', 'Electrical', 'TV / Internet', 'Lighting', 'Other'] }, { type: 'select', id: 'maintenance_urgency', label: 'Urgency', options: ['Low', 'Medium', 'High'] }] }
         };
 
         // ==================== FONCTIONS LANGUE ====================
         function setLanguage(lang) {
             currentLanguage = lang;
             localStorage.setItem('remal_language', lang);
-            
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
-                if (TRANSLATIONS[lang] && TRANSLATIONS[lang][key]) {
-                    el.innerText = TRANSLATIONS[lang][key];
-                }
+                if (TRANSLATIONS[lang] && TRANSLATIONS[lang][key]) el.innerText = TRANSLATIONS[lang][key];
             });
-            
             document.getElementById('htmlRoot').setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
-            
-            // Mettre à jour les boutons de langue
             ['en', 'fr', 'ar', 'hi'].forEach(l => {
-                const btn = document.getElementById(`lang${l.charAt(0).toUpperCase() + l.slice(1)}`);
-                const btnMain = document.getElementById(`lang${l.charAt(0).toUpperCase() + l.slice(1)}Main`);
-                if (btn) {
-                    if (l === lang) { btn.classList.add('active'); } else { btn.classList.remove('active'); }
-                }
-                if (btnMain) {
-                    if (l === lang) { btnMain.classList.add('active'); } else { btnMain.classList.remove('active'); }
-                }
+                const btn = document.getElementById(`lang${l.charAt(0).toUpperCase() + l.slice(1)}Top`);
+                if (btn) { if (l === lang) btn.classList.add('active'); else btn.classList.remove('active'); }
             });
-            
             renderFaqList();
             updateGreeting();
         }
@@ -795,202 +517,59 @@
                 ar: { text: greeting.text === 'Good Morning' ? 'صباح الخير' : greeting.text === 'Good Afternoon' ? 'مساء الخير' : 'مساء الخير', emoji: greeting.emoji },
                 hi: { text: greeting.text === 'Good Morning' ? 'सुप्रभात' : greeting.text === 'Good Afternoon' ? 'नमस्कार' : 'शुभ संध्या', emoji: greeting.emoji }
             };
-            
             const g = greetings[currentLanguage] || greetings.en;
             document.getElementById('greetingText').innerText = `${g.emoji} ${g.text} - ${TRANSLATIONS[currentLanguage].welcomeTitle}`;
-            
-            if (document.getElementById('greetingTime')) {
-                document.getElementById('greetingTime').innerText = `${g.emoji} ${g.text}`;
-            }
+            if (document.getElementById('greetingTime')) document.getElementById('greetingTime').innerText = `${g.emoji} ${g.text}`;
         }
 
         function renderFaqList() {
             const container = document.getElementById('faqContainer');
             const faqs = FAQ_DATA[currentLanguage] || FAQ_DATA.en;
-            
-            container.innerHTML = faqs.map(faq => `
-                <div class="p-3.5 bg-[var(--bg-card-hover)] border border-[var(--border-gold-strong)] rounded-2xl">
-                    <p class="text-[11px] font-bold text-[var(--text-gold)]">❓ ${faq.q}</p>
-                    <p class="text-[10px] text-muted-custom mt-1">${faq.a}</p>
-                </div>
-            `).join('');
+            container.innerHTML = faqs.map(faq => `<div class="p-3.5 bg-[var(--bg-card-hover)] border border-[var(--border-gold-strong)] rounded-2xl"><p class="text-[11px] font-bold text-[var(--text-gold)]">❓ ${faq.q}</p><p class="text-[10px] text-muted-custom mt-1">${faq.a}</p></div>`).join('');
         }
-
-        // ==================== SERVICES DATA ====================
-        const SERVICES_DATA = {
-            table_reservation: {
-                title: 'Table Reservation',
-                subtitle: 'Book a table at our restaurants',
-                icon: 'fa-calendar-check',
-                fields: [
-                    { type: 'select', id: 'reservation_venue', label: 'Venue', options: ['Falaj Restaurant', 'Sarab Bar & Lounge', 'Al Waha Pool Cabana'] },
-                    { type: 'select', id: 'reservation_guests', label: 'Number of Guests', options: ['1 Person', '2 Persons', '3 Persons', '4 Persons', '5+ Persons'] },
-                    { type: 'date', id: 'reservation_date', label: 'Date' },
-                    { type: 'time', id: 'reservation_time', label: 'Preferred Time' }
-                ]
-            },
-            wakeup_call: {
-                title: 'Wake-up Call / Alarm Service',
-                subtitle: 'Set your morning wake-up call',
-                icon: 'fa-alarm-clock',
-                fields: [{ type: 'time', id: 'wakeup_time', label: 'Alarm Time' }]
-            },
-            late_checkout: {
-                title: 'Late Check-out / Extension',
-                subtitle: 'Request extended departure time',
-                icon: 'fa-clock',
-                fields: [{ type: 'select', id: 'checkout_time', label: 'Requested Departure Time', options: ['13:00 PM', '14:00 PM', '15:00 PM', '16:00 PM (Max)'] }]
-            },
-            housekeeping: {
-                title: 'Housekeeping / Room Cleaning',
-                subtitle: 'Request room cleaning service',
-                icon: 'fa-broom',
-                fields: [
-                    { type: 'select', id: 'cleaning_type', label: 'Service Type', options: ['Full Cleaning', 'Towel Change Only', 'Bed Linen Change', 'Turndown Service'] },
-                    { type: 'select', id: 'cleaning_time', label: 'Preferred Time', options: ['Morning (8AM-12PM)', 'Afternoon (12PM-4PM)', 'Evening (4PM-8PM)'] }
-                ]
-            },
-            front_desk: {
-                title: 'Front Desk Inquiry',
-                subtitle: 'General assistance & information',
-                icon: 'fa-headset',
-                fields: [{ type: 'select', id: 'inquiry_type', label: 'Inquiry Type', options: ['General Information', 'Billing Question', 'Complaint', 'Suggestion', 'Other'] }]
-            },
-            luggage: {
-                title: 'Luggage Assistance',
-                subtitle: 'Baggage handling & storage',
-                icon: 'fa-suitcase',
-                fields: [
-                    { type: 'select', id: 'luggage_type', label: 'Service Type', options: ['Collect from Room', 'Deliver to Room', 'Store Luggage', 'Transport to Lobby'] },
-                    { type: 'number', id: 'luggage_count', label: 'Number of Bags' }
-                ]
-            },
-            maintenance: {
-                title: 'Maintenance / Technical Support',
-                subtitle: 'Repairs & technical assistance',
-                icon: 'fa-tools',
-                fields: [
-                    { type: 'select', id: 'maintenance_type', label: 'Issue Type', options: ['Air Conditioning', 'Plumbing', 'Electrical', 'TV / Internet', 'Lighting', 'Other'] },
-                    { type: 'select', id: 'maintenance_urgency', label: 'Urgency', options: ['Low', 'Medium', 'High'] }
-                ]
-            }
-        };
 
         // ==================== OFFRES ====================
         async function fetchOffers() {
             try {
-                const { data, error } = await supabaseClient
-                    .from('offers')
-                    .select('*')
-                    .eq('is_active', true)
-                    .order('created_at', { ascending: false })
-                    .limit(10);
-                if (data && data.length > 0) { currentOffers = data; renderOffers(data); } else { renderOffers([]); }
-            } catch (err) { renderOffers([]); }
+                const { data } = await supabaseClient.from('offers').select('*').eq('is_active', true).order('created_at', { ascending: false }).limit(10);
+                if (data && data.length) { currentOffers = data; renderOffers(data); } else renderOffers([]);
+            } catch(e) { renderOffers([]); }
         }
 
         function renderOffers(offers) {
             const container = document.getElementById('offersContainer');
-            if (!offers || offers.length === 0) {
-                container.innerHTML = `<div class="text-center py-8"><i class="fas fa-tags text-3xl text-muted-custom mb-2"></i><p class="text-[10px] text-muted-custom">${TRANSLATIONS[currentLanguage].noOffers}</p></div>`;
-                return;
-            }
-            const firstOffer = offers[0];
-            const otherOffers = offers.slice(1);
-            let html = `
-                <div class="featured-offer">
-                    <img src="${firstOffer.image}" alt="${firstOffer.title}" onerror="this.src='logo.png'">
-                    <div class="featured-offer-overlay">
-                        <span class="inline-block text-[8px] bg-[var(--text-gold)] text-stone-950 font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider mb-1">${TRANSLATIONS[currentLanguage].featured}</span>
-                        <p class="text-sm font-serif-luxury font-bold text-white">${firstOffer.title}</p>
-                        <p class="text-[10px] text-muted-custom">${firstOffer.description}</p>
-                        <p class="text-lg font-serif-luxury font-bold text-[var(--text-gold)] mt-1">${firstOffer.price}</p>
-                    </div>
-                </div>
-            `;
-            if (otherOffers.length > 0) {
-                html += `<div class="grid grid-cols-2 gap-3">`;
-                otherOffers.forEach(offer => {
-                    html += `
-                        <div class="offer-card remal-card rounded-2xl overflow-hidden cursor-pointer">
-                            <img src="${offer.image}" alt="${offer.title}" class="w-full h-24 object-cover" onerror="this.src='logo.png'">
-                            <div class="p-3 space-y-1">
-                                <p class="text-[10px] font-bold text-[var(--text-main)]">${offer.title}</p>
-                                <p class="text-[8px] text-muted-custom">${offer.category}</p>
-                                <p class="text-xs font-serif-luxury font-bold text-[var(--text-gold)]">${offer.price}</p>
-                            </div>
-                        </div>
-                    `;
-                });
-                html += `</div>`;
-            }
+            if (!offers.length) { container.innerHTML = `<p class="text-center text-[10px] text-muted-custom py-8">${TRANSLATIONS[currentLanguage].noOffers}</p>`; return; }
+            const first = offers[0];
+            let html = `<div class="featured-offer"><img src="${first.image}" onerror="this.src='logo.png'"><div class="featured-offer-overlay"><span class="text-[8px] bg-[var(--text-gold)] text-stone-950 font-extrabold px-2 py-0.5 rounded-full uppercase">${TRANSLATIONS[currentLanguage].featured}</span><p class="text-sm font-serif-luxury font-bold text-white">${first.title}</p><p class="text-[10px] text-muted-custom">${first.description}</p><p class="text-lg font-serif-luxury font-bold text-[var(--text-gold)]">${first.price}</p></div></div>`;
+            html += `<div class="grid grid-cols-2 gap-3">` + offers.slice(1).map(o => `<div class="offer-card remal-card rounded-2xl overflow-hidden"><img src="${o.image}" class="w-full h-24 object-cover" onerror="this.src='logo.png'"><div class="p-3"><p class="text-[10px] font-bold">${o.title}</p><p class="text-xs font-serif-luxury font-bold text-[var(--text-gold)]">${o.price}</p></div></div>`).join('') + `</div>`;
             container.innerHTML = html;
         }
 
         // ==================== ONGLETS ====================
         function switchTab(tab) {
             currentTab = tab;
-            document.getElementById('servicesSection').classList.add('hidden');
-            document.getElementById('offersSection').classList.add('hidden');
-            document.getElementById('faqSection').classList.add('hidden');
-            document.getElementById('tabServices').classList.remove('active');
-            document.getElementById('tabOffers').classList.remove('active');
-            document.getElementById('tabFaq').classList.remove('active');
-            if (tab === 'services') {
-                document.getElementById('servicesSection').classList.remove('hidden');
-                document.getElementById('tabServices').classList.add('active');
-            } else if (tab === 'offers') {
-                document.getElementById('offersSection').classList.remove('hidden');
-                document.getElementById('tabOffers').classList.add('active');
-                fetchOffers();
-            } else if (tab === 'faq') {
-                document.getElementById('faqSection').classList.remove('hidden');
-                document.getElementById('tabFaq').classList.add('active');
-                renderFaqList();
-            }
+            ['services','offers','faq'].forEach(t => { document.getElementById(t + 'Section').classList.add('hidden'); document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1)).classList.remove('active'); });
+            if (tab === 'services') { document.getElementById('servicesSection').classList.remove('hidden'); document.getElementById('tabServices').classList.add('active'); }
+            else if (tab === 'offers') { document.getElementById('offersSection').classList.remove('hidden'); document.getElementById('tabOffers').classList.add('active'); fetchOffers(); }
+            else { document.getElementById('faqSection').classList.remove('hidden'); document.getElementById('tabFaq').classList.add('active'); renderFaqList(); }
         }
 
         // ==================== SERVICES ====================
-        function showService(serviceId) {
-            currentService = serviceId;
+        function showService(id) {
+            currentService = id;
             document.getElementById('servicesList').classList.add('hidden');
-            if (serviceId === 'room_service') {
-                document.getElementById('roomServiceSection').classList.remove('hidden');
-                document.getElementById('otherServiceSection').classList.add('hidden');
-                renderMenuItems();
-            } else {
-                document.getElementById('roomServiceSection').classList.add('hidden');
-                document.getElementById('otherServiceSection').classList.remove('hidden');
-                const serviceData = SERVICES_DATA[serviceId];
-                if (serviceData) {
-                    document.getElementById('otherServiceTitle').innerText = serviceData.title;
-                    document.getElementById('otherServiceSubtitle').innerText = serviceData.subtitle;
-                    document.getElementById('otherServiceIcon').innerHTML = `<i class="fas ${serviceData.icon}"></i>`;
-                    renderServiceFields(serviceData.fields);
-                }
-            }
+            if (id === 'room_service') { document.getElementById('roomServiceSection').classList.remove('hidden'); document.getElementById('otherServiceSection').classList.add('hidden'); renderMenuItems(); }
+            else { document.getElementById('roomServiceSection').classList.add('hidden'); document.getElementById('otherServiceSection').classList.remove('hidden'); const sd = SERVICES_DATA[id]; if (sd) { document.getElementById('otherServiceTitle').innerText = sd.title; document.getElementById('otherServiceIcon').innerHTML = `<i class="fas ${sd.icon}"></i>`; renderServiceFields(sd.fields); } }
         }
 
-        function backToServices() {
-            document.getElementById('servicesList').classList.remove('hidden');
-            document.getElementById('roomServiceSection').classList.add('hidden');
-            document.getElementById('otherServiceSection').classList.add('hidden');
-            currentService = null;
-        }
+        function backToServices() { document.getElementById('servicesList').classList.remove('hidden'); document.getElementById('roomServiceSection').classList.add('hidden'); document.getElementById('otherServiceSection').classList.add('hidden'); currentService = null; }
 
         function renderServiceFields(fields) {
-            const container = document.getElementById('otherServiceFields');
-            container.innerHTML = fields.map(field => {
-                if (field.type === 'select') {
-                    return `<div><label class="block font-bold text-[var(--text-gold)] mb-1.5 uppercase tracking-wider text-[10px]">${field.label}</label><select id="${field.id}" class="w-full remal-input rounded-2xl p-3.5 font-bold cursor-pointer text-xs">${field.options.map(opt => `<option value="${opt}">${opt}</option>`).join('')}</select></div>`;
-                } else if (field.type === 'date') {
-                    const today = new Date().toISOString().split('T')[0];
-                    return `<div><label class="block font-bold text-[var(--text-gold)] mb-1.5 uppercase tracking-wider text-[10px]">${field.label}</label><input type="date" id="${field.id}" value="${today}" class="w-full remal-input rounded-2xl p-3.5 font-bold text-xs"></div>`;
-                } else if (field.type === 'time') {
-                    return `<div><label class="block font-bold text-[var(--text-gold)] mb-1.5 uppercase tracking-wider text-[10px]">${field.label}</label><input type="time" id="${field.id}" value="19:30" class="w-full remal-input rounded-2xl p-3.5 font-bold text-xs"></div>`;
-                } else if (field.type === 'number') {
-                    return `<div><label class="block font-bold text-[var(--text-gold)] mb-1.5 uppercase tracking-wider text-[10px]">${field.label}</label><input type="number" id="${field.id}" min="1" max="10" value="1" class="w-full remal-input rounded-2xl p-3.5 font-bold text-xs"></div>`;
-                }
+            const c = document.getElementById('otherServiceFields');
+            c.innerHTML = fields.map(f => {
+                if (f.type === 'select') return `<div><label class="block font-bold text-[var(--text-gold)] text-[10px] mb-1.5">${f.label}</label><select id="${f.id}" class="w-full remal-input rounded-2xl p-3.5 text-xs">${f.options.map(o => `<option>${o}</option>`).join('')}</select></div>`;
+                if (f.type === 'date') return `<div><label class="block font-bold text-[var(--text-gold)] text-[10px] mb-1.5">${f.label}</label><input type="date" id="${f.id}" class="w-full remal-input rounded-2xl p-3.5 text-xs"></div>`;
+                if (f.type === 'time') return `<div><label class="block font-bold text-[var(--text-gold)] text-[10px] mb-1.5">${f.label}</label><input type="time" id="${f.id}" value="19:30" class="w-full remal-input rounded-2xl p-3.5 text-xs"></div>`;
                 return '';
             }).join('');
         }
@@ -999,290 +578,133 @@
         async function submitOtherService() {
             const room = cachedGuestData?.room || localStorage.getItem('remal_guest_room');
             const notes = document.getElementById('otherServiceNotes').value.trim();
-            const serviceData = SERVICES_DATA[currentService];
-            if (!serviceData) return;
+            const sd = SERVICES_DATA[currentService];
+            if (!sd) return;
             let details = [];
-            serviceData.fields.forEach(field => {
-                const element = document.getElementById(field.id);
-                if (element) details.push(`${field.label}: ${element.value}`);
-            });
-            const fullDetails = details.join('\n') + (notes ? `\n📝 Notes: ${notes}` : '');
-            const requestData = {
-                room_number: room,
-                guest_name: cachedGuestData.guest_name,
-                service_type: serviceData.title,
-                details: fullDetails,
-                status: 'Pending',
-                created_at: new Date().toISOString()
-            };
-            try {
-                const { error } = await supabaseClient.from('guest_requests').insert([requestData]);
-                if (error) { showToast('Error: ' + error.message, 'error'); return; }
-                showToast('✅ Request submitted!', 'success');
-                document.getElementById('otherServiceNotes').value = '';
-                backToServices();
-            } catch (err) { showToast('Error: ' + err.message, 'error'); }
+            sd.fields.forEach(f => { const el = document.getElementById(f.id); if (el) details.push(`${f.label}: ${el.value}`); });
+            const full = details.join('\n') + (notes ? `\nNotes: ${notes}` : '');
+            const { error } = await supabaseClient.from('guest_requests').insert([{ room_number: room, guest_name: cachedGuestData.guest_name, service_type: sd.title, details: full, status: 'Pending', created_at: new Date().toISOString() }]);
+            if (error) { showToast('Error: ' + error.message, 'error'); return; }
+            showToast('✅ Request submitted!', 'success');
+            backToServices();
         }
 
         async function submitRoomServiceOrder(method) {
             const room = cachedGuestData?.room || localStorage.getItem('remal_guest_room');
-            const instructions = document.getElementById('guestSpecialInstructions').value.trim();
-            if (!isGuestVerified) { showToast('Please verify first', 'error'); return; }
-            if (Object.keys(menuCart).length === 0) { showToast('Select at least one item', 'error'); return; }
-
-            let itemsArray = [];
-            let totalAmount = 0;
-            for (const [itemId, qty] of Object.entries(menuCart)) {
-                const item = findMenuItem(itemId);
-                if (item) {
-                    itemsArray.push({ name: item.name, quantity: qty, price: item.price, total: qty * item.price });
-                    totalAmount += qty * item.price;
-                }
-            }
-
-            const orderData = {
-                room_number: room,
-                guest_name: cachedGuestData.guest_name,
-                items: itemsArray,
-                total_amount: totalAmount,
-                status: 'Pending',
-                created_at: new Date().toISOString()
-            };
-
-            try {
-                const { data, error } = await supabaseClient.from('food_orders').insert([orderData]).select();
-                if (error) { showToast('Error: ' + error.message, 'error'); return; }
-                if (data && data.length > 0) {
-                    currentOrderId = data[0].id;
-                    localStorage.setItem('remal_current_order_id', currentOrderId);
-                    updateOrderTracking('Pending');
-                }
-                if (method === 'whatsapp') {
-                    const itemsList = itemsArray.map(i => `${i.quantity}x ${i.name} (AED ${i.total})`).join('\n');
-                    const message = `🛎️ ORDER\n\nRoom: ${room}\nGuest: ${cachedGuestData.guest_name}\n\n${itemsList}\n\nTotal: AED ${totalAmount}`;
-                    window.open(`https://wa.me/${SUPABASE_CONFIG.whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank');
-                }
-                showToast('✅ Order submitted!', 'success');
-                menuCart = {};
-                document.getElementById('guestSpecialInstructions').value = '';
-                renderMenuItems();
-            } catch (err) { showToast('Error: ' + err.message, 'error'); }
+            if (!isGuestVerified) { showToast('Verify first', 'error'); return; }
+            if (!Object.keys(menuCart).length) { showToast('Select items', 'error'); return; }
+            let items = []; let total = 0;
+            for (const [id, qty] of Object.entries(menuCart)) { const item = findMenuItem(id); if (item) { items.push({ name: item.name, quantity: qty, price: item.price, total: qty * item.price }); total += qty * item.price; } }
+            const { data, error } = await supabaseClient.from('food_orders').insert([{ room_number: room, guest_name: cachedGuestData.guest_name, items: items, total_amount: total, status: 'Pending', created_at: new Date().toISOString() }]).select();
+            if (error) { showToast('Error: ' + error.message, 'error'); return; }
+            if (data && data.length) { currentOrderId = data[0].id; localStorage.setItem('remal_current_order_id', currentOrderId); updateOrderTracking('Pending'); }
+            if (method === 'whatsapp') { const list = items.map(i => `${i.quantity}x ${i.name}`).join('\n'); window.open(`https://wa.me/${SUPABASE_CONFIG.whatsappNumber}?text=${encodeURIComponent('Room ' + room + '\n' + list + '\nTotal: AED ' + total)}`, '_blank'); }
+            showToast('✅ Order submitted!', 'success');
+            menuCart = {}; renderMenuItems();
         }
 
         // ==================== MENU ====================
         function openMenuModal() { document.getElementById('menuModal').classList.remove('hidden'); renderMenuItems(); }
         function closeMenuModal() { document.getElementById('menuModal').classList.add('hidden'); }
         function confirmMenuSelection() { closeMenuModal(); }
-        
         function renderMenuItems() {
-            const container = document.getElementById('menuItemsContainer');
-            const searchQuery = document.getElementById('menuSearchInput')?.value?.toLowerCase() || '';
-            let html = '';
-            let totalPcs = 0;
-            let totalPrice = 0;
-            for (const [category, items] of Object.entries(MENU_DATA)) {
-                const filteredItems = items.filter(item => item.name.toLowerCase().includes(searchQuery) || item.desc.toLowerCase().includes(searchQuery));
-                if (filteredItems.length === 0) continue;
-                html += `<div class="menu-category-header px-3 py-2 rounded-xl font-bold text-[10px] uppercase tracking-widest text-[var(--text-gold)] mb-2">${category}</div>`;
-                filteredItems.forEach(item => {
-                    const qty = menuCart[item.id] || 0;
-                    totalPcs += qty;
-                    totalPrice += qty * item.price;
-                    const badgesHTML = getBadgeHTML(item.badges);
-                    const isFavorite = favoritesList[item.id] ? 'active' : '';
-                    html += `
-                        <div class="flex justify-between items-center py-2.5 border-b border-[var(--border-gold)]">
-                            <div class="flex-1 pr-2">
-                                <div class="flex items-center gap-2 mb-1">
-                                    <button onclick="toggleFavorite('${item.id}')" class="favorite-heart ${isFavorite}"><i class="fas fa-heart"></i></button>
-                                    <p class="font-bold text-[var(--text-main)] text-xs">${item.name}</p>
-                                </div>
-                                ${badgesHTML}
-                                <p class="text-[10px] text-muted-custom mt-1">${item.desc}</p>
-                                <div class="flex items-center gap-2 mt-1">
-                                    <p class="text-[var(--text-gold)] font-bold text-xs">AED ${item.price}</p>
-                                    <span class="text-[8px] text-muted-custom">•</span>
-                                    <span class="text-[8px] text-muted-custom">⏱️ ${item.prepTime}</span>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-2 bg-[var(--bg-input)] p-1 rounded-xl border border-[var(--border-gold)]">
-                                <button onclick="updateCart('${item.id}', -1)" class="w-6 h-6 bg-[var(--bg-card-hover)] rounded-lg font-bold">-</button>
-                                <span class="font-bold px-1 w-6 text-center">${qty}</span>
-                                <button onclick="updateCart('${item.id}', 1)" class="w-6 h-6 bg-[var(--text-gold)] text-stone-950 rounded-lg font-bold">+</button>
-                            </div>
-                        </div>
-                    `;
+            const c = document.getElementById('menuItemsContainer');
+            const q = (document.getElementById('menuSearchInput')?.value || '').toLowerCase();
+            let html = ''; let pcs = 0; let price = 0;
+            for (const [cat, items] of Object.entries(MENU_DATA)) {
+                const filtered = items.filter(i => i.name.toLowerCase().includes(q) || i.desc.toLowerCase().includes(q));
+                if (!filtered.length) continue;
+                html += `<div class="menu-category-header px-3 py-2 rounded-xl font-bold text-[10px] uppercase text-[var(--text-gold)] mb-2">${cat}</div>`;
+                filtered.forEach(item => {
+                    const qty = menuCart[item.id] || 0; pcs += qty; price += qty * item.price;
+                    html += `<div class="flex justify-between items-center py-2.5 border-b border-[var(--border-gold)]"><div class="flex-1 pr-2"><p class="font-bold text-xs">${item.name}</p><p class="text-[10px] text-muted-custom">${item.desc}</p><p class="text-[var(--text-gold)] font-bold text-xs">AED ${item.price} • ⏱️ ${item.prepTime}</p></div><div class="flex items-center gap-2 bg-[var(--bg-input)] p-1 rounded-xl border border-[var(--border-gold)]"><button onclick="updateCart('${item.id}',-1)" class="w-6 h-6 bg-[var(--bg-card-hover)] rounded-lg font-bold">-</button><span class="font-bold px-1 w-6 text-center">${qty}</span><button onclick="updateCart('${item.id}',1)" class="w-6 h-6 bg-[var(--text-gold)] text-stone-950 rounded-lg font-bold">+</button></div></div>`;
                 });
             }
-            container.innerHTML = html || '<p class="text-center text-muted-custom py-8">No items found</p>';
-            document.getElementById('modalMenuTotalSummary').innerText = `${totalPcs} items · ${totalPrice.toFixed(2)} AED`;
-            document.getElementById('selectedBadgeCount').innerText = `${totalPcs}`;
+            c.innerHTML = html || '<p class="text-center text-muted-custom py-8">No items</p>';
+            document.getElementById('modalMenuTotalSummary').innerText = `${pcs} items · ${price.toFixed(2)} AED`;
+            document.getElementById('selectedBadgeCount').innerText = pcs;
         }
+        function updateCart(id, delta) { if (!menuCart[id]) menuCart[id] = 0; menuCart[id] = Math.max(0, menuCart[id] + delta); if (!menuCart[id]) delete menuCart[id]; renderMenuItems(); }
+        function toggleFavorite(id) { if (favoritesList[id]) delete favoritesList[id]; else favoritesList[id] = true; localStorage.setItem('remal_favorites', JSON.stringify(favoritesList)); }
 
-        function updateCart(itemId, delta) {
-            if (!menuCart[itemId]) menuCart[itemId] = 0;
-            menuCart[itemId] = Math.max(0, menuCart[itemId] + delta);
-            if (menuCart[itemId] === 0) delete menuCart[itemId];
-            renderMenuItems();
-        }
-
-        function toggleFavorite(itemId) {
-            if (favoritesList[itemId]) { delete favoritesList[itemId]; } else { favoritesList[itemId] = true; }
-            localStorage.setItem('remal_favorites', JSON.stringify(favoritesList));
-            renderMenuItems();
-        }
-
-        // ==================== SUIVI DE COMMANDE ====================
+        // ==================== SUIVI DE COMMANDE (10 MINUTES) ====================
         function updateOrderTracking(status) {
             const trackingSection = document.getElementById('orderTrackingSection');
             trackingSection.classList.remove('hidden');
-            
-            // Annuler le timeout précédent
             if (trackingTimeout) clearTimeout(trackingTimeout);
-            
             const statusMap = {
-                'Pending': { step: 'received', text: TRANSLATIONS[currentLanguage].orderReceived, color: 'text-amber-400' },
-                'Preparing': { step: 'preparing', text: TRANSLATIONS[currentLanguage].beingPrepared, color: 'text-blue-400' },
-                'Ready': { step: 'ready', text: TRANSLATIONS[currentLanguage].readyForDelivery, color: 'text-purple-400' },
-                'Delivered': { step: 'delivered', text: TRANSLATIONS[currentLanguage].orderDelivered, color: 'text-emerald-400' }
+                'Pending': { step: 'received', text: TRANSLATIONS[currentLanguage].orderReceived || 'Order Received', color: 'text-amber-400' },
+                'Preparing': { step: 'preparing', text: TRANSLATIONS[currentLanguage].beingPrepared || 'Being Prepared', color: 'text-blue-400' },
+                'Ready': { step: 'ready', text: TRANSLATIONS[currentLanguage].readyForDelivery || 'Ready', color: 'text-purple-400' },
+                'Delivered': { step: 'delivered', text: TRANSLATIONS[currentLanguage].orderDelivered || 'Delivered', color: 'text-emerald-400' }
             };
-            
             const config = statusMap[status] || statusMap['Pending'];
             document.getElementById('orderStatusText').innerText = config.text;
             document.getElementById('orderStatusText').className = `text-[10px] font-bold ${config.color}`;
-            
             const steps = ['received', 'preparing', 'ready', 'delivered'];
-            const currentIndex = steps.indexOf(config.step);
-            
-            steps.forEach((step, index) => {
-                const dot = document.getElementById(`step${step.charAt(0).toUpperCase() + step.slice(1)}`);
-                const line = document.getElementById(`line${step.charAt(0).toUpperCase() + step.slice(1)}`);
-                if (index <= currentIndex) {
-                    dot.classList.add('completed'); dot.classList.add('active');
-                    if (line) line.classList.add('completed');
-                } else {
-                    dot.classList.remove('completed'); dot.classList.remove('active');
-                    if (line) line.classList.remove('completed');
-                }
+            const idx = steps.indexOf(config.step);
+            steps.forEach((step, i) => {
+                const dot = document.getElementById('step' + step.charAt(0).toUpperCase() + step.slice(1));
+                const line = document.getElementById('line' + step.charAt(0).toUpperCase() + step.slice(1));
+                if (i <= idx) { dot.classList.add('completed', 'active'); if (line) line.classList.add('completed'); }
+                else { dot.classList.remove('completed', 'active'); if (line) line.classList.remove('completed'); }
             });
-            
-            // Si livré, masquer après 10 minutes
             if (status === 'Delivered' || status === 'Completed') {
-                trackingTimeout = setTimeout(() => {
-                    trackingSection.classList.add('hidden');
-                    localStorage.removeItem('remal_current_order_id');
-                    currentOrderId = null;
-                }, 10 * 60 * 1000); // 10 minutes
+                trackingTimeout = setTimeout(() => { trackingSection.classList.add('hidden'); localStorage.removeItem('remal_current_order_id'); currentOrderId = null; }, 10 * 60 * 1000);
             }
         }
 
-        // ==================== THÈME, TOAST, IDENTIFICATION ====================
+        // ==================== THÈME ====================
         function toggleTheme() {
             document.body.classList.toggle('light-mode');
             const isLight = document.body.classList.contains('light-mode');
-            const iconLock = document.getElementById('themeIconLock');
-            const iconMain = document.getElementById('themeIconMain');
-            if (iconLock) iconLock.className = isLight ? 'fas fa-moon text-sm' : 'fas fa-sun text-sm';
-            if (iconMain) iconMain.className = isLight ? 'fas fa-moon text-sm' : 'fas fa-sun text-sm';
+            const iconTop = document.getElementById('themeIconTop');
+            if (iconTop) iconTop.className = isLight ? 'fas fa-moon text-sm' : 'fas fa-sun text-sm';
             localStorage.setItem('remal_theme', isLight ? 'light' : 'dark');
         }
 
         function initTheme() {
-            const savedTheme = localStorage.getItem('remal_theme');
-            if (savedTheme === 'light') document.body.classList.add('light-mode');
-            else document.body.classList.remove('light-mode');
+            const saved = localStorage.getItem('remal_theme');
+            if (saved === 'light') document.body.classList.add('light-mode');
             const isLight = document.body.classList.contains('light-mode');
-            const iconLock = document.getElementById('themeIconLock');
-            const iconMain = document.getElementById('themeIconMain');
-            if (iconLock) iconLock.className = isLight ? 'fas fa-moon text-sm' : 'fas fa-sun text-sm';
-            if (iconMain) iconMain.className = isLight ? 'fas fa-moon text-sm' : 'fas fa-sun text-sm';
+            const iconTop = document.getElementById('themeIconTop');
+            if (iconTop) iconTop.className = isLight ? 'fas fa-moon text-sm' : 'fas fa-sun text-sm';
         }
 
-        function showToast(message, type = 'info') {
-            const toast = document.createElement('div');
-            toast.className = 'toast-notification toast-in';
-            const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
-            toast.innerHTML = `<span>${icon}</span><span class="text-xs font-bold text-[var(--text-main)]">${message}</span>`;
-            document.body.appendChild(toast);
-            setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity 0.3s ease'; setTimeout(() => toast.remove(), 300); }, 3000);
-        }
+        function showToast(msg, type = 'info') { const t = document.createElement('div'); t.className = 'toast-notification toast-in'; t.innerHTML = `<span>${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</span><span class="text-xs font-bold">${msg}</span>`; document.body.appendChild(t); setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 3000); }
 
-        function getGreeting() {
-            const hour = new Date().getHours();
-            if (hour < 12) return { text: 'Good Morning', emoji: '🌅' };
-            if (hour < 18) return { text: 'Good Afternoon', emoji: '☀️' };
-            return { text: 'Good Evening', emoji: '🌙' };
-        }
-
+        // ==================== IDENTIFICATION ====================
         async function verifierIdentiteClient() {
-            const roomNum = document.getElementById('lockRoomInput').value.trim();
-            const nameInput = document.getElementById('lockNameInput').value.trim();
-            const errorMsg = document.getElementById('lockErrorMsg');
-            const loadingIndicator = document.getElementById('lockLoadingIndicator');
-            errorMsg.classList.add('hidden');
-            if (!roomNum) { errorMsg.innerText = '⚠️ ' + TRANSLATIONS[currentLanguage].roomNumber; errorMsg.classList.remove('hidden'); return; }
-            if (!nameInput || nameInput.length < 2) { errorMsg.innerText = '⚠️ ' + TRANSLATIONS[currentLanguage].yourName; errorMsg.classList.remove('hidden'); return; }
-            loadingIndicator.classList.remove('hidden');
+            const room = document.getElementById('lockRoomInput').value.trim();
+            const name = document.getElementById('lockNameInput').value.trim();
+            const err = document.getElementById('lockErrorMsg');
+            const load = document.getElementById('lockLoadingIndicator');
+            err.classList.add('hidden');
+            if (!room) { err.innerText = '⚠️ ' + TRANSLATIONS[currentLanguage].roomNumber; err.classList.remove('hidden'); return; }
+            if (!name || name.length < 2) { err.innerText = '⚠️ ' + TRANSLATIONS[currentLanguage].yourName; err.classList.remove('hidden'); return; }
+            load.classList.remove('hidden');
             try {
-                const { data: pmsData, error: pmsError } = await pmsSupabaseClient.from('pms_guests').select('*').ilike('room', `%${roomNum}%`).maybeSingle();
-                if (pmsError || !pmsData) { errorMsg.innerText = '❌ ' + TRANSLATIONS[currentLanguage].notFound; errorMsg.classList.remove('hidden'); return; }
-                const cleanInputName = nameInput.toLowerCase().replace(SALUTATIONS_REGEX, '').normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "").trim();
-                const cleanPmsName = (pmsData.guest_name || '').toLowerCase().replace(SALUTATIONS_REGEX, '').normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
-                const pmsWords = cleanPmsName.split(/[\s\-_,/]+/).map(w => w.replace(/[^a-z0-9]/g, "")).filter(w => w.length > 1);
-                const isMatch = pmsWords.some(word => { if (cleanInputName.length <= 3) return word === cleanInputName; return word === cleanInputName || word.includes(cleanInputName) || cleanInputName.includes(word); });
-                if (!isMatch) { errorMsg.innerText = '❌ ' + TRANSLATIONS[currentLanguage].notFound; errorMsg.classList.remove('hidden'); return; }
-                cachedGuestData = pmsData;
-                isGuestVerified = true;
-                localStorage.setItem('remal_guest_room', pmsData.room);
-                localStorage.setItem('remal_guest_data', JSON.stringify(pmsData));
-                afficherPagePersonnalisee(pmsData, pmsData.room);
-                const lockScreen = document.getElementById('lockScreen');
-                const mainScreen = document.getElementById('mainScreen');
-                lockScreen.classList.add('screen-exit');
-                setTimeout(() => { lockScreen.classList.add('hidden'); mainScreen.classList.remove('hidden'); mainScreen.classList.add('screen-enter'); }, 400);
-            } catch (error) { errorMsg.innerText = '❌ System error'; errorMsg.classList.remove('hidden'); } finally { loadingIndicator.classList.add('hidden'); }
+                const { data, error } = await pmsSupabaseClient.from('pms_guests').select('*').ilike('room', `%${room}%`).maybeSingle();
+                if (error || !data) { err.innerText = '❌ ' + TRANSLATIONS[currentLanguage].notFound; err.classList.remove('hidden'); return; }
+                const cleanInput = name.toLowerCase().replace(SALUTATIONS_REGEX,'').normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]/g,"").trim();
+                const cleanPms = (data.guest_name||'').toLowerCase().replace(SALUTATIONS_REGEX,'').normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim();
+                const words = cleanPms.split(/[\s\-_,/]+/).filter(w => w.length > 1);
+                const match = words.some(w => cleanInput.length <= 3 ? w === cleanInput : w === cleanInput || w.includes(cleanInput) || cleanInput.includes(w));
+                if (!match) { err.innerText = '❌ ' + TRANSLATIONS[currentLanguage].notFound; err.classList.remove('hidden'); return; }
+                cachedGuestData = data; isGuestVerified = true;
+                localStorage.setItem('remal_guest_room', data.room);
+                localStorage.setItem('remal_guest_data', JSON.stringify(data));
+                afficher(data, data.room);
+                document.getElementById('lockScreen').classList.add('screen-exit');
+                setTimeout(() => { document.getElementById('lockScreen').classList.add('hidden'); document.getElementById('mainScreen').classList.remove('hidden'); document.getElementById('mainScreen').classList.add('screen-enter'); }, 400);
+            } catch(e) { err.innerText = '❌ Error'; err.classList.remove('hidden'); } finally { load.classList.add('hidden'); }
         }
 
-        function afficherPagePersonnalisee(pmsData, roomNum) {
-            updateGreeting();
-            document.getElementById('welcomeGuestName').innerText = pmsData.guest_name || 'Guest';
-            document.getElementById('displayRoomNumber').innerText = roomNum;
-            document.getElementById('displayRoomType').innerText = pmsData.room_typ || 'Standard';
-            document.getElementById('displayDeparture').innerText = pmsData.departure || '---';
-        }
+        function afficher(data, room) { updateGreeting(); document.getElementById('welcomeGuestName').innerText = data.guest_name || 'Guest'; document.getElementById('displayRoomNumber').innerText = room; document.getElementById('displayRoomType').innerText = data.room_typ || 'Standard'; document.getElementById('displayDeparture').innerText = data.departure || '---'; }
 
-        function changerDeChambre() {
-            isGuestVerified = false;
-            cachedGuestData = null;
-            currentOrderId = null;
-            if (trackingTimeout) clearTimeout(trackingTimeout);
-            localStorage.removeItem('remal_guest_room');
-            localStorage.removeItem('remal_guest_data');
-            localStorage.removeItem('remal_current_order_id');
-            document.getElementById('lockRoomInput').value = '';
-            document.getElementById('lockNameInput').value = '';
-            menuCart = {};
-            const lockScreen = document.getElementById('lockScreen');
-            const mainScreen = document.getElementById('mainScreen');
-            mainScreen.classList.add('hidden');
-            lockScreen.classList.remove('hidden');
-            lockScreen.classList.add('screen-enter');
-        }
+        function changerDeChambre() { isGuestVerified = false; cachedGuestData = null; if (trackingTimeout) clearTimeout(trackingTimeout); localStorage.removeItem('remal_guest_room'); localStorage.removeItem('remal_guest_data'); localStorage.removeItem('remal_current_order_id'); menuCart = {}; document.getElementById('mainScreen').classList.add('hidden'); document.getElementById('lockScreen').classList.remove('hidden'); }
 
-        function restaurerSession() {
-            const savedRoom = localStorage.getItem('remal_guest_room');
-            const savedData = localStorage.getItem('remal_guest_data');
-            if (savedRoom && savedData) {
-                try {
-                    const parsedData = JSON.parse(savedData);
-                    cachedGuestData = parsedData;
-                    isGuestVerified = true;
-                    afficherPagePersonnalisee(parsedData, savedRoom);
-                    document.getElementById('lockScreen').classList.add('hidden');
-                    document.getElementById('mainScreen').classList.remove('hidden');
-                } catch (e) {}
-            }
-        }
+        function restaurerSession() { const room = localStorage.getItem('remal_guest_room'); const data = localStorage.getItem('remal_guest_data'); if (room && data) { try { const parsed = JSON.parse(data); cachedGuestData = parsed; isGuestVerified = true; afficher(parsed, room); document.getElementById('lockScreen').classList.add('hidden'); document.getElementById('mainScreen').classList.remove('hidden'); } catch(e) {} } }
 
         // ==================== INITIALISATION ====================
         initTheme();
