@@ -40,33 +40,27 @@
 <body class="min-h-screen lock-screen">
 
     <!-- ==================== ÉCRAN 1 : IDENTIFICATION ==================== -->
-    <div id="lockScreen" class="min-h-screen flex items-center justify-center p-4">
-        <div class="w-full max-w-md lock-card p-6 sm:p-8 rounded-[2rem] space-y-6">
+    <div id="lockScreen" class="min-h-screen flex items-center justify-center p-4 relative">
+        
+        <!-- Bouton de basculement de thème (lock screen) -->
+        <button onclick="toggleTheme()" id="themeToggleLock" class="theme-toggle-btn fixed top-4 right-4 z-50" title="Toggle Dark/Light Mode">
+            <i class="fas fa-sun text-sm" id="themeIconLock"></i>
+        </button>
+        
+        <div class="w-full max-w-md lock-card p-8 rounded-[2rem] space-y-6">
             
-            <!-- BANNIÈRE ORIGINALE AVEC IMAGE EN FOND -->
-            <div class="relative text-center border border-[var(--border-gold-strong)] pb-6 pt-7 rounded-2xl overflow-hidden shadow-inner">
-                <!-- Image de fond -->
-                <div class="absolute inset-0 bg-cover bg-center transition-all duration-500" style="background-image: var(--banner-img);"></div>
-                <!-- Overlay pour lisibilité -->
-                <div class="absolute inset-0" style="background: var(--banner-overlay);"></div>
-                
-                <!-- Contenu original -->
-                <div class="relative z-10 space-y-1.5">
-                    <h1 class="text-3xl font-serif-luxury font-bold text-gold-gradient tracking-[0.25em] drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">REMAL</h1>
-                    <p class="text-[10px] text-[var(--text-main)] tracking-[0.2em] font-bold uppercase drop-shadow-md">Hotel & Villas • Al Dhannah City</p>
-                    <div class="pt-2">
-                        <span class="inline-block text-[9px] bg-[var(--bg-card)] text-[var(--text-gold)] border border-[var(--border-gold-strong)] font-extrabold px-4 py-1.5 rounded-full uppercase tracking-[0.15em] shadow-lg backdrop-blur-md">
-                            🔒 Guest Identification
-                        </span>
-                    </div>
+            <!-- Logo et titre -->
+            <div class="text-center space-y-2">
+                <div class="w-20 h-20 mx-auto rounded-full bg-[var(--text-gold)] flex items-center justify-center shadow-2xl">
+                    <i class="fas fa-key text-2xl text-stone-950"></i>
                 </div>
-            </div>
-
-            <!-- Bouton thème -->
-            <div class="flex justify-end">
-                <button onclick="toggleTheme()" class="theme-toggle-btn" title="Toggle Dark/Light Mode">
-                    <i class="fas fa-sun" id="themeIconLock"></i>
-                </button>
+                <h1 class="text-2xl font-serif-luxury font-bold text-gold-gradient tracking-[0.2em]">REMAL</h1>
+                <p class="text-[10px] text-muted-custom uppercase tracking-[0.3em] font-bold">Hotel & Villas</p>
+                <div class="pt-2">
+                    <span class="inline-block text-[9px] bg-[var(--bg-card)] text-[var(--text-gold)] border border-[var(--border-gold-strong)] font-extrabold px-4 py-1.5 rounded-full uppercase tracking-[0.15em]">
+                        🔒 Guest Identification
+                    </span>
+                </div>
             </div>
 
             <!-- Message -->
@@ -123,39 +117,32 @@
     </div>
 
     <!-- ==================== ÉCRAN 2 : PAGE PERSONNALISÉE ==================== -->
-    <div id="mainScreen" class="hidden min-h-screen p-3 sm:p-6 flex items-center justify-center pb-24">
+    <div id="mainScreen" class="hidden min-h-screen p-3 sm:p-6 flex items-center justify-center pb-24 relative">
+        
+        <!-- Bouton de basculement de thème (main screen) -->
+        <button onclick="toggleTheme()" id="themeToggleMain" class="theme-toggle-btn fixed top-4 right-4 z-50" title="Toggle Dark/Light Mode">
+            <i class="fas fa-sun text-sm" id="themeIconMain"></i>
+        </button>
+        
         <div class="w-full max-w-md remal-card p-6 sm:p-8 rounded-[2rem] space-y-6">
             
-            <!-- BANNIÈRE ORIGINALE AVEC IMAGE EN FOND -->
-            <div class="relative text-center border border-[var(--border-gold-strong)] pb-6 pt-7 rounded-2xl overflow-hidden shadow-inner">
-                <!-- Image de fond -->
-                <div class="absolute inset-0 bg-cover bg-center transition-all duration-500" style="background-image: var(--banner-img);"></div>
-                <!-- Overlay pour lisibilité -->
-                <div class="absolute inset-0" style="background: var(--banner-overlay);"></div>
-                
-                <!-- Contenu original -->
-                <div class="relative z-10 space-y-1.5">
-                    <h1 class="text-3xl font-serif-luxury font-bold text-gold-gradient tracking-[0.25em] drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">REMAL</h1>
-                    <p class="text-[10px] text-[var(--text-main)] tracking-[0.2em] font-bold uppercase drop-shadow-md">Hotel & Villas • Al Dhannah City</p>
+            <!-- Bannière personnalisée -->
+            <div class="relative text-center border border-[var(--border-gold-strong)] pb-6 pt-7 rounded-2xl overflow-hidden">
+                <div class="relative z-10 space-y-2">
+                    <h1 class="text-2xl font-serif-luxury font-bold text-gold-gradient tracking-[0.15em]">REMAL</h1>
+                    <p class="text-[9px] text-muted-custom uppercase tracking-[0.2em] font-bold">Hotel & Villas • Al Dhannah City</p>
                     
-                    <div class="pt-2">
-                        <p class="text-[10px] text-muted-custom uppercase tracking-wider drop-shadow-md">Welcome</p>
-                        <h2 id="welcomeGuestName" class="text-lg font-serif-luxury font-bold text-[var(--text-gold)] tracking-wide drop-shadow-md">---</h2>
+                    <div class="pt-3">
+                        <p class="text-[10px] text-muted-custom uppercase tracking-wider">Welcome</p>
+                        <h2 id="welcomeGuestName" class="text-lg font-serif-luxury font-bold text-[var(--text-gold)] tracking-wide">---</h2>
                     </div>
                     
                     <div class="pt-2">
-                        <span id="roomTypeBadge" class="inline-block text-[9px] bg-[var(--bg-card)] text-[var(--text-gold)] border border-[var(--border-gold-strong)] font-extrabold px-4 py-1.5 rounded-full uppercase tracking-[0.15em] shadow-lg backdrop-blur-md">
+                        <span id="roomTypeBadge" class="inline-block text-[9px] bg-[var(--bg-card)] text-[var(--text-gold)] border border-[var(--border-gold-strong)] font-extrabold px-4 py-1.5 rounded-full uppercase tracking-[0.15em]">
                             🍽️ In-Room Dining
                         </span>
                     </div>
                 </div>
-            </div>
-
-            <!-- Bouton thème -->
-            <div class="flex justify-end">
-                <button onclick="toggleTheme()" class="theme-toggle-btn" title="Toggle Dark/Light Mode">
-                    <i class="fas fa-sun" id="themeIconMain"></i>
-                </button>
             </div>
 
             <!-- Infos client -->
@@ -277,16 +264,18 @@
             
             const isLight = document.body.classList.contains('light-mode');
             
+            // Mettre à jour les icônes
             const iconLock = document.getElementById('themeIconLock');
             const iconMain = document.getElementById('themeIconMain');
             
             if (iconLock) {
-                iconLock.className = isLight ? 'fas fa-moon' : 'fas fa-sun';
+                iconLock.className = isLight ? 'fas fa-moon text-sm' : 'fas fa-sun text-sm';
             }
             if (iconMain) {
-                iconMain.className = isLight ? 'fas fa-moon' : 'fas fa-sun';
+                iconMain.className = isLight ? 'fas fa-moon text-sm' : 'fas fa-sun text-sm';
             }
             
+            // Sauvegarder la préférence
             localStorage.setItem('remal_theme', isLight ? 'light' : 'dark');
         }
 
@@ -304,10 +293,10 @@
             const iconMain = document.getElementById('themeIconMain');
             
             if (iconLock) {
-                iconLock.className = isLight ? 'fas fa-moon' : 'fas fa-sun';
+                iconLock.className = isLight ? 'fas fa-moon text-sm' : 'fas fa-sun text-sm';
             }
             if (iconMain) {
-                iconMain.className = isLight ? 'fas fa-moon' : 'fas fa-sun';
+                iconMain.className = isLight ? 'fas fa-moon text-sm' : 'fas fa-sun text-sm';
             }
         }
 
@@ -402,6 +391,7 @@
             loadingIndicator.classList.remove('hidden');
 
             try {
+                // Rechercher la chambre dans le PMS
                 const { data: pmsData, error: pmsError } = await pmsSupabaseClient
                     .from('pms_guests')
                     .select('*')
@@ -414,6 +404,7 @@
                     return;
                 }
 
+                // Vérifier le nom
                 const cleanInputName = nameInput.toLowerCase()
                     .replace(SALUTATIONS_REGEX, '')
                     .normalize("NFD")
@@ -447,6 +438,7 @@
                     return;
                 }
 
+                // SUCCÈS
                 cachedGuestData = pmsData;
                 isGuestVerified = true;
 
