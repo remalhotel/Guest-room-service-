@@ -49,15 +49,15 @@
         
         <div class="w-full max-w-md lock-card p-8 rounded-[2rem] space-y-6">
             
-            <!-- Logo et titre -->
-            <div class="text-center space-y-2">
+            <!-- Logo et titre AVEC IMAGE DE FOND -->
+            <div class="remal-banner text-center space-y-2 rounded-2xl p-6 border border-[var(--border-gold-strong)]">
                 <div class="w-20 h-20 mx-auto rounded-full bg-[var(--text-gold)] flex items-center justify-center shadow-2xl">
                     <i class="fas fa-key text-2xl text-stone-950"></i>
                 </div>
-                <h1 class="text-2xl font-serif-luxury font-bold text-gold-gradient tracking-[0.2em]">REMAL</h1>
-                <p class="text-[10px] text-muted-custom uppercase tracking-[0.3em] font-bold">Hotel & Villas</p>
+                <h1 class="text-2xl font-serif-luxury font-bold text-gold-gradient tracking-[0.2em] drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">REMAL</h1>
+                <p class="text-[10px] text-muted-custom uppercase tracking-[0.3em] font-bold drop-shadow-md">Hotel & Villas</p>
                 <div class="pt-2">
-                    <span class="inline-block text-[9px] bg-[var(--bg-card)] text-[var(--text-gold)] border border-[var(--border-gold-strong)] font-extrabold px-4 py-1.5 rounded-full uppercase tracking-[0.15em]">
+                    <span class="inline-block text-[9px] bg-[var(--bg-card)] text-[var(--text-gold)] border border-[var(--border-gold-strong)] font-extrabold px-4 py-1.5 rounded-full uppercase tracking-[0.15em] shadow-lg backdrop-blur-md">
                         🔒 Guest Identification
                     </span>
                 </div>
@@ -126,19 +126,19 @@
         
         <div class="w-full max-w-md remal-card p-6 sm:p-8 rounded-[2rem] space-y-6">
             
-            <!-- Bannière personnalisée -->
-            <div class="relative text-center border border-[var(--border-gold-strong)] pb-6 pt-7 rounded-2xl overflow-hidden">
-                <div class="relative z-10 space-y-2">
-                    <h1 class="text-2xl font-serif-luxury font-bold text-gold-gradient tracking-[0.15em]">REMAL</h1>
-                    <p class="text-[9px] text-muted-custom uppercase tracking-[0.2em] font-bold">Hotel & Villas • Al Dhannah City</p>
+            <!-- Bannière personnalisée AVEC IMAGE DE FOND -->
+            <div class="remal-banner text-center border border-[var(--border-gold-strong)] pb-6 pt-7 rounded-2xl overflow-hidden">
+                <div class="space-y-2">
+                    <h1 class="text-2xl font-serif-luxury font-bold text-gold-gradient tracking-[0.15em] drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">REMAL</h1>
+                    <p class="text-[9px] text-muted-custom uppercase tracking-[0.2em] font-bold drop-shadow-md">Hotel & Villas • Al Dhannah City</p>
                     
                     <div class="pt-3">
-                        <p class="text-[10px] text-muted-custom uppercase tracking-wider">Welcome</p>
-                        <h2 id="welcomeGuestName" class="text-lg font-serif-luxury font-bold text-[var(--text-gold)] tracking-wide">---</h2>
+                        <p class="text-[10px] text-muted-custom uppercase tracking-wider drop-shadow-md">Welcome</p>
+                        <h2 id="welcomeGuestName" class="text-lg font-serif-luxury font-bold text-[var(--text-gold)] tracking-wide drop-shadow-md">---</h2>
                     </div>
                     
                     <div class="pt-2">
-                        <span id="roomTypeBadge" class="inline-block text-[9px] bg-[var(--bg-card)] text-[var(--text-gold)] border border-[var(--border-gold-strong)] font-extrabold px-4 py-1.5 rounded-full uppercase tracking-[0.15em]">
+                        <span id="roomTypeBadge" class="inline-block text-[9px] bg-[var(--bg-card)] text-[var(--text-gold)] border border-[var(--border-gold-strong)] font-extrabold px-4 py-1.5 rounded-full uppercase tracking-[0.15em] shadow-lg backdrop-blur-md">
                             🍽️ In-Room Dining
                         </span>
                     </div>
@@ -214,7 +214,7 @@
         </div>
     </div>
 
-    <!-- Modale Menu -->
+    <!-- Modale Menu (inchangée) -->
     <div id="menuModal" class="hidden fixed inset-0 bg-black/90 z-[100] flex items-center justify-center p-4">
         <div class="bg-[var(--bg-card)] border border-[var(--border-gold-strong)] w-full max-w-lg rounded-3xl p-6 space-y-4 max-h-[90vh] flex flex-col">
             
@@ -264,7 +264,6 @@
             
             const isLight = document.body.classList.contains('light-mode');
             
-            // Mettre à jour les icônes
             const iconLock = document.getElementById('themeIconLock');
             const iconMain = document.getElementById('themeIconMain');
             
@@ -275,7 +274,6 @@
                 iconMain.className = isLight ? 'fas fa-moon text-sm' : 'fas fa-sun text-sm';
             }
             
-            // Sauvegarder la préférence
             localStorage.setItem('remal_theme', isLight ? 'light' : 'dark');
         }
 
@@ -391,7 +389,6 @@
             loadingIndicator.classList.remove('hidden');
 
             try {
-                // Rechercher la chambre dans le PMS
                 const { data: pmsData, error: pmsError } = await pmsSupabaseClient
                     .from('pms_guests')
                     .select('*')
@@ -404,7 +401,6 @@
                     return;
                 }
 
-                // Vérifier le nom
                 const cleanInputName = nameInput.toLowerCase()
                     .replace(SALUTATIONS_REGEX, '')
                     .normalize("NFD")
@@ -438,7 +434,6 @@
                     return;
                 }
 
-                // SUCCÈS
                 cachedGuestData = pmsData;
                 isGuestVerified = true;
 
