@@ -24,7 +24,6 @@
     <link rel="stylesheet" href="assets/css/style.css">
     
     <style>
-        /* ==================== ANIMATIONS ==================== */
         @keyframes slideInRight { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
         .animate-slide-in { animation: slideInRight 0.3s ease forwards; }
         
@@ -42,7 +41,6 @@
         }
         .shake-alert { animation: shake-alert 0.5s ease; }
         
-        /* ==================== STYLES GÉNÉRAUX ==================== */
         .staff-tab-btn { transition: all 0.3s ease; cursor: pointer; }
         .staff-tab-btn.active { background: var(--text-gold); color: #1c1917; font-weight: 900; box-shadow: 0 5px 15px rgba(220, 167, 115, 0.3); }
         .staff-tab-btn:not(.active) { background: var(--bg-card-hover); color: var(--text-muted); border: 1px solid var(--border-gold); }
@@ -103,7 +101,6 @@
             text-align: center;
         }
         
-        /* ==================== MODE CLAIR ==================== */
         body.light-mode {
             background-color: #f8fafc !important;
             color: #0f172a !important;
@@ -118,7 +115,6 @@
             color: #64748b !important;
         }
         
-        /* ==================== ZONE DE RECHERCHE ==================== */
         .search-input {
             background: var(--bg-input);
             border: 1px solid var(--border-gold-strong);
@@ -135,7 +131,6 @@
             box-shadow: 0 0 15px rgba(220, 167, 115, 0.3);
         }
         
-        /* ==================== CHAT ==================== */
         .chat-message {
             padding: 8px 12px;
             border-radius: 12px;
@@ -145,6 +140,9 @@
         }
         .chat-message.staff { background: var(--text-gold); color: #1c1917; margin-left: auto; }
         .chat-message.guest { background: var(--bg-card-hover); color: var(--text-main); margin-right: auto; }
+        
+        .chat-typing-indicator { font-size: 9px; color: var(--text-muted); font-style: italic; margin-left: 12px; }
+        .chat-presence-status { font-size: 10px; margin-bottom: 8px; }
     </style>
 </head>
 <body class="min-h-screen p-3 sm:p-6">
@@ -166,7 +164,7 @@
             </div>
             <div class="flex items-center gap-3">
                 <span class="text-[10px] text-emerald-400 font-bold flex items-center gap-1">
-                    <span class="w-2 h-2 bg-emerald-400 rounded-full pulse-notification"></span>
+                    <span class="w-2 h-2 bg-emerald-400 rounded-full"></span>
                     LIVE
                 </span>
                 <button onclick="enableSoundAlerts()" id="btnSoundToggle" class="sound-toggle-btn text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-3 py-2 rounded-xl font-bold hover:bg-amber-500/40 transition">
@@ -209,7 +207,6 @@
 
         <!-- ==================== SECTION ANALYTICS ==================== -->
         <div id="analyticsSection" class="hidden space-y-6">
-            <!-- Filtres de période -->
             <div class="flex gap-2 overflow-x-auto scrollbar-none">
                 <button onclick="setAnalyticsPeriod('today')" id="periodToday" class="px-4 py-2 rounded-xl bg-[var(--text-gold)] text-stone-950 text-xs font-bold whitespace-nowrap">Aujourd'hui</button>
                 <button onclick="setAnalyticsPeriod('week')" id="periodWeek" class="px-4 py-2 rounded-xl remal-card text-muted-custom text-xs font-bold whitespace-nowrap">Cette semaine</button>
@@ -217,7 +214,6 @@
                 <button onclick="setAnalyticsPeriod('all')" id="periodAll" class="px-4 py-2 rounded-xl remal-card text-muted-custom text-xs font-bold whitespace-nowrap">Tout</button>
             </div>
             
-            <!-- Statistiques principales -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div class="mini-stat-card">
                     <div class="text-2xl font-serif-luxury font-bold text-[var(--text-gold)]" id="analyticsTotalOrders">0</div>
@@ -237,7 +233,6 @@
                 </div>
             </div>
             
-            <!-- Graphiques -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="remal-card rounded-2xl p-4">
                     <h3 class="text-xs font-bold text-[var(--text-gold)] uppercase tracking-wider mb-3">Commandes par heure</h3>
@@ -249,13 +244,11 @@
                 </div>
             </div>
             
-            <!-- Performance -->
             <div class="remal-card rounded-2xl p-4">
                 <h3 class="text-xs font-bold text-[var(--text-gold)] uppercase tracking-wider mb-3">Performance par statut</h3>
                 <canvas id="chartStatusBreakdown" width="400" height="150"></canvas>
             </div>
             
-            <!-- Bouton export -->
             <div class="flex gap-2">
                 <button onclick="exportAnalyticsCSV()" class="flex-1 bg-emerald-500/20 text-emerald-400 py-3 rounded-xl text-xs font-bold hover:bg-emerald-500/40 transition">
                     📥 Export CSV
@@ -339,7 +332,6 @@
         <!-- ==================== SECTION REQUÊTES ==================== -->
         <div id="requestsSection" class="space-y-6">
             
-            <!-- STATISTIQUES PRINCIPALES -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div class="stat-card remal-card rounded-2xl p-4 text-center">
                     <div class="text-3xl font-serif-luxury font-bold text-[var(--text-gold)]" id="statTotalOrders">0</div>
@@ -359,7 +351,6 @@
                 </div>
             </div>
 
-            <!-- STATISTIQUES F&B -->
             <div id="foodBeverageStats" class="hidden grid grid-cols-2 md:grid-cols-4 gap-3">
                 <div class="mini-stat-card">
                     <div class="text-lg font-serif-luxury font-bold text-[var(--text-gold)]" id="fbStatTotalOrders">0</div>
@@ -379,13 +370,11 @@
                 </div>
             </div>
 
-            <!-- RECHERCHE -->
             <div class="relative">
                 <i class="fas fa-search absolute left-3.5 top-3 text-muted-custom text-xs"></i>
                 <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Rechercher par chambre, nom, article..." class="search-input pl-9">
             </div>
 
-            <!-- Filtres -->
             <div class="flex gap-2 overflow-x-auto scrollbar-none">
                 <button onclick="filterStaffOrders('all')" id="filterAll" class="px-4 py-2 rounded-xl bg-[var(--text-gold)] text-stone-950 text-xs font-bold whitespace-nowrap">All</button>
                 <button onclick="filterStaffOrders('Pending')" id="filterPending" class="px-4 py-2 rounded-xl remal-card text-muted-custom text-xs font-bold whitespace-nowrap">🕐 Pending</button>
@@ -396,7 +385,6 @@
                 <button onclick="filterStaffOrders('In Progress')" id="filterInProgress" class="px-4 py-2 rounded-xl remal-card text-muted-custom text-xs font-bold whitespace-nowrap">👨‍💼 In Progress</button>
             </div>
 
-            <!-- Commandes -->
             <div id="staffOrdersContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
         </div>
 
@@ -409,7 +397,9 @@
                     </h3>
                     <button onclick="closeChatModal()" class="text-muted-custom hover:text-[var(--text-main)] text-xl">✕</button>
                 </div>
+                <div id="chatPresenceStatus" class="chat-presence-status text-gray-400">● Invité hors ligne</div>
                 <div id="chatMessagesContainer" class="flex-1 overflow-y-auto space-y-2 pr-2"></div>
+                <div id="chatTypingIndicator" class="chat-typing-indicator hidden">L'invité est en train d'écrire...</div>
                 <div class="flex gap-2 pt-2 border-t border-[var(--border-gold)]">
                     <input type="text" id="chatInput" placeholder="Écrire un message..." class="flex-1 remal-input rounded-xl px-3 py-2 text-xs" onkeypress="if(event.key==='Enter') sendChatMessage()">
                     <button onclick="sendChatMessage()" class="bg-[#DCA773] text-stone-950 font-bold px-4 py-2 rounded-xl text-xs">Envoyer</button>
@@ -434,9 +424,252 @@
         let analyticsPeriod = 'today';
         let searchQuery = '';
         let analyticsCharts = {};
-        let currentChatRoom = null;
-        let currentChatGuest = null;
-        let chatMessages = [];
+        let staffChatManager = null;
+
+        // ==================== CHAT MANAGER CLASS ====================
+        class StaffChatManager {
+            constructor(supabaseClient) {
+                this.supabase = supabaseClient;
+                this.currentRoom = null;
+                this.currentGuest = null;
+                this.messages = [];
+                this.channel = null;
+                this.typingTimeout = null;
+            }
+
+            async openChat(roomNumber, guestName) {
+                this.currentRoom = String(roomNumber);
+                this.currentGuest = guestName;
+                
+                document.getElementById('chatGuestName').textContent = 
+                    `${guestName} (Chambre ${roomNumber})`;
+                document.getElementById('chatModal').classList.remove('hidden');
+                
+                await this.loadMessages();
+                await this.markMessagesAsRead();
+                this.subscribeToRealtime();
+                await this.trackPresence();
+            }
+
+            closeChat() {
+                document.getElementById('chatModal').classList.add('hidden');
+                this.currentRoom = null;
+                this.currentGuest = null;
+                
+                if (this.channel) {
+                    this.supabase.removeChannel(this.channel);
+                    this.channel = null;
+                }
+            }
+
+            async loadMessages() {
+                if (!this.currentRoom) return [];
+                
+                try {
+                    const { data, error } = await this.supabase
+                        .from('chat_messages')
+                        .select('*')
+                        .eq('room_number', this.currentRoom)
+                        .order('created_at', { ascending: true })
+                        .limit(200);
+                        
+                    if (error) throw error;
+                    
+                    this.messages = data || [];
+                    this.renderMessages();
+                    return this.messages;
+                } catch (error) {
+                    console.error('Erreur de chargement des messages:', error);
+                    return [];
+                }
+            }
+
+            async markMessagesAsRead() {
+                if (!this.currentRoom) return;
+                
+                try {
+                    const { error } = await this.supabase
+                        .from('chat_messages')
+                        .update({ is_read: true })
+                        .eq('room_number', this.currentRoom)
+                        .eq('sender', 'guest')
+                        .eq('is_read', false);
+                        
+                    if (error) console.warn('Erreur de marquage:', error);
+                } catch (error) {
+                    console.warn('Erreur de marquage:', error);
+                }
+            }
+
+            subscribeToRealtime() {
+                if (!this.currentRoom || !this.supabase) return;
+                
+                if (this.channel) {
+                    this.supabase.removeChannel(this.channel);
+                }
+                
+                this.channel = this.supabase
+                    .channel(`staff-chat-${this.currentRoom}`)
+                    .on('postgres_changes', {
+                        event: 'INSERT',
+                        schema: 'public',
+                        table: 'chat_messages',
+                        filter: `room_number=eq.${this.currentRoom}`
+                    }, (payload) => {
+                        const newMessage = payload.new;
+                        
+                        if (newMessage && !this.messages.some(m => m.id === newMessage.id)) {
+                            this.messages.push(newMessage);
+                            this.renderMessages();
+                            
+                            if (newMessage.sender === 'guest') {
+                                this.markMessagesAsRead();
+                            }
+                        }
+                    })
+                    .on('broadcast', { event: 'typing' }, (payload) => {
+                        if (payload.payload.room_number === this.currentRoom && payload.payload.sender === 'guest') {
+                            this.showTypingIndicator(payload.payload.is_typing);
+                        }
+                    })
+                    .on('presence', { event: 'sync' }, () => {
+                        this.updatePresenceDisplay();
+                    })
+                    .subscribe(async (status) => {
+                        if (status === 'SUBSCRIBED') {
+                            await this.trackPresence();
+                        }
+                    });
+            }
+
+            async trackPresence() {
+                if (!this.channel || !this.currentRoom) return;
+                
+                await this.channel.track({
+                    user_type: 'staff',
+                    room_number: this.currentRoom,
+                    staff_name: 'Staff Member',
+                    online_at: new Date().toISOString()
+                });
+            }
+
+            updatePresenceDisplay() {
+                if (!this.channel || !this.currentRoom) return;
+                
+                const state = this.channel.presenceState();
+                const guestOnline = Object.values(state).some(
+                    presence => presence[0]?.user_type === 'guest' && 
+                               presence[0]?.room_number === this.currentRoom
+                );
+                
+                const presenceElement = document.getElementById('chatPresenceStatus');
+                if (presenceElement) {
+                    presenceElement.textContent = guestOnline ? '● Invité en ligne' : '● Invité hors ligne';
+                    presenceElement.className = guestOnline ? 
+                        'chat-presence-status text-emerald-400' : 
+                        'chat-presence-status text-gray-400';
+                }
+            }
+
+            showTypingIndicator(isTyping) {
+                const typingElement = document.getElementById('chatTypingIndicator');
+                if (!typingElement) return;
+                
+                if (isTyping) {
+                    typingElement.textContent = `${this.currentGuest} est en train d'écrire...`;
+                    typingElement.classList.remove('hidden');
+                } else {
+                    typingElement.classList.add('hidden');
+                }
+            }
+
+            async sendMessage(messageText) {
+                if (!messageText || !messageText.trim() || !this.currentRoom) return null;
+                
+                const message = {
+                    room_number: this.currentRoom,
+                    sender: 'staff',
+                    staff_name: 'Staff Member',
+                    message: messageText.trim(),
+                    is_read: false,
+                    created_at: new Date().toISOString()
+                };
+                
+                try {
+                    const { data, error } = await this.supabase
+                        .from('chat_messages')
+                        .insert([message])
+                        .select()
+                        .single();
+                        
+                    if (error) throw error;
+                    
+                    this.messages.push(data);
+                    this.renderMessages();
+                    
+                    return data;
+                } catch (error) {
+                    console.error('Erreur d\'envoi:', error);
+                    return null;
+                }
+            }
+
+            renderMessages() {
+                const container = document.getElementById('chatMessagesContainer');
+                if (!container) return;
+                
+                container.innerHTML = this.messages.map(msg => {
+                    const isStaff = msg.sender === 'staff';
+                    const time = new Date(msg.created_at).toLocaleTimeString([], {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    
+                    return `
+                        <div class="chat-message ${isStaff ? 'staff' : 'guest'}">
+                            <div class="flex items-start gap-2">
+                                <div class="flex-1">
+                                    <p class="text-[10px]">${msg.message}</p>
+                                    <div class="flex items-center gap-2 mt-1">
+                                        <p class="text-[8px] opacity-60">${time}</p>
+                                        ${isStaff && msg.is_read ? '<span class="text-[8px] text-blue-400">✓✓ Lu</span>' : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+                container.scrollTop = container.scrollHeight;
+            }
+        }
+
+        // ==================== CHAT FUNCTIONS ====================
+        function openChatModal(roomNumber, guestName) {
+            if (!staffChatManager) {
+                staffChatManager = new StaffChatManager(supabaseClient);
+            }
+            staffChatManager.openChat(roomNumber, guestName);
+        }
+
+        function closeChatModal() {
+            if (staffChatManager) {
+                staffChatManager.closeChat();
+            }
+        }
+
+        async function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message || !staffChatManager) return;
+            
+            const sent = await staffChatManager.sendMessage(message);
+            if (sent) {
+                input.value = '';
+                input.focus();
+            }
+        }
 
         // ==================== HEURE DE L'APPAREIL ====================
         function updateDateTimeDisplay() {
@@ -463,7 +696,6 @@
         function sendBrowserNotification(title, body) {
             if ('Notification' in window && Notification.permission === 'granted') {
                 new Notification(title, { body: body, icon: 'logo.png' });
-                // Vibration sur mobile
                 if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
             }
         }
@@ -650,7 +882,6 @@
             document.getElementById('analyticsTotalRevenue').innerText = 'AED ' + totalRevenue.toFixed(2);
             document.getElementById('analyticsResolutionRate').innerText = resolutionRate + '%';
             
-            // Temps moyen de résolution
             let totalTime = 0;
             let timeCount = 0;
             completedRequests.forEach(r => {
@@ -662,7 +893,6 @@
             const avgTime = timeCount > 0 ? Math.round(totalTime / timeCount) : 0;
             document.getElementById('analyticsAvgTime').innerText = avgTime + ' min';
             
-            // Graphique commandes par heure
             const hourCounts = Array(24).fill(0);
             filteredRequests.forEach(r => {
                 const hour = new Date(r.created_at).getHours();
@@ -679,7 +909,6 @@
                 options: { responsive: true, plugins: { legend: { display: false } } }
             });
             
-            // Graphique par service
             const serviceCounts = {};
             filteredRequests.forEach(r => {
                 const key = r.serviceLabel || 'Other';
@@ -696,7 +925,6 @@
                 options: { responsive: true }
             });
             
-            // Graphique par statut
             const statusCounts = { 'Pending': 0, 'In Progress': 0, 'Completed': 0 };
             filteredRequests.forEach(r => {
                 if (r.status === 'Pending') statusCounts['Pending']++;
@@ -864,66 +1092,6 @@
             window.open(pdfUrl, '_blank');
         }
 
-        // ==================== CHAT ====================
-        function openChatModal(roomNumber, guestName) {
-            currentChatRoom = roomNumber;
-            currentChatGuest = guestName;
-            document.getElementById('chatGuestName').innerText = guestName + ' (Room ' + roomNumber + ')';
-            document.getElementById('chatMessagesContainer').innerHTML = '';
-            document.getElementById('chatModal').classList.remove('hidden');
-            loadChatMessages();
-        }
-
-        function closeChatModal() {
-            document.getElementById('chatModal').classList.add('hidden');
-            currentChatRoom = null;
-        }
-
-        async function loadChatMessages() {
-            if (!currentChatRoom || !supabaseClient) return;
-            const { data } = await supabaseClient
-                .from('chat_messages')
-                .select('*')
-                .or(`room_number.eq.${currentChatRoom},guest_room.eq.${currentChatRoom}`)
-                .order('created_at', { ascending: true })
-                .limit(50);
-            if (data) {
-                chatMessages = data;
-                renderChatMessages();
-            }
-        }
-
-        function renderChatMessages() {
-            const container = document.getElementById('chatMessagesContainer');
-            container.innerHTML = chatMessages.map(msg => `
-                <div class="chat-message ${msg.sender === 'staff' ? 'staff' : 'guest'}">
-                    <p>${msg.message}</p>
-                    <p class="text-[8px] opacity-60">${new Date(msg.created_at).toLocaleTimeString()}</p>
-                </div>
-            `).join('');
-        }
-
-        async function sendChatMessage() {
-            const input = document.getElementById('chatInput');
-            const message = input.value.trim();
-            if (!message || !currentChatRoom) return;
-            
-            const newMessage = {
-                room_number: currentChatRoom,
-                sender: 'staff',
-                message: message,
-                created_at: new Date().toISOString()
-            };
-            
-            if (supabaseClient) {
-                await supabaseClient.from('chat_messages').insert([newMessage]);
-            }
-            
-            chatMessages.push(newMessage);
-            renderChatMessages();
-            input.value = '';
-        }
-
         // ==================== RÉCUPÉRATION DES DONNÉES ====================
         async function fetchAllData() {
             const { data: foodData } = await supabaseClient.from('food_orders').select('*').order('created_at', { ascending: false }).limit(200);
@@ -980,11 +1148,6 @@
                     fetchAllData();
                 })
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'offers' }, () => { fetchOffers(); })
-                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages' }, (payload) => {
-                    if (currentChatRoom && payload.new && payload.new.room_number == currentChatRoom) {
-                        loadChatMessages();
-                    }
-                })
                 .subscribe();
         }
 
@@ -1156,7 +1319,6 @@
             if (!file) return;
             if (file.size > 5 * 1024 * 1024) { showToast('Image too large. Max 5MB.', 'error'); return; }
             
-            // Compression d'image
             const reader = new FileReader();
             reader.onload = function(e) {
                 const img = new Image();
@@ -1268,7 +1430,13 @@
             if (icon) icon.className = isLight ? 'fas fa-moon text-sm' : 'fas fa-sun text-sm';
         }
 
-        function showToast(msg, type = 'info') { const t = document.createElement('div'); t.className = 'toast-notification toast-in'; t.innerHTML = `<span>${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</span><span class="text-xs font-bold">${msg}</span>`; document.body.appendChild(t); setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 3000); }
+        function showToast(msg, type = 'info') { 
+            const t = document.createElement('div'); 
+            t.className = 'toast-notification toast-in'; 
+            t.innerHTML = `<span>${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</span><span class="text-xs font-bold">${msg}</span>`; 
+            document.body.appendChild(t); 
+            setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 3000); 
+        }
 
         // ==================== TEMPS ÉCOULÉ ====================
         function getTimeAgo(timestamp) {
