@@ -469,7 +469,7 @@
                     const { data, error } = await this.supabase
                         .from('chat_messages')
                         .select('*')
-                        .eq('room_number', this.currentRoom)
+                        .or(`room_number.eq.${this.currentRoom},guest_room.eq.${this.currentRoom}`)
                         .order('created_at', { ascending: true })
                         .limit(200);
                         
@@ -491,7 +491,7 @@
                     const { error } = await this.supabase
                         .from('chat_messages')
                         .update({ is_read: true })
-                        .eq('room_number', this.currentRoom)
+                        .or(`room_number.eq.${this.currentRoom},guest_room.eq.${this.currentRoom}`)
                         .eq('sender', 'guest')
                         .eq('is_read', false);
                         
@@ -513,17 +513,17 @@
                     .on('postgres_changes', {
                         event: 'INSERT',
                         schema: 'public',
-                        table: 'chat_messages',
-                        filter: `room_number=eq.${this.currentRoom}`
+                        table: 'chat_messages'
                     }, (payload) => {
                         const newMessage = payload.new;
-                        
-                        if (newMessage && !this.messages.some(m => m.id === newMessage.id)) {
-                            this.messages.push(newMessage);
-                            this.renderMessages();
-                            
-                            if (newMessage.sender === 'guest') {
-                                this.markMessagesAsRead();
+                        if (newMessage && (String(newMessage.room_number) === this.currentRoom || String(newMessage.guest_room) === this.currentRoom)) {
+                            if (!this.messages.some(m => m.id === newMessage.id)) {
+                                this.messages.push(newMessage);
+                                this.renderMessages();
+                                
+                                if (newMessage.sender === 'guest') {
+                                    this.markMessagesAsRead();
+                                }
                             }
                         }
                     })
@@ -588,6 +588,7 @@
                 
                 const message = {
                     room_number: this.currentRoom,
+                    guest_room: this.currentRoom,
                     sender: 'staff',
                     staff_name: 'Staff Member',
                     message: messageText.trim(),
@@ -1241,9 +1242,9 @@
                             </div>
                             ${request.details && request.details !== 'None' ? `<div class="bg-amber-500/10 border border-amber-500/20 p-2.5 rounded-xl"><p class="text-[10px] font-bold text-amber-400">📝 Notes:</p><p class="text-[10px] text-amber-300">${request.details}</p></div>` : ''}
                             <div class="flex gap-2 pt-1">
-                                ${request.status === 'Pending' ? `<button onclick="updateFoodOrderStatus(${request.id}, 'Preparing')" class="flex-1 bg-blue-500/20 text-blue-400 py-2.5 rounded-xl text-xs font-bold hover:bg-blue-500/40 transition">👨‍🍳 Start</button>` :
-                                request.status === 'Preparing' ? `<button onclick="updateFoodOrderStatus(${request.id}, 'Ready')" class="flex-1 bg-purple-500/20 text-purple-400 py-2.5 rounded-xl text-xs font-bold hover:bg-purple-500/40 transition">✅ Ready</button>` :
-                                request.status === 'Ready' ? `<button onclick="updateFoodOrderStatus(${request.id}, 'Delivered')" class="flex-1 bg-emerald-500/20 text-emerald-400 py-2.5 rounded-xl text-xs font-bold hover:bg-emerald-500/40 transition">🚚 Deliver</button>` :
+                                ${request.status === 'Pending' ? `<button onclick="updateFoodOrderStatus(${request.id}, &quot;Preparing&quot;)" class="flex-1 bg-blue-500/20 text-blue-400 py-2.5 rounded-xl text-xs font-bold hover:bg-blue-500/40 transition">👨‍🍳 Start</button>` :
+                                request.status === 'Preparing' ? `<button onclick="updateFoodOrderStatus(${request.id}, &quot;Ready&quot;)" class="flex-1 bg-purple-500/20 text-purple-400 py-2.5 rounded-xl text-xs font-bold hover:bg-purple-500/40 transition">✅ Ready</button>` :
+                                request.status === 'Ready' ? `<button onclick="updateFoodOrderStatus(${request.id}, &quot;Delivered&quot;)" class="flex-1 bg-emerald-500/20 text-emerald-400 py-2.5 rounded-xl text-xs font-bold hover:bg-emerald-500/40 transition">🚚 Deliver</button>` :
                                 `<span class="flex-1 text-center text-[10px] text-emerald-400 font-bold py-2.5">✅ Completed</span>`}
                             </div>
                             <div class="flex gap-2 pt-1">
@@ -1269,8 +1270,8 @@
                             ${request.details ? `<div class="bg-[var(--bg-dark)] p-3 rounded-xl text-[10px] text-muted-custom whitespace-pre-line">${request.details}</div>` : ''}
                             <div class="flex justify-between items-center text-xs"><span class="text-[10px] text-muted-custom">${timeAgo}</span></div>
                             <div class="flex gap-2 pt-1">
-                                ${request.status === 'Pending' ? `<button onclick="updateGuestRequestStatus(${request.id}, 'In Progress')" class="flex-1 bg-blue-500/20 text-blue-400 py-2.5 rounded-xl text-xs font-bold hover:bg-blue-500/40 transition">👨‍💼 Handle</button>` :
-                                request.status === 'In Progress' ? `<button onclick="updateGuestRequestStatus(${request.id}, 'Completed')" class="flex-1 bg-emerald-500/20 text-emerald-400 py-2.5 rounded-xl text-xs font-bold hover:bg-emerald-500/40 transition">✔️ Complete</button>` :
+                                ${request.status === 'Pending' ? `<button onclick="updateGuestRequestStatus(${request.id}, &quot;In Progress&quot;)" class="flex-1 bg-blue-500/20 text-blue-400 py-2.5 rounded-xl text-xs font-bold hover:bg-blue-500/40 transition">👨‍💼 Handle</button>` :
+                                request.status === 'In Progress' ? `<button onclick="updateGuestRequestStatus(${request.id}, &quot;Completed&quot;)" class="flex-1 bg-emerald-500/20 text-emerald-400 py-2.5 rounded-xl text-xs font-bold hover:bg-emerald-500/40 transition">✔️ Complete</button>` :
                                 `<span class="flex-1 text-center text-[10px] text-emerald-400 font-bold py-2.5">✅ Completed</span>`}
                                 <button onclick="openChatModal('${request.room_number}', '${request.guest_name}')" class="bg-purple-500/20 text-purple-400 px-3 py-2.5 rounded-xl text-xs font-bold hover:bg-purple-500/40 transition">💬</button>
                                 <button onclick="deleteGuestRequest(${request.id})" class="bg-red-500/10 text-red-400 px-3 py-2.5 rounded-xl text-xs font-bold hover:bg-red-500/30 transition">🗑️</button>
@@ -1291,13 +1292,47 @@
 
         // ==================== MISE À JOUR DES STATUTS ====================
         async function updateFoodOrderStatus(orderId, newStatus) {
-            const { error } = await supabaseClient.from('food_orders').update({ status: newStatus, updated_at: new Date().toISOString() }).eq('id', orderId);
-            if (!error) { showToast(`Order #${orderId} → ${newStatus}`, 'success'); fetchAllData(); }
+            let { error } = await supabaseClient
+                .from('food_orders')
+                .update({ status: newStatus, updated_at: new Date().toISOString() })
+                .eq('id', orderId);
+
+            if (error) {
+                const fallback = await supabaseClient
+                    .from('food_orders')
+                    .update({ status: newStatus })
+                    .eq('id', orderId);
+                error = fallback.error;
+            }
+
+            if (!error) { 
+                showToast(`Commande #${orderId} → ${newStatus}`, 'success'); 
+                fetchAllData(); 
+            } else {
+                showToast(`Erreur : ${error.message}`, 'error');
+            }
         }
 
         async function updateGuestRequestStatus(requestId, newStatus) {
-            const { error } = await supabaseClient.from('guest_requests').update({ status: newStatus, updated_at: new Date().toISOString() }).eq('id', requestId);
-            if (!error) { showToast(`Request #${requestId} → ${newStatus}`, 'success'); fetchAllData(); }
+            let { error } = await supabaseClient
+                .from('guest_requests')
+                .update({ status: newStatus, updated_at: new Date().toISOString() })
+                .eq('id', requestId);
+
+            if (error) {
+                const fallback = await supabaseClient
+                    .from('guest_requests')
+                    .update({ status: newStatus })
+                    .eq('id', requestId);
+                error = fallback.error;
+            }
+
+            if (!error) { 
+                showToast(`Demande #${requestId} → ${newStatus}`, 'success'); 
+                fetchAllData(); 
+            } else {
+                showToast(`Erreur : ${error.message}`, 'error');
+            }
         }
 
         // ==================== SUPPRESSION ====================
