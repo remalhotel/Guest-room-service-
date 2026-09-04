@@ -1,46 +1,14 @@
 <!DOCTYPE html>
-<html lang="fr" dir="ltr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Remal Hotel - Kitchen Dashboard</title>
+    <title>Kitchen Dashboard - Remal Hotel</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --bg-dark: #0a0908;
-            --bg-card: rgba(22, 20, 18, 0.92);
-            --text-gold: #DCA773;
-            --border-gold: rgba(220, 167, 115, 0.35);
-            --border-gold-strong: rgba(220, 167, 115, 0.65);
-            --text-main: #ffffff;
-            --text-muted: #c2bab0;
-        }
-
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: var(--bg-dark); 
-            color: var(--text-main); 
-        }
-
-        .font-serif-luxury { font-family: 'Cinzel', serif; }
-        .remal-card { background: var(--bg-card); backdrop-filter: blur(20px); border: 1px solid var(--border-gold-strong); }
-        
-        @keyframes pulse-red { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
-        .pulse-notification { animation: pulse-red 1.5s infinite; }
-
-        .status-badge {
-            padding: 0.3rem 0.8rem;
-            border-radius: 9999px;
-            font-size: 0.65rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            border: 1px solid;
-        }
-    </style>
+    <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body class="min-h-screen p-3 sm:p-6">
 
@@ -57,36 +25,39 @@
                     <p class="text-[10px] text-muted-custom uppercase">Remal Hotel & Villas • Room Service</p>
                 </div>
             </div>
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-3">
                 <span class="text-[10px] text-emerald-400 font-bold flex items-center gap-1">
                     <span class="w-2 h-2 bg-emerald-400 rounded-full pulse-notification"></span>
                     LIVE
                 </span>
+                <button onclick="logoutStaff()" class="bg-red-500/20 text-red-400 border border-red-500/30 px-4 py-2 rounded-xl text-xs font-bold hover:bg-red-500/30 transition">
+                    <i class="fas fa-sign-out-alt"></i> Exit
+                </button>
             </div>
         </div>
 
         <!-- Statistiques -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div class="remal-card rounded-2xl p-4 text-center">
+            <div class="stat-card remal-card rounded-2xl p-4 text-center">
                 <div class="text-3xl font-serif-luxury font-bold text-[var(--text-gold)]" id="statTotalOrders">0</div>
                 <p class="text-[10px] text-muted-custom uppercase mt-1 font-bold">Total</p>
             </div>
-            <div class="remal-card rounded-2xl p-4 text-center">
+            <div class="stat-card remal-card rounded-2xl p-4 text-center">
                 <div class="text-3xl font-serif-luxury font-bold text-amber-400" id="statPendingOrders">0</div>
                 <p class="text-[10px] text-muted-custom uppercase mt-1 font-bold">Pending</p>
             </div>
-            <div class="remal-card rounded-2xl p-4 text-center">
+            <div class="stat-card remal-card rounded-2xl p-4 text-center">
                 <div class="text-3xl font-serif-luxury font-bold text-blue-400" id="statPreparingOrders">0</div>
                 <p class="text-[10px] text-muted-custom uppercase mt-1 font-bold">Preparing</p>
             </div>
-            <div class="remal-card rounded-2xl p-4 text-center">
+            <div class="stat-card remal-card rounded-2xl p-4 text-center">
                 <div class="text-3xl font-serif-luxury font-bold text-emerald-400" id="statCompletedOrders">0</div>
                 <p class="text-[10px] text-muted-custom uppercase mt-1 font-bold">Delivered</p>
             </div>
         </div>
 
         <!-- Filtres -->
-        <div class="flex gap-2 overflow-x-auto" style="scrollbar-width: none;">
+        <div class="flex gap-2 overflow-x-auto scrollbar-none">
             <button onclick="filterStaffOrders('all')" id="filterAll" class="px-4 py-2 rounded-xl bg-[var(--text-gold)] text-stone-950 text-xs font-bold whitespace-nowrap">All</button>
             <button onclick="filterStaffOrders('Pending')" id="filterPending" class="px-4 py-2 rounded-xl remal-card text-muted-custom text-xs font-bold whitespace-nowrap">🕐 Pending</button>
             <button onclick="filterStaffOrders('Preparing')" id="filterPreparing" class="px-4 py-2 rounded-xl remal-card text-muted-custom text-xs font-bold whitespace-nowrap">👨‍🍳 Preparing</button>
@@ -98,11 +69,14 @@
         <div id="staffOrdersContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
     </div>
 
+    <script src="assets/js/config.js"></script>
     <script>
-        const SUPABASE_URL = 'https://jbcewxdvhvusfmlpjldk.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpiY2V3eGR2aHZ1c2ZtbHBqbGRrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg0OTA3NTcsImV4cCI6MjEwNDA2Njc1N30.-AlYlsf5pAOaxNu_hKMUO6sZISM_l5jafcET9CqfLJc';
-        
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // Vérification d'authentification
+        if (!sessionStorage.getItem('staff_authorized')) {
+            window.location.href = 'staff-login.html';
+        }
+
+        const supabaseClient = initSupabaseClient();
         let staffOrders = [];
         let currentFilter = 'all';
 
@@ -162,7 +136,7 @@
                 const items = Array.isArray(order.items) ? order.items : [];
 
                 return `
-                    <div class="remal-card rounded-2xl p-4 space-y-3">
+                    <div class="order-card remal-card rounded-2xl p-4 space-y-3">
                         <div class="flex justify-between items-start">
                             <div>
                                 <p class="font-bold text-[var(--text-gold)] text-sm">Room ${order.room_number}</p>
@@ -237,6 +211,11 @@
             if (diffMins < 60) return `${diffMins} min ago`;
             const diffHours = Math.floor(diffMins / 60);
             return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+        }
+
+        function logoutStaff() {
+            sessionStorage.removeItem('staff_authorized');
+            window.location.href = 'staff-login.html';
         }
     </script>
 </body>
