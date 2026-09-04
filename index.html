@@ -50,7 +50,6 @@
         
         .animate-fade-in-up { animation: fadeInUp 0.5s ease forwards; }
 
-        /* Style pour les onglets */
         .tab-btn {
             transition: all 0.3s ease;
         }
@@ -73,7 +72,6 @@
             border-color: var(--text-gold);
         }
 
-        /* Style pour les cartes de service */
         .service-card {
             transition: all 0.3s ease;
             cursor: pointer;
@@ -83,6 +81,77 @@
             transform: translateY(-3px);
             border-color: var(--text-gold);
             box-shadow: 0 10px 30px rgba(220, 167, 115, 0.2);
+        }
+
+        /* Style pour les offres */
+        .offer-card {
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .offer-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(220, 167, 115, 0.3);
+            border-color: var(--text-gold);
+        }
+        
+        .offer-card img {
+            transition: all 0.5s ease;
+        }
+        
+        .offer-card:hover img {
+            transform: scale(1.05);
+        }
+
+        /* Carrousel d'offres */
+        .offers-carousel {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            gap: 1rem;
+            padding: 0.5rem;
+        }
+        
+        .offers-carousel::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .offer-slide {
+            scroll-snap-align: center;
+            flex-shrink: 0;
+            width: 280px;
+        }
+
+        /* Bannière d'offre en vedette */
+        .featured-offer {
+            position: relative;
+            overflow: hidden;
+            border-radius: 1rem;
+            border: 1px solid var(--border-gold-strong);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .featured-offer:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(220, 167, 115, 0.3);
+        }
+        
+        .featured-offer img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+        
+        .featured-offer-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 50%, transparent 100%);
+            padding: 20px 15px 15px;
         }
     </style>
 </head>
@@ -97,7 +166,7 @@
         
         <div class="w-full max-w-md lock-card p-8 rounded-[2rem] space-y-6">
             
-            <!-- BANNIÈRE REMAL -->
+            <!-- BANNIÈRE GUEST HUB -->
             <div class="remal-banner text-center space-y-2 rounded-2xl p-6 border border-[var(--border-gold-strong)]">
                 <div class="w-20 h-20 mx-auto rounded-full bg-[var(--text-gold)] flex items-center justify-center shadow-2xl">
                     <i class="fas fa-concierge-bell text-2xl text-stone-950"></i>
@@ -149,14 +218,6 @@
                         class="w-full bg-[#DCA773] hover:bg-[#ebd0b3] text-stone-950 font-black py-4 rounded-2xl text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2.5 shadow-lg hover:scale-[1.02] active:scale-[0.98]">
                     <i class="fas fa-unlock"></i> Verify & Access
                 </button>
-            </div>
-
-            <!-- Sélecteur de langue -->
-            <div class="flex justify-center gap-2 pt-2">
-                <button onclick="setLanguage('en')" class="text-[10px] px-3 py-1.5 rounded-full border border-[var(--border-gold)] text-muted-custom hover:text-[var(--text-gold)] transition font-bold">EN</button>
-                <button onclick="setLanguage('fr')" class="text-[10px] px-3 py-1.5 rounded-full border border-[var(--border-gold)] text-muted-custom hover:text-[var(--text-gold)] transition font-bold">FR</button>
-                <button onclick="setLanguage('ar')" class="text-[10px] px-3 py-1.5 rounded-full border border-[var(--border-gold)] text-muted-custom hover:text-[var(--text-gold)] transition font-bold">عربي</button>
-                <button onclick="setLanguage('hi')" class="text-[10px] px-3 py-1.5 rounded-full border border-[var(--border-gold)] text-muted-custom hover:text-[var(--text-gold)] transition font-bold">हिन्दी</button>
             </div>
         </div>
     </div>
@@ -330,13 +391,12 @@
                     </div>
                 </div>
 
-                <!-- ==================== ROOM SERVICE (Formulaire complet) ==================== -->
+                <!-- Room Service Section -->
                 <div id="roomServiceSection" class="hidden space-y-4 animate-fade-in-up">
                     <button onclick="backToServices()" class="text-[10px] text-muted-custom hover:text-[var(--text-gold)] font-bold transition">
                         <i class="fas fa-arrow-left mr-1"></i> Back to Services
                     </button>
 
-                    <!-- Suivi de commande -->
                     <div id="orderTrackingSection" class="hidden p-4 bg-[var(--bg-card-hover)] border border-[var(--border-gold-strong)] rounded-2xl space-y-3">
                         <div class="flex justify-between items-center">
                             <span class="text-[10px] font-bold text-[var(--text-gold)] uppercase tracking-wider">
@@ -367,15 +427,6 @@
                         </div>
                     </div>
 
-                    <!-- Historique -->
-                    <div id="orderHistorySection" class="hidden p-4 bg-[var(--bg-card-hover)] border border-[var(--border-gold-strong)] rounded-2xl space-y-2">
-                        <span class="text-[10px] font-bold text-[var(--text-gold)] uppercase tracking-wider">
-                            <i class="fas fa-history mr-1"></i> Recent Orders
-                        </span>
-                        <div id="orderHistoryContainer" class="space-y-2 max-h-40 overflow-y-auto scrollbar-none"></div>
-                    </div>
-
-                    <!-- Période de repas -->
                     <div>
                         <label class="block font-bold text-[var(--text-gold)] mb-1.5 uppercase tracking-wider text-[10px]">Meal Period</label>
                         <select id="guestMealType" class="w-full remal-input rounded-2xl p-3.5 font-bold cursor-pointer text-xs">
@@ -387,7 +438,6 @@
                         </select>
                     </div>
 
-                    <!-- Bouton menu -->
                     <div>
                         <button onclick="openMenuModal()" class="w-full bg-[var(--bg-card-hover)] hover:border-[var(--text-gold)] text-[var(--text-gold)] border border-[var(--border-gold-strong)] font-bold py-4 px-4 rounded-2xl transition flex items-center justify-between shadow-md">
                             <span class="flex items-center gap-3">
@@ -397,40 +447,20 @@
                         </button>
                     </div>
 
-                    <!-- Instructions -->
                     <div>
                         <label class="block font-bold text-[var(--text-gold)] mb-1.5 uppercase tracking-wider text-[10px]">Special Instructions / Allergies</label>
                         <textarea id="guestSpecialInstructions" placeholder="e.g., No onions, gluten allergy..." class="w-full h-20 remal-input rounded-2xl p-3.5 outline-none resize-none text-xs"></textarea>
                     </div>
 
-                    <!-- Temps de livraison -->
                     <div>
                         <label class="block font-bold text-[var(--text-gold)] mb-1.5 uppercase tracking-wider text-[10px]">Delivery Time</label>
                         <select id="deliveryTime" class="w-full remal-input rounded-2xl p-3.5 font-bold cursor-pointer text-xs">
                             <option value="As soon as possible">⚡ As soon as possible (~30 min)</option>
                             <option value="In 45 minutes">🕒 In 45 minutes</option>
                             <option value="In 1 hour">🕒 In 1 hour</option>
-                            <option value="Scheduled Breakfast">🥐 Scheduled Breakfast (7:00 AM)</option>
                         </select>
                     </div>
 
-                    <!-- TVA -->
-                    <div id="vatSection" class="hidden p-4 bg-[var(--bg-card-hover)] border border-[var(--border-gold-strong)] rounded-2xl space-y-2">
-                        <div class="flex justify-between text-[10px] text-muted-custom">
-                            <span>Subtotal:</span>
-                            <span id="subtotalDisplay" class="font-bold">AED 0.00</span>
-                        </div>
-                        <div class="flex justify-between text-[10px] text-muted-custom">
-                            <span>VAT (5%):</span>
-                            <span id="vatDisplay" class="font-bold">AED 0.00</span>
-                        </div>
-                        <div class="flex justify-between text-xs font-bold text-[var(--text-gold)] border-t border-[var(--border-gold)] pt-2">
-                            <span>Grand Total:</span>
-                            <span id="grandTotalDisplay" class="font-serif-luxury text-sm">AED 0.00</span>
-                        </div>
-                    </div>
-
-                    <!-- Boutons -->
                     <div class="space-y-3 pt-2">
                         <button onclick="submitRoomServiceOrder('direct')" class="w-full bg-[#DCA773] hover:bg-[#ebd0b3] text-stone-950 font-black py-4 rounded-2xl text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2.5 shadow-lg">
                             <i class="fas fa-concierge-bell"></i> Direct Order to Kitchen
@@ -441,7 +471,7 @@
                     </div>
                 </div>
 
-                <!-- ==================== AUTRES SERVICES (Formulaire générique) ==================== -->
+                <!-- Other Services Section -->
                 <div id="otherServiceSection" class="hidden space-y-4 animate-fade-in-up">
                     <button onclick="backToServices()" class="text-[10px] text-muted-custom hover:text-[var(--text-gold)] font-bold transition">
                         <i class="fas fa-arrow-left mr-1"></i> Back to Services
@@ -458,9 +488,7 @@
                             </div>
                         </div>
 
-                        <div id="otherServiceFields" class="space-y-3">
-                            <!-- Champs dynamiques injectés ici -->
-                        </div>
+                        <div id="otherServiceFields" class="space-y-3"></div>
 
                         <div>
                             <label class="block font-bold text-[var(--text-gold)] mb-1.5 uppercase tracking-wider text-[10px]">Additional Notes</label>
@@ -474,23 +502,20 @@
                 </div>
             </div>
 
-            <!-- ==================== SECTION OFFERS ==================== -->
+            <!-- ==================== SECTION OFFERS (DYNAMIQUE) ==================== -->
             <div id="offersSection" class="hidden space-y-4">
-                <p class="text-center text-[10px] text-muted-custom font-bold uppercase tracking-wider">Exclusive Offers</p>
-                <div class="grid grid-cols-1 gap-3">
-                    <div class="p-4 bg-[var(--bg-card-hover)] border border-[var(--border-gold-strong)] rounded-2xl">
-                        <p class="font-bold text-[var(--text-gold)] text-xs">🏖️ Pool Day Pass - AED 75</p>
-                        <p class="text-[9px] text-muted-custom mt-1">Full day access to Al Waha Pool with towel service</p>
-                    </div>
-                    <div class="p-4 bg-[var(--bg-card-hover)] border border-[var(--border-gold-strong)] rounded-2xl">
-                        <p class="font-bold text-[var(--text-gold)] text-xs">💆 Spa Relaxation - AED 199</p>
-                        <p class="text-[9px] text-muted-custom mt-1">60-min massage + steam room access</p>
-                    </div>
-                    <div class="p-4 bg-[var(--bg-card-hover)] border border-[var(--border-gold-strong)] rounded-2xl">
-                        <p class="font-bold text-[var(--text-gold)] text-xs">🍽️ Dinner Buffet - AED 129</p>
-                        <p class="text-[9px] text-muted-custom mt-1">International buffet at Falaj Restaurant</p>
-                    </div>
+                <p class="text-center text-[10px] text-muted-custom font-bold uppercase tracking-wider">
+                    <i class="fas fa-star mr-1"></i> Exclusive Offers
+                </p>
+                
+                <!-- Indicateur de chargement -->
+                <div id="offersLoading" class="text-center py-4">
+                    <i class="fas fa-spinner fa-spin text-[var(--text-gold)]"></i>
+                    <p class="text-[10px] text-muted-custom mt-2">Loading offers...</p>
                 </div>
+                
+                <!-- Container des offres -->
+                <div id="offersContainer" class="space-y-4"></div>
             </div>
 
             <!-- ==================== SECTION FAQ ==================== -->
@@ -518,7 +543,7 @@
         </div>
     </div>
 
-    <!-- Modale Menu (identique à avant) -->
+    <!-- Modale Menu -->
     <div id="menuModal" class="hidden fixed inset-0 bg-black/90 z-[100] flex items-center justify-center p-4">
         <div class="bg-[var(--bg-card)] border border-[var(--border-gold-strong)] w-full max-w-lg rounded-3xl p-6 space-y-4 max-h-[90vh] flex flex-col">
             <div class="flex justify-between items-center border-b border-[var(--border-gold)] pb-3">
@@ -560,6 +585,7 @@
         let realtimeChannel = null;
         let currentService = null;
         let currentTab = 'services';
+        let currentOffers = [];
 
         const SALUTATIONS_REGEX = /\b(mr|mrs|ms|miss|mme|mlle|dr|prof|eng|sir|madam|lady|lord|sheikh|sheikha)\.?\b/gi;
 
@@ -624,10 +650,88 @@
                 icon: 'fa-tools',
                 fields: [
                     { type: 'select', id: 'maintenance_type', label: 'Issue Type', options: ['Air Conditioning', 'Plumbing', 'Electrical', 'TV / Internet', 'Lighting', 'Other'] },
-                    { type: 'select', id: 'maintenance_urgency', label: 'Urgency', options: ['Low - Whenever possible', 'Medium - Today', 'High - As soon as possible'] }
+                    { type: 'select', id: 'maintenance_urgency', label: 'Urgency', options: ['Low', 'Medium', 'High'] }
                 ]
             }
         };
+
+        // ==================== FONCTIONS OFFRES ====================
+        async function fetchOffers() {
+            const { data, error } = await supabaseClient
+                .from('offers')
+                .select('*')
+                .eq('is_active', true)
+                .order('created_at', { ascending: false })
+                .limit(10);
+            
+            if (data && data.length > 0) {
+                currentOffers = data;
+                renderOffers(data);
+            } else {
+                renderOffers([]);
+            }
+        }
+
+        function renderOffers(offers) {
+            const container = document.getElementById('offersContainer');
+            const loading = document.getElementById('offersLoading');
+            
+            if (loading) loading.classList.add('hidden');
+            
+            if (!offers || offers.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8">
+                        <i class="fas fa-tags text-3xl text-muted-custom mb-2"></i>
+                        <p class="text-[10px] text-muted-custom">No offers available at the moment</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Première offre en vedette (grande carte)
+            const firstOffer = offers[0];
+            const otherOffers = offers.slice(1);
+            
+            let html = `
+                <!-- Offre en vedette -->
+                <div class="featured-offer" onclick="showOfferDetail('${firstOffer.id}')">
+                    <img src="${firstOffer.image}" alt="${firstOffer.title}" onerror="this.src='logo.png'">
+                    <div class="featured-offer-overlay">
+                        <span class="inline-block text-[8px] bg-[var(--text-gold)] text-stone-950 font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider mb-1">Featured</span>
+                        <p class="text-sm font-serif-luxury font-bold text-white">${firstOffer.title}</p>
+                        <p class="text-[10px] text-muted-custom">${firstOffer.description}</p>
+                        <p class="text-lg font-serif-luxury font-bold text-[var(--text-gold)] mt-1">${firstOffer.price}</p>
+                    </div>
+                </div>
+            `;
+            
+            // Autres offres en grille
+            if (otherOffers.length > 0) {
+                html += `<div class="grid grid-cols-2 gap-3">`;
+                otherOffers.forEach(offer => {
+                    html += `
+                        <div class="offer-card remal-card rounded-2xl overflow-hidden cursor-pointer" onclick="showOfferDetail('${offer.id}')">
+                            <img src="${offer.image}" alt="${offer.title}" class="w-full h-24 object-cover" onerror="this.src='logo.png'">
+                            <div class="p-3 space-y-1">
+                                <p class="text-[10px] font-bold text-[var(--text-main)]">${offer.title}</p>
+                                <p class="text-[8px] text-muted-custom">${offer.category}</p>
+                                <p class="text-xs font-serif-luxury font-bold text-[var(--text-gold)]">${offer.price}</p>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += `</div>`;
+            }
+            
+            container.innerHTML = html;
+        }
+
+        function showOfferDetail(offerId) {
+            const offer = currentOffers.find(o => o.id == offerId);
+            if (!offer) return;
+            
+            showToast(`${offer.title} - ${offer.price}`, 'info');
+        }
 
         // ==================== FONCTIONS ONGLETS ====================
         function switchTab(tab) {
@@ -647,6 +751,7 @@
             } else if (tab === 'offers') {
                 document.getElementById('offersSection').classList.remove('hidden');
                 document.getElementById('tabOffers').classList.add('active');
+                fetchOffers();
             } else if (tab === 'faq') {
                 document.getElementById('faqSection').classList.remove('hidden');
                 document.getElementById('tabFaq').classList.add('active');
@@ -656,7 +761,6 @@
         // ==================== FONCTIONS SERVICES ====================
         function showService(serviceId) {
             currentService = serviceId;
-            
             document.getElementById('servicesList').classList.add('hidden');
             
             if (serviceId === 'room_service') {
@@ -672,7 +776,6 @@
                     document.getElementById('otherServiceTitle').innerText = serviceData.title;
                     document.getElementById('otherServiceSubtitle').innerText = serviceData.subtitle;
                     document.getElementById('otherServiceIcon').innerHTML = `<i class="fas ${serviceData.icon}"></i>`;
-                    
                     renderServiceFields(serviceData.fields);
                 }
             }
@@ -687,7 +790,6 @@
 
         function renderServiceFields(fields) {
             const container = document.getElementById('otherServiceFields');
-            
             container.innerHTML = fields.map(field => {
                 if (field.type === 'select') {
                     return `
@@ -725,7 +827,7 @@
             }).join('');
         }
 
-        // ==================== SOUMISSION DES SERVICES ====================
+        // ==================== SOUMISSION ====================
         async function submitOtherService() {
             const room = cachedGuestData?.room || localStorage.getItem('remal_guest_room');
             const notes = document.getElementById('otherServiceNotes').value.trim();
@@ -734,7 +836,6 @@
             if (!serviceData) return;
             
             let details = [];
-            
             serviceData.fields.forEach(field => {
                 const element = document.getElementById(field.id);
                 if (element) {
@@ -759,8 +860,7 @@
                 .select();
             
             if (error) {
-                console.error('Supabase Error:', error);
-                showToast('Error submitting request. Please try again.', 'error');
+                showToast('Error submitting request', 'error');
                 return;
             }
             
@@ -810,6 +910,7 @@
                 vat: vat,
                 total_amount: grandTotal,
                 details: instructions || 'None',
+                delivery_time: deliveryTime,
                 status: 'Pending',
                 created_at: new Date().toISOString()
             };
@@ -820,8 +921,7 @@
                 .select();
 
             if (error) {
-                console.error('Supabase Error:', error);
-                showToast('Error submitting order. Please try again.', 'error');
+                showToast('Error submitting order', 'error');
                 return;
             }
 
@@ -843,7 +943,7 @@
             renderMenuItems();
         }
 
-        // ==================== FONCTIONS MENU (réutilisées) ====================
+        // ==================== MENU ====================
         function openMenuModal() { document.getElementById('menuModal').classList.remove('hidden'); renderMenuItems(); }
         function closeMenuModal() { document.getElementById('menuModal').classList.add('hidden'); }
         function confirmMenuSelection() { closeMenuModal(); }
@@ -1106,6 +1206,7 @@
         initTheme();
         renderMenuItems();
         restaurerSession();
+        fetchOffers();
     </script>
 </body>
 </html>
