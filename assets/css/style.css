@@ -12,7 +12,6 @@
     --text-muted: #c2bab0;
     --card-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.8);
     --lock-screen-bg: linear-gradient(135deg, #0a0908 0%, #1a1714 50%, #0a0908 100%);
-    --header-bg: rgba(22, 20, 18, 0.95);
 }
 
 /* Mode clair */
@@ -29,7 +28,6 @@
     --text-muted: #57514a;
     --card-shadow: 0 25px 50px -12px rgba(180, 122, 62, 0.12);
     --lock-screen-bg: linear-gradient(135deg, #f6f4f0 0%, #e8e4de 50%, #f6f4f0 100%);
-    --header-bg: rgba(255, 255, 255, 0.95);
 }
 
 * {
@@ -190,70 +188,23 @@ body {
     transition: all 0.4s ease;
 }
 
-/* ==================== EN-TÊTE AVEC BOUTON THÈME ==================== */
-.app-header {
-    background: var(--header-bg);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--border-gold-strong);
-    padding: 12px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: sticky;
-    top: 0;
-    z-index: 50;
-    transition: all 0.4s ease;
-}
-
-/* Bouton de basculement de thème élégant */
+/* Bouton de basculement de thème */
 .theme-toggle-btn {
     background: var(--bg-card-hover);
     color: var(--text-gold);
-    border: 2px solid var(--border-gold-strong);
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
+    border: 1px solid var(--border-gold-strong);
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    position: relative;
-    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .theme-toggle-btn:hover {
-    transform: scale(1.1) rotate(15deg);
+    transform: scale(1.05);
     border-color: var(--text-gold);
-    box-shadow: 0 6px 20px rgba(220, 167, 115, 0.4);
-}
-
-.theme-toggle-btn:active {
-    transform: scale(0.95);
-}
-
-.theme-toggle-btn i {
-    font-size: 18px;
-    transition: all 0.3s ease;
-}
-
-/* Animation du soleil/lune */
-.theme-toggle-btn .fa-sun {
-    animation: rotate-sun 0.5s ease;
-}
-
-.theme-toggle-btn .fa-moon {
-    animation: rotate-moon 0.5s ease;
-}
-
-@keyframes rotate-sun {
-    from { transform: rotate(-180deg) scale(0); }
-    to { transform: rotate(0) scale(1); }
-}
-
-@keyframes rotate-moon {
-    from { transform: rotate(180deg) scale(0); }
-    to { transform: rotate(0) scale(1); }
 }
