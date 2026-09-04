@@ -63,7 +63,7 @@
                 <h1 class="text-2xl font-serif-luxury font-bold text-gold-gradient tracking-[0.2em] drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">REMAL</h1>
                 <p class="text-[10px] text-muted-custom uppercase tracking-[0.3em] font-bold drop-shadow-md">Hotel & Villas</p>
                 <div class="pt-2">
-                    <span class="inline-block text-[9px] bg-[var(--bg-card)] text-[var(--text-gold)] border border-[var(--border-gold-strong)] font-extrabold px-4 py-1.5 rounded-full uppercase tracking-[0.15em] shadow-lg backdrop-blur-md">
+                    <span class="inline-block text-[9px] bg-[var(--bg-card)] text-[var(--text-gold)] border border-[var(--border-gold-strong)] font-extrabold px-4 py-1.5 rounded-full uppercase tracking-[0.15em] shadow-lg backdrop-blur-md" data-i18n="guestIdentification">
                         🔒 Guest Identification
                     </span>
                 </div>
@@ -71,42 +71,50 @@
 
             <div class="text-center space-y-1">
                 <h2 class="text-sm font-bold text-[var(--text-main)]" id="greetingText">Welcome to In-Room Dining</h2>
-                <p class="text-[10px] text-muted-custom">Please verify your identity to access the menu</p>
+                <p class="text-[10px] text-muted-custom" data-i18n="verifyPrompt">Please verify your identity to access the menu</p>
             </div>
 
             <div class="space-y-4">
                 
                 <div>
                     <label class="block font-bold text-[var(--text-gold)] uppercase tracking-wider text-[10px] mb-1.5">
-                        <i class="fas fa-door-open mr-1"></i> Room Number
+                        <i class="fas fa-door-open mr-1"></i> <span data-i18n="roomNumber">Room Number</span>
                     </label>
-                    <input type="text" id="lockRoomInput" placeholder="Enter your room number (e.g., 103)" 
+                    <input type="text" id="lockRoomInput" placeholder="e.g., 103" 
                            class="w-full remal-input rounded-2xl p-4 font-bold text-xl text-[var(--text-gold)] tracking-wide text-center"
                            onkeypress="if(event.key==='Enter') verifierIdentiteClient()">
                 </div>
 
                 <div>
                     <label class="block font-bold text-[var(--text-gold)] uppercase tracking-wider text-[10px] mb-1.5">
-                        <i class="fas fa-user mr-1"></i> Your Name
+                        <i class="fas fa-user mr-1"></i> <span data-i18n="yourName">Your Name</span>
                     </label>
                     <input type="text" id="lockNameInput" placeholder="e.g., SANGARE or ZIDANE" 
                            class="w-full remal-input rounded-2xl p-4 font-semibold text-sm text-center"
                            onkeypress="if(event.key==='Enter') verifierIdentiteClient()">
-                    <p class="text-[9px] text-muted-custom text-center mt-1">Enter any name on your reservation</p>
+                    <p class="text-[9px] text-muted-custom text-center mt-1" data-i18n="nameHint">Enter any name on your reservation</p>
                 </div>
 
                 <div id="lockLoadingIndicator" class="hidden text-center text-[10px] text-[var(--text-gold)] py-2">
-                    <i class="fas fa-spinner fa-spin mr-1"></i> Verifying with hotel records...
+                    <i class="fas fa-spinner fa-spin mr-1"></i> <span data-i18n="verifying">Verifying with hotel records...</span>
                 </div>
 
                 <div id="lockErrorMsg" class="hidden text-center text-[10px] text-red-400 font-bold py-2">
-                    ❌ Room number or name not found. Please try again.
+                    ❌ <span data-i18n="notFound">Room number or name not found. Please try again.</span>
                 </div>
 
                 <button onclick="verifierIdentiteClient()" 
                         class="w-full bg-[#DCA773] hover:bg-[#ebd0b3] text-stone-950 font-black py-4 rounded-2xl text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2.5 shadow-lg hover:scale-[1.02] active:scale-[0.98]">
-                    <i class="fas fa-unlock"></i> Verify & Access
+                    <i class="fas fa-unlock"></i> <span data-i18n="verifyAccess">Verify & Access</span>
                 </button>
+            </div>
+
+            <!-- Sélecteur de langue -->
+            <div class="flex justify-center gap-2 pt-2">
+                <button onclick="setLanguage('en')" class="text-[10px] px-3 py-1.5 rounded-full border border-[var(--border-gold)] text-muted-custom hover:text-[var(--text-gold)] transition font-bold">EN</button>
+                <button onclick="setLanguage('fr')" class="text-[10px] px-3 py-1.5 rounded-full border border-[var(--border-gold)] text-muted-custom hover:text-[var(--text-gold)] transition font-bold">FR</button>
+                <button onclick="setLanguage('ar')" class="text-[10px] px-3 py-1.5 rounded-full border border-[var(--border-gold)] text-muted-custom hover:text-[var(--text-gold)] transition font-bold">عربي</button>
+                <button onclick="setLanguage('hi')" class="text-[10px] px-3 py-1.5 rounded-full border border-[var(--border-gold)] text-muted-custom hover:text-[var(--text-gold)] transition font-bold">हिन्दी</button>
             </div>
 
             <div class="text-center text-[8px] text-muted-custom opacity-60 tracking-widest uppercase">
@@ -121,6 +129,11 @@
         <button onclick="toggleTheme()" id="themeToggleMain" class="theme-toggle-btn fixed top-4 right-4 z-50" title="Toggle Dark/Light Mode">
             <i class="fas fa-sun text-sm" id="themeIconMain"></i>
         </button>
+        
+        <!-- Bouton appel réception -->
+        <a href="tel:+971526966865" class="fixed bottom-4 left-4 z-50 bg-emerald-600 hover:bg-emerald-700 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-2xl transition hover:scale-110">
+            <i class="fas fa-phone-alt text-lg"></i>
+        </a>
         
         <div class="w-full max-w-md remal-card p-6 sm:p-8 rounded-[2rem] space-y-6">
             
@@ -147,7 +160,7 @@
             <div id="orderTrackingSection" class="hidden p-4 bg-[var(--bg-card-hover)] border border-[var(--border-gold-strong)] rounded-2xl space-y-3 animate-fade-in">
                 <div class="flex justify-between items-center">
                     <span class="text-[10px] font-bold text-[var(--text-gold)] uppercase tracking-wider">
-                        <i class="fas fa-truck mr-1"></i> Order Tracking
+                        <i class="fas fa-truck mr-1"></i> <span data-i18n="orderTracking">Order Tracking</span>
                     </span>
                     <span id="orderStatusText" class="text-[10px] font-bold text-amber-400">---</span>
                 </div>
@@ -157,58 +170,62 @@
                         <div class="order-progress-dot active" id="stepReceived">
                             <i class="fas fa-check"></i>
                         </div>
-                        <span class="order-progress-label active">Received</span>
+                        <span class="order-progress-label active" data-i18n="received">Received</span>
                     </div>
                     <div class="order-progress-line" id="lineReceived"></div>
                     <div class="order-progress-step">
                         <div class="order-progress-dot" id="stepPreparing">
                             <i class="fas fa-fire"></i>
                         </div>
-                        <span class="order-progress-label">Preparing</span>
+                        <span class="order-progress-label" data-i18n="preparing">Preparing</span>
                     </div>
                     <div class="order-progress-line" id="linePreparing"></div>
                     <div class="order-progress-step">
                         <div class="order-progress-dot" id="stepReady">
                             <i class="fas fa-bell"></i>
                         </div>
-                        <span class="order-progress-label">Ready</span>
+                        <span class="order-progress-label" data-i18n="ready">Ready</span>
                     </div>
                     <div class="order-progress-line" id="lineReady"></div>
                     <div class="order-progress-step">
                         <div class="order-progress-dot" id="stepDelivered">
                             <i class="fas fa-home"></i>
                         </div>
-                        <span class="order-progress-label">Delivered</span>
+                        <span class="order-progress-label" data-i18n="delivered">Delivered</span>
                     </div>
-                </div>
-                
-                <div class="text-center text-[10px] text-muted-custom">
-                    Estimated time: <span id="estimatedTime" class="font-bold text-[var(--text-gold)]">--</span>
                 </div>
             </div>
 
             <!-- Infos client -->
             <div class="p-4 bg-[var(--bg-card-hover)] border border-[var(--border-gold-strong)] rounded-2xl space-y-2 animate-fade-in">
                 <div class="flex justify-between font-semibold">
-                    <span class="text-muted-custom text-[11px]">Room:</span> 
+                    <span class="text-muted-custom text-[11px]" data-i18n="room">Room:</span> 
                     <span id="displayRoomNumber" class="text-[var(--text-gold)] font-bold">---</span>
                 </div>
                 <div class="flex justify-between font-semibold border-t border-[var(--border-gold)] pt-2">
-                    <span class="text-muted-custom text-[11px]">Room Type:</span> 
+                    <span class="text-muted-custom text-[11px]" data-i18n="roomType">Room Type:</span> 
                     <span id="displayRoomType" class="text-[var(--text-gold)] font-bold">---</span>
                 </div>
                 <div class="flex justify-between font-semibold border-t border-[var(--border-gold)] pt-2">
-                    <span class="text-muted-custom text-[11px]">Departure:</span> 
+                    <span class="text-muted-custom text-[11px]" data-i18n="departure">Departure:</span> 
                     <span id="displayDeparture" class="text-[var(--text-gold)] font-bold">---</span>
                 </div>
                 <button onclick="changerDeChambre()" class="w-full text-center text-[10px] text-muted-custom hover:text-[var(--text-gold)] font-bold uppercase tracking-wider transition">
-                    <i class="fas fa-sign-out-alt mr-1"></i> Change Room / Logout
+                    <i class="fas fa-sign-out-alt mr-1"></i> <span data-i18n="logout">Change Room / Logout</span>
                 </button>
+            </div>
+
+            <!-- Historique des commandes -->
+            <div id="orderHistorySection" class="hidden p-4 bg-[var(--bg-card-hover)] border border-[var(--border-gold-strong)] rounded-2xl space-y-2 animate-fade-in">
+                <span class="text-[10px] font-bold text-[var(--text-gold)] uppercase tracking-wider">
+                    <i class="fas fa-history mr-1"></i> <span data-i18n="orderHistory">Recent Orders</span>
+                </span>
+                <div id="orderHistoryContainer" class="space-y-2 max-h-40 overflow-y-auto scrollbar-none"></div>
             </div>
 
             <!-- Période de repas -->
             <div>
-                <label class="block font-bold text-[var(--text-gold)] mb-1.5 uppercase tracking-wider text-[10px]">Meal Period</label>
+                <label class="block font-bold text-[var(--text-gold)] mb-1.5 uppercase tracking-wider text-[10px]" data-i18n="mealPeriod">Meal Period</label>
                 <select id="guestMealType" class="w-full remal-input rounded-2xl p-3.5 font-bold cursor-pointer text-xs">
                     <option value="Breakfast">🌅 Breakfast (6:00 - 11:00)</option>
                     <option value="Lunch">☀️ Lunch (12:00 - 15:00)</option>
@@ -222,7 +239,7 @@
             <div>
                 <button onclick="openMenuModal()" class="w-full bg-[var(--bg-card-hover)] hover:border-[var(--text-gold)] text-[var(--text-gold)] border border-[var(--border-gold-strong)] font-bold py-4 px-4 rounded-2xl transition flex items-center justify-between shadow-md">
                     <span class="flex items-center gap-3">
-                        <i class="fas fa-utensils"></i> Browse Menu & Select Items
+                        <i class="fas fa-utensils"></i> <span data-i18n="browseMenu">Browse Menu & Select Items</span>
                     </span>
                     <span id="selectedBadgeCount" class="bg-[var(--text-gold)] text-stone-950 px-3.5 py-1 rounded-full text-[11px] font-black">0 items</span>
                 </button>
@@ -230,27 +247,44 @@
 
             <!-- Instructions -->
             <div>
-                <label class="block font-bold text-[var(--text-gold)] mb-1.5 uppercase tracking-wider text-[10px]">Special Instructions / Allergies</label>
-                <textarea id="guestSpecialInstructions" placeholder="e.g., No onions, gluten allergy, extra spicy..." class="w-full h-20 remal-input rounded-2xl p-3.5 outline-none resize-none text-xs"></textarea>
+                <label class="block font-bold text-[var(--text-gold)] mb-1.5 uppercase tracking-wider text-[10px]" data-i18n="specialInstructions">Special Instructions / Allergies</label>
+                <textarea id="guestSpecialInstructions" placeholder="e.g., No onions, gluten allergy..." class="w-full h-20 remal-input rounded-2xl p-3.5 outline-none resize-none text-xs"></textarea>
             </div>
 
             <!-- Temps de livraison -->
             <div>
-                <label class="block font-bold text-[var(--text-gold)] mb-1.5 uppercase tracking-wider text-[10px]">Delivery Time</label>
+                <label class="block font-bold text-[var(--text-gold)] mb-1.5 uppercase tracking-wider text-[10px]" data-i18n="deliveryTime">Delivery Time</label>
                 <select id="deliveryTime" class="w-full remal-input rounded-2xl p-3.5 font-bold cursor-pointer text-xs">
                     <option value="As soon as possible">⚡ As soon as possible (~30 min)</option>
                     <option value="In 45 minutes">🕒 In 45 minutes</option>
                     <option value="In 1 hour">🕒 In 1 hour</option>
+                    <option value="Scheduled Breakfast">🥐 Scheduled Breakfast (7:00 AM)</option>
                 </select>
+            </div>
+
+            <!-- Total avec TVA -->
+            <div id="vatSection" class="hidden p-4 bg-[var(--bg-card-hover)] border border-[var(--border-gold-strong)] rounded-2xl space-y-2 animate-fade-in">
+                <div class="flex justify-between text-[10px] text-muted-custom">
+                    <span data-i18n="subtotal">Subtotal:</span>
+                    <span id="subtotalDisplay" class="font-bold">AED 0.00</span>
+                </div>
+                <div class="flex justify-between text-[10px] text-muted-custom">
+                    <span data-i18n="vat">VAT (5%):</span>
+                    <span id="vatDisplay" class="font-bold">AED 0.00</span>
+                </div>
+                <div class="flex justify-between text-xs font-bold text-[var(--text-gold)] border-t border-[var(--border-gold)] pt-2">
+                    <span data-i18n="grandTotal">Grand Total:</span>
+                    <span id="grandTotalDisplay" class="font-serif-luxury text-sm">AED 0.00</span>
+                </div>
             </div>
 
             <!-- Boutons -->
             <div class="space-y-3 pt-2">
                 <button onclick="submitOrder('direct')" class="w-full bg-[#DCA773] hover:bg-[#ebd0b3] text-stone-950 font-black py-4 rounded-2xl text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2.5 shadow-lg">
-                    <i class="fas fa-concierge-bell"></i> Direct Order to Kitchen
+                    <i class="fas fa-concierge-bell"></i> <span data-i18n="directOrder">Direct Order to Kitchen</span>
                 </button>
                 <button onclick="submitOrder('whatsapp')" class="w-full bg-[#10b981] hover:bg-[#34d399] text-stone-950 font-black py-3.5 rounded-2xl text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2.5 shadow-lg">
-                    <i class="fab fa-whatsapp text-lg"></i> Send via WhatsApp
+                    <i class="fab fa-whatsapp text-lg"></i> <span data-i18n="whatsappOrder">Send via WhatsApp</span>
                 </button>
             </div>
         </div>
@@ -262,9 +296,18 @@
             
             <div class="flex justify-between items-center border-b border-[var(--border-gold)] pb-3">
                 <h3 class="text-xs font-serif-luxury font-bold text-[var(--text-gold)] uppercase tracking-widest">
-                    <i class="fas fa-book-open"></i> Restaurant Menu
+                    <i class="fas fa-book-open"></i> <span data-i18n="restaurantMenu">Restaurant Menu</span>
                 </h3>
                 <button onclick="closeMenuModal()" class="text-muted-custom hover:text-[var(--text-main)] text-xl">✕</button>
+            </div>
+
+            <!-- Filtres -->
+            <div class="flex gap-2 overflow-x-auto scrollbar-none">
+                <button onclick="setMenuFilter('all')" id="filterMenuAll" class="px-3 py-1.5 rounded-xl bg-[var(--text-gold)] text-stone-950 text-[10px] font-bold whitespace-nowrap">All</button>
+                <button onclick="setMenuFilter('vegetarian')" id="filterMenuVeg" class="px-3 py-1.5 rounded-xl remal-card text-muted-custom text-[10px] font-bold whitespace-nowrap">🌱 Veg</button>
+                <button onclick="setMenuFilter('spicy')" id="filterMenuSpicy" class="px-3 py-1.5 rounded-xl remal-card text-muted-custom text-[10px] font-bold whitespace-nowrap">🌶️ Spicy</button>
+                <button onclick="setMenuFilter('chef')" id="filterMenuChef" class="px-3 py-1.5 rounded-xl remal-card text-muted-custom text-[10px] font-bold whitespace-nowrap">⭐ Chef</button>
+                <button onclick="setMenuFilter('popular')" id="filterMenuPopular" class="px-3 py-1.5 rounded-xl remal-card text-muted-custom text-[10px] font-bold whitespace-nowrap">🔥 Popular</button>
             </div>
 
             <div class="relative">
@@ -276,11 +319,11 @@
 
             <div class="border-t border-[var(--border-gold)] pt-3 space-y-3">
                 <div class="flex justify-between items-center text-xs font-bold">
-                    <span class="text-muted-custom">Total:</span>
+                    <span class="text-muted-custom" data-i18n="total">Total:</span>
                     <span id="modalMenuTotalSummary" class="text-[var(--text-gold)] font-serif-luxury text-sm">0 items · 0.00 AED</span>
                 </div>
                 <button onclick="confirmMenuSelection()" class="w-full bg-[var(--text-gold)] text-stone-950 font-bold py-3.5 rounded-2xl text-xs uppercase tracking-widest">
-                    Confirm Selection
+                    <span data-i18n="confirmSelection">Confirm Selection</span>
                 </button>
             </div>
         </div>
@@ -300,10 +343,164 @@
         let currentOrderId = localStorage.getItem('remal_current_order_id') || null;
         let favoritesList = JSON.parse(localStorage.getItem('remal_favorites') || '{}');
         let realtimeChannel = null;
+        let currentLanguage = localStorage.getItem('remal_language') || 'en';
+        let menuFilter = 'all';
 
         const SALUTATIONS_REGEX = /\b(mr|mrs|ms|miss|mme|mlle|dr|prof|eng|sir|madam|lady|lord|sheikh|sheikha)\.?\b/gi;
 
-        // ==================== SALUTATION PERSONNALISÉE ====================
+        // ==================== TRADUCTIONS ====================
+        const TRANSLATIONS = {
+            en: {
+                guestIdentification: '🔒 Guest Identification',
+                verifyPrompt: 'Please verify your identity to access the menu',
+                roomNumber: 'Room Number',
+                yourName: 'Your Name',
+                nameHint: 'Enter any name on your reservation',
+                verifying: 'Verifying with hotel records...',
+                notFound: 'Room number or name not found. Please try again.',
+                verifyAccess: 'Verify & Access',
+                orderTracking: 'Order Tracking',
+                received: 'Received',
+                preparing: 'Preparing',
+                ready: 'Ready',
+                delivered: 'Delivered',
+                room: 'Room:',
+                roomType: 'Room Type:',
+                departure: 'Departure:',
+                logout: 'Change Room / Logout',
+                orderHistory: 'Recent Orders',
+                mealPeriod: 'Meal Period',
+                browseMenu: 'Browse Menu & Select Items',
+                specialInstructions: 'Special Instructions / Allergies',
+                deliveryTime: 'Delivery Time',
+                subtotal: 'Subtotal:',
+                vat: 'VAT (5%):',
+                grandTotal: 'Grand Total:',
+                directOrder: 'Direct Order to Kitchen',
+                whatsappOrder: 'Send via WhatsApp',
+                restaurantMenu: 'Restaurant Menu',
+                total: 'Total:',
+                confirmSelection: 'Confirm Selection',
+                orderAgain: 'Order Again'
+            },
+            fr: {
+                guestIdentification: '🔒 Identification Client',
+                verifyPrompt: 'Veuillez vérifier votre identité pour accéder au menu',
+                roomNumber: 'Numéro de chambre',
+                yourName: 'Votre nom',
+                nameHint: 'Entrez un nom de votre réservation',
+                verifying: 'Vérification avec les dossiers de l\'hôtel...',
+                notFound: 'Numéro de chambre ou nom introuvable. Veuillez réessayer.',
+                verifyAccess: 'Vérifier & Accéder',
+                orderTracking: 'Suivi de commande',
+                received: 'Reçue',
+                preparing: 'En préparation',
+                ready: 'Prête',
+                delivered: 'Livrée',
+                room: 'Chambre :',
+                roomType: 'Type de chambre :',
+                departure: 'Départ :',
+                logout: 'Changer de chambre / Déconnexion',
+                orderHistory: 'Commandes récentes',
+                mealPeriod: 'Période de repas',
+                browseMenu: 'Parcourir le menu',
+                specialInstructions: 'Instructions spéciales / Allergies',
+                deliveryTime: 'Heure de livraison',
+                subtotal: 'Sous-total :',
+                vat: 'TVA (5%) :',
+                grandTotal: 'Total général :',
+                directOrder: 'Commande directe à la cuisine',
+                whatsappOrder: 'Envoyer via WhatsApp',
+                restaurantMenu: 'Menu du restaurant',
+                total: 'Total :',
+                confirmSelection: 'Confirmer la sélection',
+                orderAgain: 'Commander à nouveau'
+            },
+            ar: {
+                guestIdentification: '🔒 تعريف النزيل',
+                verifyPrompt: 'يرجى التحقق من هويتك للوصول إلى القائمة',
+                roomNumber: 'رقم الغرفة',
+                yourName: 'اسمك',
+                nameHint: 'أدخل أي اسم من حجزك',
+                verifying: 'جارٍ التحقق من سجلات الفندق...',
+                notFound: 'رقم الغرفة أو الاسم غير موجود. يرجى المحاولة مرة أخرى.',
+                verifyAccess: 'تحقق وادخل',
+                orderTracking: 'تتبع الطلب',
+                received: 'تم الاستلام',
+                preparing: 'قيد التحضير',
+                ready: 'جاهز',
+                delivered: 'تم التسليم',
+                room: 'الغرفة:',
+                roomType: 'نوع الغرفة:',
+                departure: 'المغادرة:',
+                logout: 'تغيير الغرفة / خروج',
+                orderHistory: 'الطلبات الأخيرة',
+                mealPeriod: 'فترة الوجبة',
+                browseMenu: 'تصفح القائمة',
+                specialInstructions: 'تعليمات خاصة / حساسية',
+                deliveryTime: 'وقت التسليم',
+                subtotal: 'المجموع الفرعي:',
+                vat: 'ضريبة القيمة المضافة (5%):',
+                grandTotal: 'المجموع الكلي:',
+                directOrder: 'طلب مباشر للمطبخ',
+                whatsappOrder: 'إرسال عبر واتساب',
+                restaurantMenu: 'قائمة المطعم',
+                total: 'المجموع:',
+                confirmSelection: 'تأكيد الاختيار',
+                orderAgain: 'اطلب مرة أخرى'
+            },
+            hi: {
+                guestIdentification: '🔒 अतिथि पहचान',
+                verifyPrompt: 'मेनू तक पहुंचने के लिए कृपया अपनी पहचान सत्यापित करें',
+                roomNumber: 'कमरा संख्या',
+                yourName: 'आपका नाम',
+                nameHint: 'अपने आरक्षण से कोई भी नाम दर्ज करें',
+                verifying: 'होटल रिकॉर्ड से सत्यापित किया जा रहा है...',
+                notFound: 'कमरा संख्या या नाम नहीं मिला। कृपया पुनः प्रयास करें।',
+                verifyAccess: 'सत्यापित करें और प्रवेश करें',
+                orderTracking: 'ऑर्डर ट्रैकिंग',
+                received: 'प्राप्त हुआ',
+                preparing: 'तैयार हो रहा है',
+                ready: 'तैयार',
+                delivered: 'वितरित',
+                room: 'कमरा:',
+                roomType: 'कमरे का प्रकार:',
+                departure: 'प्रस्थान:',
+                logout: 'कमरा बदलें / लॉगआउट',
+                orderHistory: 'हाल के ऑर्डर',
+                mealPeriod: 'भोजन अवधि',
+                browseMenu: 'मेनू ब्राउज़ करें',
+                specialInstructions: 'व�ेष निर्देश / एलर्जी',
+                deliveryTime: 'डिलीवरी का समय',
+                subtotal: 'उप-योग:',
+                vat: 'वैट (5%):',
+                grandTotal: 'कुल योग:',
+                directOrder: 'सीधे रसोई में ऑर्डर',
+                whatsappOrder: 'व्हाट्सएप के माध्यम से भेजें',
+                restaurantMenu: 'रेस्तरां मेनू',
+                total: 'कुल:',
+                confirmSelection: 'चयन की पुष्टि करें',
+                orderAgain: 'फिर से ऑर्डर करें'
+            }
+        };
+
+        // ==================== FONCTIONS LANGUE ====================
+        function setLanguage(lang) {
+            currentLanguage = lang;
+            localStorage.setItem('remal_language', lang);
+            
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (TRANSLATIONS[lang] && TRANSLATIONS[lang][key]) {
+                    el.innerText = TRANSLATIONS[lang][key];
+                }
+            });
+            
+            document.getElementById('htmlRoot').setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+            renderMenuItems();
+        }
+
+        // ==================== SALUTATION ====================
         function getGreeting() {
             const hour = new Date().getHours();
             if (hour < 12) return { text: 'Good Morning', emoji: '🌅' };
@@ -319,41 +516,47 @@
         // ==================== FONCTIONS THÈME ====================
         function toggleTheme() {
             document.body.classList.toggle('light-mode');
-            
             const isLight = document.body.classList.contains('light-mode');
             
             const iconLock = document.getElementById('themeIconLock');
             const iconMain = document.getElementById('themeIconMain');
             
-            if (iconLock) {
-                iconLock.className = isLight ? 'fas fa-moon text-sm' : 'fas fa-sun text-sm';
-            }
-            if (iconMain) {
-                iconMain.className = isLight ? 'fas fa-moon text-sm' : 'fas fa-sun text-sm';
-            }
+            if (iconLock) iconLock.className = isLight ? 'fas fa-moon text-sm' : 'fas fa-sun text-sm';
+            if (iconMain) iconMain.className = isLight ? 'fas fa-moon text-sm' : 'fas fa-sun text-sm';
             
             localStorage.setItem('remal_theme', isLight ? 'light' : 'dark');
         }
 
         function initTheme() {
             const savedTheme = localStorage.getItem('remal_theme');
-            
-            if (savedTheme === 'light') {
-                document.body.classList.add('light-mode');
-            } else {
-                document.body.classList.remove('light-mode');
-            }
+            if (savedTheme === 'light') document.body.classList.add('light-mode');
+            else document.body.classList.remove('light-mode');
             
             const isLight = document.body.classList.contains('light-mode');
             const iconLock = document.getElementById('themeIconLock');
             const iconMain = document.getElementById('themeIconMain');
             
-            if (iconLock) {
-                iconLock.className = isLight ? 'fas fa-moon text-sm' : 'fas fa-sun text-sm';
-            }
-            if (iconMain) {
-                iconMain.className = isLight ? 'fas fa-moon text-sm' : 'fas fa-sun text-sm';
-            }
+            if (iconLock) iconLock.className = isLight ? 'fas fa-moon text-sm' : 'fas fa-sun text-sm';
+            if (iconMain) iconMain.className = isLight ? 'fas fa-moon text-sm' : 'fas fa-sun text-sm';
+        }
+
+        // ==================== FILTRES MENU ====================
+        function setMenuFilter(filter) {
+            menuFilter = filter;
+            
+            const filters = ['all', 'vegetarian', 'spicy', 'chef', 'popular'];
+            filters.forEach(f => {
+                const btn = document.getElementById(`filterMenu${f.charAt(0).toUpperCase() + f.slice(1)}`);
+                if (btn) {
+                    if (f === filter) {
+                        btn.className = 'px-3 py-1.5 rounded-xl bg-[var(--text-gold)] text-stone-950 text-[10px] font-bold whitespace-nowrap';
+                    } else {
+                        btn.className = 'px-3 py-1.5 rounded-xl remal-card text-muted-custom text-[10px] font-bold whitespace-nowrap';
+                    }
+                }
+            });
+            
+            renderMenuItems();
         }
 
         // ==================== FONCTIONS MENU ====================
@@ -375,10 +578,13 @@
             let totalPrice = 0;
 
             for (const [category, items] of Object.entries(MENU_DATA)) {
-                const filteredItems = items.filter(item => 
-                    item.name.toLowerCase().includes(searchQuery) || 
-                    item.desc.toLowerCase().includes(searchQuery)
-                );
+                const filteredItems = items.filter(item => {
+                    const matchesSearch = item.name.toLowerCase().includes(searchQuery) || 
+                                        item.desc.toLowerCase().includes(searchQuery);
+                    const matchesFilter = menuFilter === 'all' || 
+                                        (item.badges && item.badges.includes(menuFilter));
+                    return matchesSearch && matchesFilter;
+                });
 
                 if (filteredItems.length === 0) continue;
 
@@ -424,6 +630,9 @@
             container.innerHTML = html || '<p class="text-center text-muted-custom py-8">No items found</p>';
             document.getElementById('modalMenuTotalSummary').innerText = `${totalPcs} items · ${totalPrice.toFixed(2)} AED`;
             document.getElementById('selectedBadgeCount').innerText = `${totalPcs} items`;
+            
+            // Mettre à jour le total avec TVA
+            updateVatDisplay(totalPrice);
         }
 
         function updateCart(itemId, delta) {
@@ -435,6 +644,26 @@
 
         function confirmMenuSelection() {
             closeMenuModal();
+        }
+
+        // ==================== TVA ====================
+        function updateVatDisplay(subtotal) {
+            const vatSection = document.getElementById('vatSection');
+            const subtotalDisplay = document.getElementById('subtotalDisplay');
+            const vatDisplay = document.getElementById('vatDisplay');
+            const grandTotalDisplay = document.getElementById('grandTotalDisplay');
+            
+            if (subtotal > 0) {
+                vatSection.classList.remove('hidden');
+                const vat = subtotal * 0.05;
+                const grandTotal = subtotal + vat;
+                
+                subtotalDisplay.innerText = `AED ${subtotal.toFixed(2)}`;
+                vatDisplay.innerText = `AED ${vat.toFixed(2)}`;
+                grandTotalDisplay.innerText = `AED ${grandTotal.toFixed(2)}`;
+            } else {
+                vatSection.classList.add('hidden');
+            }
         }
 
         // ==================== FAVORIS ====================
@@ -471,7 +700,7 @@
             }, 3000);
         }
 
-        // ==================== FONCTIONS D'IDENTIFICATION ====================
+        // ==================== IDENTIFICATION ====================
         async function verifierIdentiteClient() {
             const roomNum = document.getElementById('lockRoomInput').value.trim();
             const nameInput = document.getElementById('lockNameInput').value.trim();
@@ -482,13 +711,13 @@
             errorMsg.classList.add('hidden');
             
             if (!roomNum) {
-                errorMsg.innerText = '⚠️ Please enter your room number';
+                errorMsg.innerText = '⚠️ ' + TRANSLATIONS[currentLanguage].roomNumber;
                 errorMsg.classList.remove('hidden');
                 return;
             }
 
             if (!nameInput || nameInput.length < 2) {
-                errorMsg.innerText = '⚠️ Please enter your name';
+                errorMsg.innerText = '⚠️ ' + TRANSLATIONS[currentLanguage].yourName;
                 errorMsg.classList.remove('hidden');
                 return;
             }
@@ -503,7 +732,7 @@
                     .maybeSingle();
 
                 if (pmsError || !pmsData) {
-                    errorMsg.innerText = '❌ Room number not found in hotel records';
+                    errorMsg.innerText = '❌ ' + TRANSLATIONS[currentLanguage].notFound;
                     errorMsg.classList.remove('hidden');
                     return;
                 }
@@ -527,16 +756,12 @@
                     .filter(w => w.length > 1);
 
                 const isMatch = pmsWords.some(word => {
-                    if (cleanInputName.length <= 3) {
-                        return word === cleanInputName;
-                    }
-                    return word === cleanInputName || 
-                           word.includes(cleanInputName) || 
-                           cleanInputName.includes(word);
+                    if (cleanInputName.length <= 3) return word === cleanInputName;
+                    return word === cleanInputName || word.includes(cleanInputName) || cleanInputName.includes(word);
                 });
 
                 if (!isMatch) {
-                    errorMsg.innerText = '❌ Name does not match our records for this room';
+                    errorMsg.innerText = '❌ ' + TRANSLATIONS[currentLanguage].notFound;
                     errorMsg.classList.remove('hidden');
                     return;
                 }
@@ -550,6 +775,7 @@
                 afficherPagePersonnalisee(pmsData, pmsData.room);
                 setupRealtimeTracking(pmsData.room);
                 restaurerSuiviCommande();
+                chargerHistoriqueCommandes(pmsData.room);
 
                 const lockScreen = document.getElementById('lockScreen');
                 const mainScreen = document.getElementById('mainScreen');
@@ -600,6 +826,7 @@
             renderMenuItems();
             
             document.getElementById('orderTrackingSection').classList.add('hidden');
+            document.getElementById('orderHistorySection').classList.add('hidden');
             
             if (realtimeChannel) {
                 supabaseClient.removeChannel(realtimeChannel);
@@ -614,11 +841,72 @@
             lockScreen.classList.add('screen-enter');
         }
 
-        // ==================== SUIVI DE COMMANDE EN TEMPS RÉEL ====================
-        function setupRealtimeTracking(roomNumber) {
-            if (realtimeChannel) {
-                supabaseClient.removeChannel(realtimeChannel);
+        // ==================== HISTORIQUE DES COMMANDES ====================
+        async function chargerHistoriqueCommandes(roomNumber) {
+            const { data, error } = await supabaseClient
+                .from('food_orders')
+                .select('*')
+                .eq('room_number', roomNumber)
+                .order('created_at', { ascending: false })
+                .limit(5);
+            
+            if (data && data.length > 0) {
+                const section = document.getElementById('orderHistorySection');
+                const container = document.getElementById('orderHistoryContainer');
+                
+                section.classList.remove('hidden');
+                
+                container.innerHTML = data.map(order => {
+                    const items = Array.isArray(order.items) ? order.items : [];
+                    const itemNames = items.map(i => `${i.quantity}x ${i.name}`).join(', ');
+                    
+                    return `
+                        <div class="flex justify-between items-center p-2.5 bg-[var(--bg-dark)] rounded-xl border border-[var(--border-gold)]">
+                            <div class="flex-1 pr-2">
+                                <p class="text-[10px] font-bold text-[var(--text-main)]">${itemNames}</p>
+                                <p class="text-[8px] text-muted-custom">${order.created_at ? new Date(order.created_at).toLocaleString() : ''}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-[10px] font-bold text-[var(--text-gold)]">AED ${order.total_amount}</p>
+                                <button onclick="commanderANouveau(${order.id})" class="text-[8px] text-blue-400 hover:underline font-bold">
+                                    ${TRANSLATIONS[currentLanguage].orderAgain}
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
             }
+        }
+
+        async function commanderANouveau(orderId) {
+            const { data, error } = await supabaseClient
+                .from('food_orders')
+                .select('*')
+                .eq('id', orderId)
+                .single();
+            
+            if (data && !error) {
+                const items = Array.isArray(data.items) ? data.items : [];
+                menuCart = {};
+                items.forEach(item => {
+                    const menuItem = Object.values(MENU_DATA).flat().find(mi => mi.name === item.name);
+                    if (menuItem) {
+                        menuCart[menuItem.id] = item.quantity;
+                    }
+                });
+                
+                document.getElementById('guestMealType').value = data.meal_type || 'All Day';
+                document.getElementById('guestSpecialInstructions').value = data.special_instructions || '';
+                document.getElementById('deliveryTime').value = data.delivery_time || 'As soon as possible';
+                
+                renderMenuItems();
+                showToast('Items added to cart!', 'success');
+            }
+        }
+
+        // ==================== SUIVI DE COMMANDE ====================
+        function setupRealtimeTracking(roomNumber) {
+            if (realtimeChannel) supabaseClient.removeChannel(realtimeChannel);
             
             realtimeChannel = supabaseClient
                 .channel(`order-tracking-${roomNumber}`)
@@ -669,18 +957,17 @@
             
             if (status === 'Delivered') {
                 showToast('✅ Your order has been delivered!', 'success');
-                // Effacer l'ID après livraison
                 setTimeout(() => {
                     localStorage.removeItem('remal_current_order_id');
                     currentOrderId = null;
                     trackingSection.classList.add('hidden');
+                    if (cachedGuestData) chargerHistoriqueCommandes(cachedGuestData.room);
                 }, 5000);
             } else if (status === 'Ready') {
                 showToast('🔔 Your order is ready!', 'info');
             }
         }
 
-        // ==================== RESTAURATION DU SUIVI DE COMMANDE ====================
         async function restaurerSuiviCommande() {
             const savedOrderId = localStorage.getItem('remal_current_order_id');
             
@@ -700,7 +987,6 @@
                     currentOrderId = data.id;
                     updateOrderTracking(data.status);
                 } else {
-                    // La commande n'existe plus
                     localStorage.removeItem('remal_current_order_id');
                     currentOrderId = null;
                     document.getElementById('orderTrackingSection').classList.add('hidden');
@@ -710,7 +996,6 @@
             }
         }
 
-        // ==================== RESTAURATION DE SESSION ====================
         function restaurerSession() {
             const savedRoom = localStorage.getItem('remal_guest_room');
             const savedData = localStorage.getItem('remal_guest_data');
@@ -724,6 +1009,7 @@
                     afficherPagePersonnalisee(parsedData, savedRoom);
                     setupRealtimeTracking(savedRoom);
                     restaurerSuiviCommande();
+                    chargerHistoriqueCommandes(savedRoom);
 
                     document.getElementById('lockScreen').classList.add('hidden');
                     document.getElementById('mainScreen').classList.remove('hidden');
@@ -733,24 +1019,18 @@
             }
         }
 
-        // ==================== FONCTION COMMANDE ====================
+        // ==================== COMMANDE ====================
         async function submitOrder(method) {
             const room = cachedGuestData?.room || localStorage.getItem('remal_guest_room');
             const mealType = document.getElementById('guestMealType').value;
             const instructions = document.getElementById('guestSpecialInstructions').value.trim();
             const deliveryTime = document.getElementById('deliveryTime').value;
 
-            if (!isGuestVerified) { 
-                showToast('Please verify your identity first', 'error');
-                return; 
-            }
-            if (Object.keys(menuCart).length === 0) { 
-                showToast('Please select at least one item', 'error');
-                return; 
-            }
+            if (!isGuestVerified) { showToast('Please verify your identity first', 'error'); return; }
+            if (Object.keys(menuCart).length === 0) { showToast('Please select at least one item', 'error'); return; }
 
             let itemsArray = [];
-            let totalAmount = 0;
+            let subtotal = 0;
 
             for (const [itemId, qty] of Object.entries(menuCart)) {
                 const item = findMenuItem(itemId);
@@ -764,16 +1044,21 @@
                         badges: item.badges || [],
                         allergens: item.allergens || []
                     });
-                    totalAmount += qty * item.price;
+                    subtotal += qty * item.price;
                 }
             }
+
+            const vat = subtotal * 0.05;
+            const grandTotal = subtotal + vat;
 
             const orderData = {
                 room_number: room,
                 guest_name: cachedGuestData.guest_name,
                 meal_type: mealType,
                 items: itemsArray,
-                total_amount: totalAmount,
+                subtotal: subtotal,
+                vat: vat,
+                total_amount: grandTotal,
                 special_instructions: instructions || 'None',
                 delivery_time: deliveryTime,
                 status: 'Pending',
@@ -793,14 +1078,13 @@
 
             if (data && data.length > 0) {
                 currentOrderId = data[0].id;
-                // SAUVEGARDER l'ID de commande dans localStorage
                 localStorage.setItem('remal_current_order_id', currentOrderId);
                 updateOrderTracking('Pending');
             }
 
             if (method === 'whatsapp') {
                 const itemsList = itemsArray.map(i => `${i.quantity}x ${i.name} (AED ${i.total})`).join('\n');
-                const message = `🛎️ NEW ROOM SERVICE ORDER\n\n🏨 Room: ${room}\n👤 Guest: ${cachedGuestData.guest_name}\n🍽️ Meal: ${mealType}\n\n📋 Items:\n${itemsList}\n\n💰 Total: AED ${totalAmount}\n🕒 Delivery: ${deliveryTime}\n\n📝 Notes: ${instructions || 'None'}`;
+                const message = `🛎️ NEW ROOM SERVICE ORDER\n\n🏨 Room: ${room}\n👤 Guest: ${cachedGuestData.guest_name}\n🍽️ Meal: ${mealType}\n\n📋 Items:\n${itemsList}\n\n💰 Subtotal: AED ${subtotal}\n🧾 VAT (5%): AED ${vat.toFixed(2)}\n💎 Grand Total: AED ${grandTotal.toFixed(2)}\n🕒 Delivery: ${deliveryTime}\n\n📝 Notes: ${instructions || 'None'}`;
                 window.open(`https://wa.me/${SUPABASE_CONFIG.whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank');
             }
 
@@ -809,11 +1093,13 @@
             menuCart = {};
             document.getElementById('guestSpecialInstructions').value = '';
             renderMenuItems();
+            chargerHistoriqueCommandes(room);
         }
 
         // ==================== INITIALISATION ====================
         initTheme();
         initGreeting();
+        setLanguage(currentLanguage);
         renderMenuItems();
         restaurerSession();
     </script>
