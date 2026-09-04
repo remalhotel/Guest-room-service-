@@ -11,6 +11,23 @@
     --text-main: #ffffff;
     --text-muted: #c2bab0;
     --card-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.8);
+    --lock-screen-bg: linear-gradient(135deg, #0a0908 0%, #1a1714 50%, #0a0908 100%);
+}
+
+/* Mode clair */
+.light-mode {
+    --bg-dark: #f6f4f0;
+    --bg-card: rgba(255, 255, 255, 0.95);
+    --bg-card-hover: rgba(248, 246, 242, 0.98);
+    --bg-input: rgba(255, 255, 255, 0.95);
+    --text-gold: #b47a3e;
+    --gold-gradient: linear-gradient(135deg, #cfa26d 0%, #b47a3e 50%, #8c5822 100%);
+    --border-gold: rgba(180, 122, 62, 0.3);
+    --border-gold-strong: rgba(180, 122, 62, 0.6);
+    --text-main: #1c1917;
+    --text-muted: #57514a;
+    --card-shadow: 0 25px 50px -12px rgba(180, 122, 62, 0.12);
+    --lock-screen-bg: linear-gradient(135deg, #f6f4f0 0%, #e8e4de 50%, #f6f4f0 100%);
 }
 
 * {
@@ -155,4 +172,39 @@ body {
 .stat-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 10px 30px rgba(220, 167, 115, 0.2);
+}
+
+/* Écran de verrouillage */
+.lock-screen {
+    background: var(--lock-screen-bg);
+    transition: background 0.4s ease;
+}
+
+.lock-card {
+    background: var(--bg-card);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border-gold-strong);
+    box-shadow: var(--card-shadow);
+    transition: all 0.4s ease;
+}
+
+/* Bouton de basculement de thème */
+.theme-toggle-btn {
+    background: var(--bg-card-hover);
+    color: var(--text-gold);
+    border: 1px solid var(--border-gold-strong);
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.theme-toggle-btn:hover {
+    transform: scale(1.05);
+    border-color: var(--text-gold);
 }
