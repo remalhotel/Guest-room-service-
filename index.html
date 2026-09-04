@@ -35,6 +35,13 @@
         }
         
         .shake-error { animation: shake 0.5s ease; }
+        
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateX(100px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .toast-in { animation: toastIn 0.4s ease forwards; }
     </style>
 </head>
 <body class="min-h-screen lock-screen">
@@ -42,30 +49,30 @@
     <!-- ==================== ÉCRAN 1 : IDENTIFICATION ==================== -->
     <div id="lockScreen" class="min-h-screen flex items-center justify-center p-4 relative">
         
-        <!-- Bouton de basculement de thème (lock screen) -->
+        <!-- Bouton de basculement de thème -->
         <button onclick="toggleTheme()" id="themeToggleLock" class="theme-toggle-btn fixed top-4 right-4 z-50" title="Toggle Dark/Light Mode">
             <i class="fas fa-sun text-sm" id="themeIconLock"></i>
         </button>
         
         <div class="w-full max-w-md lock-card p-8 rounded-[2rem] space-y-6">
             
-            <!-- Logo et titre AVEC IMAGE DE FOND -->
-            <div class="remal-banner text-center space-y-2 rounded-2xl p-6 border border-[var(--border-gold-strong)]">
+            <!-- Logo et titre -->
+            <div class="text-center space-y-2">
                 <div class="w-20 h-20 mx-auto rounded-full bg-[var(--text-gold)] flex items-center justify-center shadow-2xl">
                     <i class="fas fa-key text-2xl text-stone-950"></i>
                 </div>
-                <h1 class="text-2xl font-serif-luxury font-bold text-gold-gradient tracking-[0.2em] drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">REMAL</h1>
-                <p class="text-[10px] text-muted-custom uppercase tracking-[0.3em] font-bold drop-shadow-md">Hotel & Villas</p>
+                <h1 class="text-2xl font-serif-luxury font-bold text-gold-gradient tracking-[0.2em]">REMAL</h1>
+                <p class="text-[10px] text-muted-custom uppercase tracking-[0.3em] font-bold">Hotel & Villas</p>
                 <div class="pt-2">
-                    <span class="inline-block text-[9px] bg-[var(--bg-card)] text-[var(--text-gold)] border border-[var(--border-gold-strong)] font-extrabold px-4 py-1.5 rounded-full uppercase tracking-[0.15em] shadow-lg backdrop-blur-md">
+                    <span class="inline-block text-[9px] bg-[var(--bg-card)] text-[var(--text-gold)] border border-[var(--border-gold-strong)] font-extrabold px-4 py-1.5 rounded-full uppercase tracking-[0.15em]">
                         🔒 Guest Identification
                     </span>
                 </div>
             </div>
 
-            <!-- Message -->
+            <!-- Salutation personnalisée -->
             <div class="text-center space-y-1">
-                <h2 class="text-sm font-bold text-[var(--text-main)]">Welcome to In-Room Dining</h2>
+                <h2 class="text-sm font-bold text-[var(--text-main)]" id="greetingText">Welcome to In-Room Dining</h2>
                 <p class="text-[10px] text-muted-custom">Please verify your identity to access the menu</p>
             </div>
 
@@ -119,29 +126,75 @@
     <!-- ==================== ÉCRAN 2 : PAGE PERSONNALISÉE ==================== -->
     <div id="mainScreen" class="hidden min-h-screen p-3 sm:p-6 flex items-center justify-center pb-24 relative">
         
-        <!-- Bouton de basculement de thème (main screen) -->
+        <!-- Bouton de basculement de thème -->
         <button onclick="toggleTheme()" id="themeToggleMain" class="theme-toggle-btn fixed top-4 right-4 z-50" title="Toggle Dark/Light Mode">
             <i class="fas fa-sun text-sm" id="themeIconMain"></i>
         </button>
         
         <div class="w-full max-w-md remal-card p-6 sm:p-8 rounded-[2rem] space-y-6">
             
-            <!-- Bannière personnalisée AVEC IMAGE DE FOND -->
-            <div class="remal-banner text-center border border-[var(--border-gold-strong)] pb-6 pt-7 rounded-2xl overflow-hidden">
-                <div class="space-y-2">
-                    <h1 class="text-2xl font-serif-luxury font-bold text-gold-gradient tracking-[0.15em] drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">REMAL</h1>
-                    <p class="text-[9px] text-muted-custom uppercase tracking-[0.2em] font-bold drop-shadow-md">Hotel & Villas • Al Dhannah City</p>
+            <!-- Bannière personnalisée -->
+            <div class="relative text-center border border-[var(--border-gold-strong)] pb-6 pt-7 rounded-2xl overflow-hidden">
+                <div class="relative z-10 space-y-2">
+                    <h1 class="text-2xl font-serif-luxury font-bold text-gold-gradient tracking-[0.15em]">REMAL</h1>
+                    <p class="text-[9px] text-muted-custom uppercase tracking-[0.2em] font-bold">Hotel & Villas • Al Dhannah City</p>
                     
                     <div class="pt-3">
-                        <p class="text-[10px] text-muted-custom uppercase tracking-wider drop-shadow-md">Welcome</p>
-                        <h2 id="welcomeGuestName" class="text-lg font-serif-luxury font-bold text-[var(--text-gold)] tracking-wide drop-shadow-md">---</h2>
+                        <p class="text-[10px] text-muted-custom uppercase tracking-wider" id="greetingTime">Welcome</p>
+                        <h2 id="welcomeGuestName" class="text-lg font-serif-luxury font-bold text-[var(--text-gold)] tracking-wide uppercase">---</h2>
                     </div>
                     
                     <div class="pt-2">
-                        <span id="roomTypeBadge" class="inline-block text-[9px] bg-[var(--bg-card)] text-[var(--text-gold)] border border-[var(--border-gold-strong)] font-extrabold px-4 py-1.5 rounded-full uppercase tracking-[0.15em] shadow-lg backdrop-blur-md">
+                        <span id="roomTypeBadge" class="inline-block text-[9px] bg-[var(--bg-card)] text-[var(--text-gold)] border border-[var(--border-gold-strong)] font-extrabold px-4 py-1.5 rounded-full uppercase tracking-[0.15em]">
                             🍽️ In-Room Dining
                         </span>
                     </div>
+                </div>
+            </div>
+
+            <!-- Suivi de commande en temps réel -->
+            <div id="orderTrackingSection" class="hidden p-4 bg-[var(--bg-card-hover)] border border-[var(--border-gold-strong)] rounded-2xl space-y-3 animate-fade-in">
+                <div class="flex justify-between items-center">
+                    <span class="text-[10px] font-bold text-[var(--text-gold)] uppercase tracking-wider">
+                        <i class="fas fa-truck mr-1"></i> Order Tracking
+                    </span>
+                    <span id="orderStatusText" class="text-[10px] font-bold text-amber-400">---</span>
+                </div>
+                
+                <!-- Barre de progression -->
+                <div class="order-progress">
+                    <div class="order-progress-step">
+                        <div class="order-progress-dot active" id="stepReceived">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <span class="order-progress-label active">Received</span>
+                    </div>
+                    <div class="order-progress-line" id="lineReceived"></div>
+                    <div class="order-progress-step">
+                        <div class="order-progress-dot" id="stepPreparing">
+                            <i class="fas fa-fire"></i>
+                        </div>
+                        <span class="order-progress-label">Preparing</span>
+                    </div>
+                    <div class="order-progress-line" id="linePreparing"></div>
+                    <div class="order-progress-step">
+                        <div class="order-progress-dot" id="stepReady">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <span class="order-progress-label">Ready</span>
+                    </div>
+                    <div class="order-progress-line" id="lineReady"></div>
+                    <div class="order-progress-step">
+                        <div class="order-progress-dot" id="stepDelivered">
+                            <i class="fas fa-home"></i>
+                        </div>
+                        <span class="order-progress-label">Delivered</span>
+                    </div>
+                </div>
+                
+                <!-- Temps estimé -->
+                <div class="text-center text-[10px] text-muted-custom">
+                    Estimated time: <span id="estimatedTime" class="font-bold text-[var(--text-gold)]">--</span>
                 </div>
             </div>
 
@@ -214,7 +267,7 @@
         </div>
     </div>
 
-    <!-- Modale Menu (inchangée) -->
+    <!-- Modale Menu -->
     <div id="menuModal" class="hidden fixed inset-0 bg-black/90 z-[100] flex items-center justify-center p-4">
         <div class="bg-[var(--bg-card)] border border-[var(--border-gold-strong)] w-full max-w-lg rounded-3xl p-6 space-y-4 max-h-[90vh] flex flex-col">
             
@@ -255,8 +308,24 @@
         let menuCart = {};
         let cachedGuestData = null;
         let isGuestVerified = false;
+        let currentOrderId = null;
+        let favoritesList = JSON.parse(localStorage.getItem('remal_favorites') || '{}');
+        let realtimeChannel = null;
 
         const SALUTATIONS_REGEX = /\b(mr|mrs|ms|miss|mme|mlle|dr|prof|eng|sir|madam|lady|lord|sheikh|sheikha)\.?\b/gi;
+
+        // ==================== SALUTATION PERSONNALISÉE ====================
+        function getGreeting() {
+            const hour = new Date().getHours();
+            if (hour < 12) return { text: 'Good Morning', emoji: '🌅' };
+            if (hour < 18) return { text: 'Good Afternoon', emoji: '☀️' };
+            return { text: 'Good Evening', emoji: '🌙' };
+        }
+
+        function initGreeting() {
+            const greeting = getGreeting();
+            document.getElementById('greetingText').innerText = `${greeting.emoji} ${greeting.text} - Welcome to In-Room Dining`;
+        }
 
         // ==================== FONCTIONS THÈME ====================
         function toggleTheme() {
@@ -330,13 +399,28 @@
                     const qty = menuCart[item.id] || 0;
                     totalPcs += qty;
                     totalPrice += qty * item.price;
+                    
+                    const badgesHTML = getBadgeHTML(item.badges);
+                    const allergensHTML = getAllergensHTML(item.allergens);
+                    const isFavorite = favoritesList[item.id] ? 'active' : '';
 
                     html += `
                         <div class="flex justify-between items-center py-2.5 border-b border-[var(--border-gold)]">
                             <div class="flex-1 pr-2">
-                                <p class="font-bold text-[var(--text-main)] text-xs">${item.name}</p>
-                                <p class="text-[10px] text-muted-custom">${item.desc}</p>
-                                <p class="text-[var(--text-gold)] font-bold text-xs mt-0.5">AED ${item.price}</p>
+                                <div class="flex items-center gap-2 mb-1">
+                                    <button onclick="toggleFavorite('${item.id}')" class="favorite-heart ${isFavorite}">
+                                        <i class="fas fa-heart"></i>
+                                    </button>
+                                    <p class="font-bold text-[var(--text-main)] text-xs">${item.name}</p>
+                                </div>
+                                ${badgesHTML}
+                                <p class="text-[10px] text-muted-custom mt-1">${item.desc}</p>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <p class="text-[var(--text-gold)] font-bold text-xs">AED ${item.price}</p>
+                                    <span class="text-[8px] text-muted-custom">•</span>
+                                    <span class="text-[8px] text-muted-custom">⏱️ ${item.prepTime}</span>
+                                </div>
+                                ${allergensHTML}
                             </div>
                             <div class="flex items-center gap-2 bg-[var(--bg-input)] p-1 rounded-xl border border-[var(--border-gold)]">
                                 <button onclick="updateCart('${item.id}', -1)" class="w-6 h-6 bg-[var(--bg-card-hover)] rounded-lg font-bold">-</button>
@@ -362,6 +446,40 @@
 
         function confirmMenuSelection() {
             closeMenuModal();
+        }
+
+        // ==================== FAVORIS ====================
+        function toggleFavorite(itemId) {
+            if (favoritesList[itemId]) {
+                delete favoritesList[itemId];
+                showToast('Removed from favorites', 'info');
+            } else {
+                favoritesList[itemId] = true;
+                showToast('Added to favorites ❤️', 'success');
+            }
+            localStorage.setItem('remal_favorites', JSON.stringify(favoritesList));
+            renderMenuItems();
+        }
+
+        // ==================== NOTIFICATION TOAST ====================
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = 'toast-notification toast-in';
+            
+            const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
+            
+            toast.innerHTML = `
+                <span>${icon}</span>
+                <span class="text-xs font-bold text-[var(--text-main)]">${message}</span>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
         }
 
         // ==================== FONCTIONS D'IDENTIFICATION ====================
@@ -441,6 +559,7 @@
                 localStorage.setItem('remal_guest_data', JSON.stringify(pmsData));
 
                 afficherPagePersonnalisee(pmsData, pmsData.room);
+                setupRealtimeTracking(pmsData.room);
 
                 const lockScreen = document.getElementById('lockScreen');
                 const mainScreen = document.getElementById('mainScreen');
@@ -463,6 +582,9 @@
         }
 
         function afficherPagePersonnalisee(pmsData, roomNum) {
+            const greeting = getGreeting();
+            
+            document.getElementById('greetingTime').innerText = `${greeting.emoji} ${greeting.text}`;
             document.getElementById('welcomeGuestName').innerText = pmsData.guest_name || 'Guest';
             document.getElementById('displayRoomNumber').innerText = roomNum;
             document.getElementById('displayRoomType').innerText = pmsData.room_typ || 'Standard';
@@ -485,12 +607,78 @@
             menuCart = {};
             renderMenuItems();
             
+            if (realtimeChannel) {
+                supabaseClient.removeChannel(realtimeChannel);
+                realtimeChannel = null;
+            }
+            
             const lockScreen = document.getElementById('lockScreen');
             const mainScreen = document.getElementById('mainScreen');
             
             mainScreen.classList.add('hidden');
             lockScreen.classList.remove('hidden');
             lockScreen.classList.add('screen-enter');
+        }
+
+        // ==================== SUIVI DE COMMANDE EN TEMPS RÉEL ====================
+        function setupRealtimeTracking(roomNumber) {
+            if (realtimeChannel) {
+                supabaseClient.removeChannel(realtimeChannel);
+            }
+            
+            realtimeChannel = supabaseClient
+                .channel(`order-tracking-${roomNumber}`)
+                .on('postgres_changes', 
+                    { event: 'UPDATE', schema: 'public', table: 'food_orders', filter: `room_number=eq.${roomNumber}` },
+                    (payload) => {
+                        if (payload.new && payload.new.id === currentOrderId) {
+                            updateOrderTracking(payload.new.status);
+                        }
+                    }
+                )
+                .subscribe();
+        }
+
+        function updateOrderTracking(status) {
+            const trackingSection = document.getElementById('orderTrackingSection');
+            trackingSection.classList.remove('hidden');
+            
+            const statusMap = {
+                'Pending': { step: 'received', text: 'Order Received', color: 'text-amber-400' },
+                'Preparing': { step: 'preparing', text: 'Being Prepared', color: 'text-blue-400' },
+                'Ready': { step: 'ready', text: 'Ready for Delivery', color: 'text-purple-400' },
+                'Delivered': { step: 'delivered', text: 'Delivered', color: 'text-emerald-400' }
+            };
+            
+            const config = statusMap[status] || statusMap['Pending'];
+            
+            document.getElementById('orderStatusText').innerText = config.text;
+            document.getElementById('orderStatusText').className = `text-[10px] font-bold ${config.color}`;
+            
+            // Mettre à jour la barre de progression
+            const steps = ['received', 'preparing', 'ready', 'delivered'];
+            const currentIndex = steps.indexOf(config.step);
+            
+            steps.forEach((step, index) => {
+                const dot = document.getElementById(`step${step.charAt(0).toUpperCase() + step.slice(1)}`);
+                const line = document.getElementById(`line${step.charAt(0).toUpperCase() + step.slice(1)}`);
+                
+                if (index <= currentIndex) {
+                    dot.classList.add('completed');
+                    dot.classList.add('active');
+                    if (line) line.classList.add('completed');
+                } else {
+                    dot.classList.remove('completed');
+                    dot.classList.remove('active');
+                    if (line) line.classList.remove('completed');
+                }
+            });
+            
+            if (status === 'Delivered') {
+                showToast('✅ Your order has been delivered!', 'success');
+            } else if (status === 'Ready') {
+                showToast('🔔 Your order is ready!', 'info');
+            }
         }
 
         // ==================== RESTAURATION DE SESSION ====================
@@ -505,6 +693,7 @@
                     isGuestVerified = true;
 
                     afficherPagePersonnalisee(parsedData, savedRoom);
+                    setupRealtimeTracking(savedRoom);
 
                     document.getElementById('lockScreen').classList.add('hidden');
                     document.getElementById('mainScreen').classList.remove('hidden');
@@ -521,16 +710,31 @@
             const instructions = document.getElementById('guestSpecialInstructions').value.trim();
             const deliveryTime = document.getElementById('deliveryTime').value;
 
-            if (!isGuestVerified) { alert('⚠️ Please verify your identity first'); return; }
-            if (Object.keys(menuCart).length === 0) { alert('⚠️ Please select at least one item'); return; }
+            if (!isGuestVerified) { 
+                showToast('Please verify your identity first', 'error');
+                return; 
+            }
+            if (Object.keys(menuCart).length === 0) { 
+                showToast('Please select at least one item', 'error');
+                return; 
+            }
 
             let itemsArray = [];
             let totalAmount = 0;
+            let estimatedTotalTime = 0;
 
             for (const [itemId, qty] of Object.entries(menuCart)) {
                 const item = findMenuItem(itemId);
                 if (item) {
-                    itemsArray.push({ name: item.name, quantity: qty, price: item.price, total: qty * item.price });
+                    itemsArray.push({ 
+                        name: item.name, 
+                        quantity: qty, 
+                        price: item.price, 
+                        total: qty * item.price,
+                        prepTime: item.prepTime,
+                        badges: item.badges || [],
+                        allergens: item.allergens || []
+                    });
                     totalAmount += qty * item.price;
                 }
             }
@@ -554,8 +758,13 @@
 
             if (error) {
                 console.error('Supabase Error:', error);
-                alert('❌ Error submitting order. Please try again.');
+                showToast('Error submitting order. Please try again.', 'error');
                 return;
+            }
+
+            if (data && data.length > 0) {
+                currentOrderId = data[0].id;
+                updateOrderTracking('Pending');
             }
 
             if (method === 'whatsapp') {
@@ -564,7 +773,7 @@
                 window.open(`https://wa.me/${SUPABASE_CONFIG.whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank');
             }
 
-            alert('✅ Order submitted successfully!');
+            showToast('✅ Order submitted successfully!', 'success');
             
             menuCart = {};
             document.getElementById('guestSpecialInstructions').value = '';
@@ -573,6 +782,7 @@
 
         // ==================== INITIALISATION ====================
         initTheme();
+        initGreeting();
         renderMenuItems();
         restaurerSession();
     </script>
