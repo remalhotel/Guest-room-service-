@@ -4,10 +4,12 @@ function switchTab(tab) {
     document.getElementById('servicesSection').classList.add('hidden');
     document.getElementById('offersSection').classList.add('hidden');
     document.getElementById('faqSection').classList.add('hidden');
+    document.getElementById('favoritesSection').classList.add('hidden');
     
     document.getElementById('tabServices').classList.remove('active');
     document.getElementById('tabOffers').classList.remove('active');
     document.getElementById('tabFaq').classList.remove('active');
+    document.getElementById('tabFavorites').classList.remove('active');
     
     if (tab === 'services') {
         document.getElementById('servicesSection').classList.remove('hidden');
@@ -22,6 +24,20 @@ function switchTab(tab) {
         document.getElementById('tabFaq').classList.add('active');
         renderFaqList();
     }
+}
+
+function showFavorites() {
+    document.getElementById('servicesSection').classList.add('hidden');
+    document.getElementById('offersSection').classList.add('hidden');
+    document.getElementById('faqSection').classList.add('hidden');
+    document.getElementById('favoritesSection').classList.remove('hidden');
+    
+    document.getElementById('tabServices').classList.remove('active');
+    document.getElementById('tabOffers').classList.remove('active');
+    document.getElementById('tabFaq').classList.remove('active');
+    document.getElementById('tabFavorites').classList.add('active');
+    
+    renderFavoritesView();
 }
 
 function showService(serviceId) {
@@ -50,16 +66,4 @@ function backToServices() {
     document.getElementById('otherServiceSection').classList.add('hidden');
     currentService = null;
     renderServiceRequestsTracking();
-}
-function showFavorites() {
-    document.getElementById('servicesSection').classList.add('hidden');
-    document.getElementById('offersSection').classList.add('hidden');
-    document.getElementById('faqSection').classList.add('hidden');
-    document.getElementById('favoritesSection').classList.remove('hidden');
-    
-    document.getElementById('tabServices').classList.remove('active');
-    document.getElementById('tabOffers').classList.remove('active');
-    document.getElementById('tabFaq').classList.remove('active');
-    
-    renderFavoritesView();
 }
