@@ -387,6 +387,9 @@
                 <button onclick="switchTab('offers')" id="tabOffers" class="tab-btn flex-1 py-3 rounded-xl text-xs font-bold transition">
                     <i class="fas fa-tags mr-1"></i> <span data-i18n="offers">Offers</span>
                 </button>
+                <button onclick="showFavorites()" id="tabFavorites" class="tab-btn flex-1 py-3 rounded-xl text-xs font-bold transition">
+                    <i class="fas fa-heart mr-1"></i> <span data-i18n="favorites">Favorites</span>
+                </button>
                 <button onclick="switchTab('faq')" id="tabFaq" class="tab-btn flex-1 py-3 rounded-xl text-xs font-bold transition">
                     <i class="fas fa-question-circle mr-1"></i> <span data-i18n="faq">FAQ</span>
                 </button>
@@ -593,6 +596,13 @@
                 <p class="text-center text-[10px] text-stone-400 font-bold uppercase tracking-wider" data-i18n="faqTitle">Frequently Asked Questions</p>
                 <div class="space-y-3" id="faqContainer"></div>
             </div>
+
+            <div id="favoritesSection" class="hidden space-y-4">
+                <p class="text-center text-[10px] text-stone-400 font-bold uppercase tracking-wider">
+                    <i class="fas fa-heart mr-1"></i> <span data-i18n="myFavorites">My Favorites</span>
+                </p>
+                <div id="favoritesContainer" class="space-y-4"></div>
+            </div>
         </div>
     </div>
 
@@ -659,6 +669,7 @@
     <script src="assets/js/ui/navigation.js"></script>
     <script src="assets/js/ui/services-ui.js"></script>
     <script src="assets/js/ui/menu-ui.js"></script>
+    <script src="assets/js/ui/favorites-ui.js"></script>
     <script src="assets/js/ui/chat-ui.js"></script>
     <script src="assets/js/services/auth.js"></script>
     <script src="assets/js/services/offers.js"></script>
