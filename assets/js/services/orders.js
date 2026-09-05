@@ -45,8 +45,10 @@ async function submitRoomServiceOrder(method) {
                 localStorage.setItem('remal_current_order_id', currentOrderId);
                 updateOrderTracking('Pending');
                 
-                // 🆕 Démarrer les notifications en temps réel
-                startOrderNotifications(currentOrderId);
+                // Démarrer les notifications en temps réel
+                if (typeof startOrderNotifications === 'function') {
+                    startOrderNotifications(currentOrderId);
+                }
             }
         } else {
             updateOrderTracking('Pending');
@@ -64,6 +66,11 @@ async function submitRoomServiceOrder(method) {
         menuCart = {};
         document.getElementById('guestSpecialInstructions').value = '';
         renderMenuItems();
+        
+        // Rafraîchir l'historique
+        if (typeof fetchOrderHistory === 'function') {
+            fetchOrderHistory();
+        }
     } catch (err) { 
         showToast('Error: ' + err.message, 'error'); 
     }
@@ -124,17 +131,20 @@ function updateOrderTracking(status) {
     });
     
     if (status === 'Delivered' || status === 'Completed') {
+        if (typeof stopOrderNotifications === 'function') {
+            stopOrderNotifications();
+        }
         trackingTimeout = setTimeout(() => {
             trackingSection.classList.add('hidden');
             localStorage.removeItem('remal_current_order_id');
             currentOrderId = null;
+            if (typeof fetchOrderHistory === 'function') {
+                fetchOrderHistory();
+            }
         }, 20 * 60 * 1000);
     }
 }
-// 🆕 Arrêter les notifications si la commande est terminée
-if (status === 'Delivered' || status === 'Completed') {
-    stopOrderNotifications();
-}
+
 async function verifierEtRestaurerCommandeEnCours() {
     const savedOrderId = localStorage.getItem('remal_current_order_id');
     if (!savedOrderId || !supabaseClient) return;
@@ -162,11 +172,143 @@ async function verifierEtRestaurerCommandeEnCours() {
 
         showService('room_service');
         updateOrderTracking(data.status || 'Pending');
+        
+        if (typeof startOrderNotifications === 'function') {
+            startOrderNotifications(savedOrderId);
+        }
     } catch (err) {
         console.warn('Erreur lors de la vérification de la commande:', err);
     }
 }
+
+// ==================== ORDER HISTORY ====================
+async function fetchOrderHistory() {
+    const room = cachedGuestData?.room || localStorage.getItem('remal_guest_room');
+    if (!room || !supabaseClient) return;
+    
+    try {
+        const { data, error } = await supabaseClient
+            .from('food_orders')
+            .select('*')
+            .eq('room_number', String(room))
+            .order('created_at', { ascending: false })
+            .limit(20);
+            
+        if (error) {
+            console.warn('Erreur lors du chargement de l\'historique:', error);
+            return;
+        }
+        
+        window.orderHistory = data || [];
+        renderOrderHistory();
+    } catch (err) {
+        console.warn('Erreur lors du chargement de l\'historique:', err);
+        window.orderHistory = [];
+        renderOrderHistory();
+    }
+}
+
+function renderOrderHistory() {
+    const container = document.getElementById('orderHistoryContainer');
+    if (!container) return;
+    
+    const orders = window.orderHistory || [];
+    
+    if (orders.length === 0) {
+        container.innerHTML = `
+            <div class="text-center py-6">
+                <i class="fas fa-receipt text-3xl text-stone-600 mb-2"></i>
+                <p class="text-[10px] text-stone-400">No orders yet</p>
+            </div>
+        `;
+        return;
+    }
+    
+    container.innerHTML = orders.map(order => {
+        const statusColors = {
+            'Pending': { bg: 'bg-amber-500/20', text: 'text-amber-400', icon: '⏳' },
+            'Preparing': { bg: 'bg-blue-500/20', text: 'text-blue-400', icon: '👨‍🍳' },
+            'Ready': { bg: 'bg-purple-500/20', text: 'text-purple-400', icon: '🔔' },
+            'Delivered': { bg: 'bg-emerald-500/20', text: 'text-emerald-400', icon: '✅' },
+            'Completed': { bg: 'bg-emerald-500/20', text: 'text-emerald-400', icon: '✅' },
+            'Cancelled': { bg: 'bg-red-500/20', text: 'text-red-400', icon: '❌' }
+        };
+        const sc = statusColors[order.status] || statusColors['Pending'];
+        const date = new Date(order.created_at).toLocaleDateString();
+        const time = new Date(order.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        
+        let itemsList = '';
+        try {
+            const items = typeof order.items === 'string' ? JSON.parse(order.items) : order.items;
+            if (Array.isArray(items)) {
+                itemsList = items.map(item => `${item.quantity}x ${item.name}`).join(', ');
+            }
+        } catch (e) {
+            itemsList = 'Items';
+        }
+        
+        return `
+            <div class="p-3 bg-stone-950/60 border border-stone-800 rounded-xl hover:border-amber-500/30 transition">
+                <div class="flex justify-between items-start mb-2">
+                    <div class="flex-1">
+                        <p class="font-bold text-stone-100 text-xs">🛎️ Order #${String(order.id).slice(-6)}</p>
+                        <p class="text-[9px] text-stone-400 mt-1">${date} at ${time}</p>
+                    </div>
+                    <span class="text-[9px] font-bold px-2 py-0.5 rounded-full ${sc.bg} ${sc.text}">
+                        ${sc.icon} ${order.status}
+                    </span>
+                </div>
+                
+                <div class="bg-stone-900/50 rounded-lg p-2 mb-2">
+                    <p class="text-[9px] text-stone-400 line-clamp-2">${itemsList}</p>
+                </div>
+                
+                <div class="flex justify-between items-center">
+                    <span class="text-[10px] font-bold text-[var(--text-gold,#DCA773)]">
+                        AED ${(order.total_amount || 0).toFixed(2)}
+                    </span>
+                    ${order.status === 'Pending' || order.status === 'Preparing' ? `
+                        <button onclick="trackOrder('${order.id}')" class="text-[9px] text-blue-400 hover:text-blue-300">
+                            <i class="fas fa-satellite-dish mr-1"></i> Track
+                        </button>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function trackOrder(orderId) {
+    currentOrderId = orderId;
+    localStorage.setItem('remal_current_order_id', orderId);
+    showService('room_service');
+    
+    if (typeof startOrderNotifications === 'function') {
+        startOrderNotifications(orderId);
+    }
+    
+    verifierEtRestaurerCommandeEnCours();
+}
+
+function showOrderHistory() {
+    document.getElementById('servicesSection').classList.add('hidden');
+    document.getElementById('offersSection').classList.add('hidden');
+    document.getElementById('faqSection').classList.add('hidden');
+    document.getElementById('favoritesSection').classList.add('hidden');
+    document.getElementById('orderHistorySection').classList.remove('hidden');
+    
+    document.getElementById('tabServices').classList.remove('active');
+    document.getElementById('tabOffers').classList.remove('active');
+    document.getElementById('tabFaq').classList.remove('active');
+    document.getElementById('tabFavorites').classList.remove('active');
+    document.getElementById('tabHistory').classList.add('active');
+    
+    fetchOrderHistory();
+}
+
 // ==================== NOTIFICATIONS TEMPS RÉEL ====================
+let orderNotificationChannel = null;
+
 function subscribeToOrderUpdates(orderId) {
     if (!supabaseClient || !orderId) return null;
     
@@ -191,78 +333,34 @@ function subscribeToOrderUpdates(orderId) {
 }
 
 function handleOrderStatusChange(newStatus, oldStatus) {
-    // Mettre à jour l'affichage du suivi
     updateOrderTracking(newStatus);
     
-    // Afficher une notification toast
     const statusMessages = {
-        'Pending': {
-            icon: '📝',
-            title: TRANSLATIONS[currentLanguage].orderReceived,
-            message: 'Votre commande a été enregistrée',
-            type: 'info'
-        },
-        'Preparing': {
-            icon: '👨‍🍳',
-            title: TRANSLATIONS[currentLanguage].beingPrepared,
-            message: 'Le chef prépare votre commande',
-            type: 'info'
-        },
-        'Ready': {
-            icon: '🔔',
-            title: TRANSLATIONS[currentLanguage].readyForDelivery,
-            message: 'Votre commande est prête !',
-            type: 'success'
-        },
-        'Delivered': {
-            icon: '✅',
-            title: TRANSLATIONS[currentLanguage].orderDelivered,
-            message: 'Bon appétit !',
-            type: 'success'
-        },
-        'Completed': {
-            icon: '🌟',
-            title: TRANSLATIONS[currentLanguage].orderDelivered,
-            message: 'Commande terminée. Merci !',
-            type: 'success'
-        },
-        'Cancelled': {
-            icon: '❌',
-            title: 'Commande annulée',
-            message: 'Votre commande a été annulée',
-            type: 'error'
-        }
+        'Pending': { icon: '📝', title: 'Order Received', message: 'Your order has been registered', type: 'info' },
+        'Preparing': { icon: '👨‍🍳', title: 'Being Prepared', message: 'The chef is preparing your order', type: 'info' },
+        'Ready': { icon: '🔔', title: 'Ready for Delivery', message: 'Your order is ready!', type: 'success' },
+        'Delivered': { icon: '✅', title: 'Delivered', message: 'Enjoy your meal!', type: 'success' },
+        'Completed': { icon: '🌟', title: 'Completed', message: 'Order completed. Thank you!', type: 'success' },
+        'Cancelled': { icon: '❌', title: 'Cancelled', message: 'Your order has been cancelled', type: 'error' }
     };
     
     const config = statusMessages[newStatus] || statusMessages['Pending'];
-    
-    // Notification toast avec style amélioré
     showEnhancedToast(config.icon, config.title, config.message, config.type);
-    
-    // Jouer un son de notification
     playOrderNotificationSound();
     
-    // Notification système si autorisée
-    showSystemNotification(config.icon, config.title, config.message);
-    
-    // Si la commande est livrée, préparer la notification de feedback
     if (newStatus === 'Delivered' || newStatus === 'Completed') {
         setTimeout(() => {
             showFeedbackPrompt();
         }, 5000);
+        if (typeof fetchOrderHistory === 'function') {
+            fetchOrderHistory();
+        }
     }
 }
 
 function showEnhancedToast(icon, title, message, type = 'info') {
     const toast = document.createElement('div');
     toast.className = 'toast-notification toast-in';
-    
-    const colors = {
-        'info': 'border-amber-500/30',
-        'success': 'border-emerald-500/30',
-        'error': 'border-red-500/30'
-    };
-    
     toast.style.borderColor = type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#DCA773';
     
     toast.innerHTML = `
@@ -276,7 +374,6 @@ function showEnhancedToast(icon, title, message, type = 'info') {
     `;
     
     document.body.appendChild(toast);
-    
     setTimeout(() => { 
         toast.style.opacity = '0'; 
         toast.style.transition = 'opacity 0.3s ease'; 
@@ -287,23 +384,17 @@ function showEnhancedToast(icon, title, message, type = 'info') {
 function playOrderNotificationSound() {
     try {
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        
-        // Créer un son agréable de notification
-        const notes = [523.25, 659.25, 783.99]; // Do, Mi, Sol
+        const notes = [523.25, 659.25, 783.99];
         
         notes.forEach((frequency, index) => {
             const oscillator = audioContext.createOscillator();
             const gainNode = audioContext.createGain();
-            
             oscillator.connect(gainNode);
             gainNode.connect(audioContext.destination);
-            
             oscillator.type = 'sine';
             oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime + index * 0.1);
-            
             gainNode.gain.setValueAtTime(0.2, audioContext.currentTime + index * 0.1);
             gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + index * 0.1 + 0.3);
-            
             oscillator.start(audioContext.currentTime + index * 0.1);
             oscillator.stop(audioContext.currentTime + index * 0.1 + 0.3);
         });
@@ -330,7 +421,7 @@ function showFeedbackPrompt() {
         <div class="flex items-center gap-3">
             <span class="text-2xl">⭐</span>
             <div class="flex-1">
-                <p class="text-xs font-bold text-stone-100">Comment était votre expérience ?</p>
+                <p class="text-xs font-bold text-stone-100">How was your experience?</p>
                 <div class="flex gap-2 mt-2">
                     ${[1, 2, 3, 4, 5].map(star => `
                         <button onclick="submitFeedback(${star})" class="text-xl hover:scale-125 transition">⭐</button>
@@ -341,7 +432,6 @@ function showFeedbackPrompt() {
     `;
     
     document.body.appendChild(feedbackToast);
-    
     setTimeout(() => { 
         feedbackToast.style.opacity = '0'; 
         feedbackToast.style.transition = 'opacity 0.3s ease'; 
@@ -370,41 +460,32 @@ async function submitFeedback(rating) {
                 .insert([feedbackData]);
                 
             if (error) {
-                console.warn('Erreur lors de l\'enregistrement du feedback:', error);
-                showToast('Erreur lors de l\'enregistrement', 'error');
+                console.warn('Erreur feedback:', error);
+                showToast('Error saving feedback', 'error');
                 return;
             }
         }
         
-        // Fermer tous les toasts de feedback
         document.querySelectorAll('.toast-notification').forEach(t => t.remove());
-        
-        showToast(`Merci pour votre note de ${rating} étoiles ! 🌟`, 'success');
+        showToast(`Thank you for your ${rating} star rating! 🌟`, 'success');
     } catch (error) {
-        console.warn('Erreur lors de l\'enregistrement du feedback:', error);
-        showToast('Erreur lors de l\'enregistrement', 'error');
+        console.warn('Erreur feedback:', error);
+        showToast('Error saving feedback', 'error');
     }
 }
 
-// Variable pour stocker le canal de notification
-let orderNotificationChannel = null;
-
-// Fonction pour démarrer le suivi des notifications
 function startOrderNotifications(orderId) {
-    // Fermer l'ancien canal s'il existe
     if (orderNotificationChannel && supabaseClient) {
         supabaseClient.removeChannel(orderNotificationChannel);
     }
     
     orderNotificationChannel = subscribeToOrderUpdates(orderId);
     
-    // Demander la permission pour les notifications système
     if ('Notification' in window && Notification.permission === 'default') {
         Notification.requestPermission();
     }
 }
 
-// Fonction pour arrêter le suivi des notifications
 function stopOrderNotifications() {
     if (orderNotificationChannel && supabaseClient) {
         supabaseClient.removeChannel(orderNotificationChannel);
