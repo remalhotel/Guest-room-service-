@@ -646,6 +646,7 @@
             <div id="guestChatContainer" class="flex-1 overflow-y-auto space-y-2 pr-1 max-h-[50vh]"></div>
             <div id="chatTypingIndicator" class="chat-typing-indicator hidden">Le staff est en train d'écrire...</div>
             <div id="chatError" class="hidden text-center text-[10px] text-red-400 font-bold"></div>
+            <div id="quickRepliesContainer" class="hidden"></div>
             <div class="flex gap-2 pt-2 border-t border-stone-800">
                 <input type="text" id="guestChatInput" placeholder="Write a message..." class="flex-1 bg-stone-950 border border-stone-800 rounded-xl px-3 py-2 text-xs text-stone-100 outline-none focus:border-amber-500" onkeypress="if(event.key==='Enter') sendGuestChatMessage()">
                 <button onclick="sendGuestChatMessage()" class="bg-[var(--text-gold,#DCA773)] text-stone-950 font-bold px-4 py-2 rounded-xl text-xs hover:bg-[#ebd0b3]">Send</button>
