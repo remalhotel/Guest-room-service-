@@ -1,14 +1,12 @@
 // ==================== SERVICE REQUESTS ====================
+let requestNotificationChannel = null;
+
 async function submitOtherService() {
     console.log('📤 submitOtherService called');
     
     const room = cachedGuestData?.room || localStorage.getItem('remal_guest_room');
     const notes = document.getElementById('otherServiceNotes')?.value?.trim() || '';
     const serviceData = SERVICES_DATA[currentService];
-    
-    console.log('📦 Room:', room);
-    console.log('📦 Service:', currentService);
-    console.log('📦 Service Data:', serviceData);
     
     if (!serviceData) {
         showToast('Error: Service not found', 'error');
@@ -25,7 +23,6 @@ async function submitOtherService() {
         const element = document.getElementById(field.id);
         if (element) {
             details.push(`${field.label}: ${element.value}`);
-            console.log(`📝 ${field.label}: ${element.value}`);
         }
     });
     
@@ -51,12 +48,16 @@ async function submitOtherService() {
                 
             if (error) {
                 console.error('❌ Supabase error:', error.message);
-                console.error('❌ Full error:', error);
                 showToast('Error: ' + error.message, 'error');
                 return;
             }
             
             console.log('✅ Request inserted:', data);
+            
+            // Démarrer les notifications en temps réel pour cette demande
+            if (data && data.length > 0) {
+                startRequestNotifications(data[0].id);
+            }
         } else {
             console.warn('⚠️ No Supabase client');
         }
@@ -65,7 +66,6 @@ async function submitOtherService() {
         document.getElementById('otherServiceNotes').value = '';
         backToServices();
         
-        // Rafraîchir la liste des demandes
         await fetchServiceRequestsTracking();
         
     } catch (err) {
@@ -158,125 +158,89 @@ function renderServiceRequestsTracking() {
         </div>
     `;
 }
-// ==================== FEEDBACK APRÈS SERVICE ====================
-function showServiceFeedbackPrompt(requestId, serviceType) {
-    const feedbackModal = document.createElement('div');
-    feedbackModal.className = 'fixed inset-0 bg-black/90 z-[500] flex items-center justify-center p-4 backdrop-blur-sm';
-    feedbackModal.id = 'serviceFeedbackModal';
+
+// ==================== NOTIFICATIONS TEMPS RÉEL POUR DEMANDES ====================
+function startRequestNotifications(requestId) {
+    if (!supabaseClient || !requestId) return;
     
-    feedbackModal.innerHTML = `
-        <div class="bg-stone-900 border border-amber-500/30 w-full max-w-sm rounded-3xl p-6 space-y-4 shadow-2xl">
-            <div class="flex justify-between items-center border-b border-stone-800 pb-3">
-                <h3 class="text-xs font-serif-luxury font-bold text-[var(--text-gold,#DCA773)] uppercase tracking-widest">
-                    ⭐ Rate Your Experience
-                </h3>
-                <button onclick="closeServiceFeedback()" class="text-stone-400 hover:text-stone-100 text-xl font-bold">✕</button>
-            </div>
+    if (requestNotificationChannel) {
+        supabaseClient.removeChannel(requestNotificationChannel);
+    }
+    
+    requestNotificationChannel = supabaseClient
+        .channel(`request-updates-${requestId}`)
+        .on('postgres_changes', {
+            event: 'UPDATE',
+            schema: 'public',
+            table: 'guest_requests',
+            filter: `id=eq.${requestId}`
+        }, (payload) => {
+            const newStatus = payload.new.status;
+            const oldStatus = payload.old.status;
             
-            <div class="space-y-3">
-                <div>
-                    <p class="text-[10px] text-stone-400 font-bold uppercase">Service</p>
-                    <p class="text-sm font-bold text-stone-100">${serviceType}</p>
-                </div>
-                
-                <div>
-                    <p class="text-[10px] text-stone-400 font-bold uppercase mb-2">Your Rating</p>
-                    <div class="flex gap-2 justify-center" id="starRating">
-                        ${[1, 2, 3, 4, 5].map(star => `
-                            <button onclick="selectStar(${star})" class="star-btn text-3xl hover:scale-125 transition text-stone-600" data-star="${star}">
-                                ★
-                            </button>
-                        `).join('')}
-                    </div>
-                </div>
-                
-                <div>
-                    <p class="text-[10px] text-stone-400 font-bold uppercase mb-2">Comments (optional)</p>
-                    <textarea id="feedbackComment" placeholder="Tell us more about your experience..." class="w-full h-20 bg-stone-950 border border-stone-800 rounded-2xl p-3 outline-none resize-none text-xs text-stone-200"></textarea>
-                </div>
-                
-                <button onclick="submitServiceFeedback('${requestId}')" class="w-full bg-[#DCA773] hover:bg-[#ebd0b3] text-stone-950 font-black py-3.5 rounded-2xl text-xs uppercase tracking-widest transition">
-                    Submit Feedback
-                </button>
+            if (newStatus !== oldStatus) {
+                handleRequestStatusChange(newStatus, oldStatus, payload.new);
+            }
+        })
+        .subscribe();
+}
+
+function handleRequestStatusChange(newStatus, oldStatus, requestData) {
+    // Rafraîchir la liste des demandes
+    fetchServiceRequestsTracking();
+    
+    const statusMessages = {
+        'Pending': { icon: '📝', title: 'Request Received', message: 'Your request has been registered', type: 'info' },
+        'In Progress': { icon: '🔄', title: 'Request In Progress', message: 'Our team is working on your request', type: 'info' },
+        'Completed': { icon: '✅', title: 'Request Completed', message: 'Your request has been completed!', type: 'success' },
+        'Cancelled': { icon: '❌', title: 'Request Cancelled', message: 'Your request has been cancelled', type: 'error' }
+    };
+    
+    const config = statusMessages[newStatus] || statusMessages['Pending'];
+    showRequestNotification(config.icon, config.title, config.message, config.type);
+    
+    // Si complété, arrêter les notifications et proposer un feedback
+    if (newStatus === 'Completed') {
+        if (requestNotificationChannel) {
+            supabaseClient.removeChannel(requestNotificationChannel);
+            requestNotificationChannel = null;
+        }
+        
+        setTimeout(() => {
+            if (typeof showServiceFeedbackPrompt === 'function') {
+                showServiceFeedbackPrompt(requestData.id, requestData.service_type);
+            }
+        }, 3000);
+    }
+}
+
+function showRequestNotification(icon, title, message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = 'toast-notification toast-in';
+    toast.style.borderColor = type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#DCA773';
+    
+    toast.innerHTML = `
+        <div class="flex items-center gap-3">
+            <span class="text-2xl">${icon}</span>
+            <div>
+                <p class="text-xs font-bold text-stone-100">${title}</p>
+                <p class="text-[10px] text-stone-300">${message}</p>
             </div>
         </div>
     `;
     
-    document.body.appendChild(feedbackModal);
+    document.body.appendChild(toast);
+    
+    setTimeout(() => { 
+        toast.style.opacity = '0'; 
+        toast.style.transition = 'opacity 0.3s ease'; 
+        setTimeout(() => toast.remove(), 300); 
+    }, 4000);
 }
 
-let selectedRating = 0;
-
-function selectStar(star) {
-    selectedRating = star;
-    document.querySelectorAll('.star-btn').forEach(btn => {
-        const btnStar = parseInt(btn.getAttribute('data-star'));
-        if (btnStar <= star) {
-            btn.className = 'star-btn text-3xl hover:scale-125 transition text-amber-400';
-        } else {
-            btn.className = 'star-btn text-3xl hover:scale-125 transition text-stone-600';
-        }
-    });
-}
-
-function closeServiceFeedback() {
-    const modal = document.getElementById('serviceFeedbackModal');
-    if (modal) modal.remove();
-    selectedRating = 0;
-}
-
-async function submitServiceFeedback(requestId) {
-    if (!selectedRating) {
-        showToast('Please select a rating', 'error');
-        return;
+function stopRequestNotifications() {
+    if (requestNotificationChannel && supabaseClient) {
+        supabaseClient.removeChannel(requestNotificationChannel);
+        requestNotificationChannel = null;
     }
-    
-    const comment = document.getElementById('feedbackComment')?.value?.trim() || '';
-    const room = cachedGuestData?.room || localStorage.getItem('remal_guest_room');
-    
-    const feedbackData = {
-        request_id: requestId,
-        room_number: String(room),
-        rating: selectedRating,
-        feedback_text: comment,
-        created_at: new Date().toISOString()
-    };
-    
-    try {
-        if (supabaseClient) {
-            const { error } = await supabaseClient
-                .from('service_feedback')
-                .insert([feedbackData]);
-                
-            if (error) {
-                console.warn('Error saving feedback:', error);
-                showToast('Error saving feedback', 'error');
-                return;
-            }
-        }
-        
-        closeServiceFeedback();
-        showToast(`Thank you for your ${selectedRating} star rating! 🌟`, 'success');
-        selectedRating = 0;
-        
-    } catch (err) {
-        console.warn('Error saving feedback:', err);
-        showToast('Error saving feedback', 'error');
-    }
-}
-
-// Vérifier et afficher le feedback pour les demandes complétées
-function checkForCompletedRequests() {
-    const requests = window.activeServiceRequests || [];
-    const completedRequests = requests.filter(r => r.status === 'Completed');
-    
-    completedRequests.forEach(request => {
-        const feedbackKey = `feedback_shown_${request.id}`;
-        if (!localStorage.getItem(feedbackKey)) {
-            localStorage.setItem(feedbackKey, 'true');
-            setTimeout(() => {
-                showServiceFeedbackPrompt(request.id, request.service_type);
-            }, 2000);
-        }
-    });
 }
