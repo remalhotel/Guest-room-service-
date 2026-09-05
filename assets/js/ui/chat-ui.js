@@ -4,7 +4,14 @@ function openGuestChatModal() {
     const guestName = cachedGuestData?.guest_name || 'Guest';
     
     if (!room) {
-        showToast("Veuillez d'abord vérifier votre chambre", "error");
+        const noRoomTexts = {
+            en: 'Please verify your room first',
+            fr: 'Veuillez d\'abord vérifier votre chambre',
+            ar: 'يرجى التحقق من غرفتك أولاً',
+            hi: 'कृपया पहले अपना कमरा सत्यापित करें'
+        };
+        const lang = typeof currentLanguage !== 'undefined' ? currentLanguage : 'en';
+        showToast(noRoomTexts[lang] || noRoomTexts.en, 'error');
         return;
     }
     
@@ -16,6 +23,9 @@ function openGuestChatModal() {
     } else {
         guestChatManager.render();
     }
+    
+    // Mettre à jour les textes selon la langue
+    updateChatLanguage();
     
     if ('Notification' in window && Notification.permission === 'default') {
         Notification.requestPermission();
