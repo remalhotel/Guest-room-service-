@@ -37,7 +37,7 @@ class GuestChatManager {
             await this.markMessagesAsRead();
             return this.messages;
         } catch (error) {
-            console.error('Erreur lors du chargement des messages:', error);
+            console.error('Error loading messages:', error);
             return [];
         }
     }
@@ -53,9 +53,9 @@ class GuestChatManager {
                 .eq('sender', 'staff')
                 .eq('is_read', false);
                 
-            if (error) console.warn('Erreur lors du marquage des messages:', error);
+            if (error) console.warn('Error marking messages:', error);
         } catch (error) {
-            console.warn('Erreur lors du marquage des messages:', error);
+            console.warn('Error marking messages:', error);
         }
     }
 
@@ -129,19 +129,32 @@ class GuestChatManager {
     updateStaffStatus(isOnline) {
         const statusElement = document.getElementById('staffPresenceStatus');
         if (statusElement) {
-            if (isOnline) {
-                statusElement.innerHTML = '<span class="text-emerald-400 text-[10px]">● Staff en ligne</span>';
-            } else {
-                statusElement.innerHTML = '<span class="text-gray-400 text-[10px]">● Staff hors ligne</span>';
-            }
+            const statusTexts = {
+                en: isOnline ? '● Staff online' : '● Staff offline',
+                fr: isOnline ? '● Staff en ligne' : '● Staff hors ligne',
+                ar: isOnline ? '● الموظف متصل' : '● الموظف غير متصل',
+                hi: isOnline ? '● स्टाफ ऑनलाइन' : '● स्टाफ ऑफलाइन'
+            };
+            const lang = typeof currentLanguage !== 'undefined' ? currentLanguage : 'en';
+            const text = statusTexts[lang] || statusTexts.en;
+            const colorClass = isOnline ? 'text-emerald-400' : 'text-gray-400';
+            statusElement.innerHTML = `<span class="${colorClass} text-[10px]">${text}</span>`;
         }
     }
 
     showTypingIndicator(isTyping) {
         const typingElement = document.getElementById('chatTypingIndicator');
         if (typingElement) {
+            const typingTexts = {
+                en: 'Staff is typing...',
+                fr: 'Le staff est en train d\'écrire...',
+                ar: 'الموظف يكتب...',
+                hi: 'स्टाफ टाइप कर रहा है...'
+            };
+            const lang = typeof currentLanguage !== 'undefined' ? currentLanguage : 'en';
+            
             if (isTyping) {
-                typingElement.textContent = 'Le staff est en train d\'écrire...';
+                typingElement.textContent = typingTexts[lang] || typingTexts.en;
                 typingElement.classList.remove('hidden');
             } else {
                 typingElement.classList.add('hidden');
@@ -185,7 +198,7 @@ class GuestChatManager {
             this.sendTypingIndicator(false);
             return data;
         } catch (error) {
-            console.error('Erreur lors de l\'envoi du message:', error);
+            console.error('Error sending message:', error);
             this.messages = this.messages.filter(m => m.id !== tempId);
             this.render();
             return null;
@@ -250,13 +263,13 @@ class GuestChatManager {
             oscillator.start();
             oscillator.stop(audioContext.currentTime + 0.5);
         } catch (error) {
-            console.warn('Son non disponible:', error);
+            console.warn('Sound not available:', error);
         }
     }
 
     showDesktopNotification(message) {
         if ('Notification' in window && Notification.permission === 'granted') {
-            new Notification('Message du staff', {
+            new Notification('Message from staff', {
                 body: message.message,
                 icon: '/assets/images/logo.png'
             });
@@ -274,6 +287,15 @@ class GuestChatManager {
                 minute: '2-digit' 
             });
             
+            const readTexts = {
+                en: 'Read',
+                fr: 'Lu',
+                ar: 'مقروء',
+                hi: 'पढ़ा'
+            };
+            const lang = typeof currentLanguage !== 'undefined' ? currentLanguage : 'en';
+            const readText = readTexts[lang] || readTexts.en;
+            
             return `
                 <div class="chat-message ${isGuest ? 'guest' : 'staff'}">
                     <div class="flex items-start gap-2">
@@ -281,7 +303,7 @@ class GuestChatManager {
                             <p class="text-[10px]">${msg.message}</p>
                             <div class="flex items-center gap-2 mt-1">
                                 <p class="text-[8px] opacity-60">${time}</p>
-                                ${isGuest && msg.is_read ? '<span class="text-[8px] text-blue-400">✓✓ Lu</span>' : ''}
+                                ${isGuest && msg.is_read ? `<span class="text-[8px] text-blue-400">✓✓ ${readText}</span>` : ''}
                             </div>
                         </div>
                     </div>
