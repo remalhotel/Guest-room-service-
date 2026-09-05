@@ -51,3 +51,15 @@ function backToServices() {
     currentService = null;
     renderServiceRequestsTracking();
 }
+function showFavorites() {
+    document.getElementById('servicesSection').classList.add('hidden');
+    document.getElementById('offersSection').classList.add('hidden');
+    document.getElementById('faqSection').classList.add('hidden');
+    document.getElementById('favoritesSection').classList.remove('hidden');
+    
+    document.getElementById('tabServices').classList.remove('active');
+    document.getElementById('tabOffers').classList.remove('active');
+    document.getElementById('tabFaq').classList.remove('active');
+    
+    renderFavoritesView();
+}
