@@ -68,6 +68,7 @@ async function verifierIdentiteClient() {
         }, 400);
 
     } catch (error) { 
+        console.error('Erreur vérification:', error);
         errorMsg.innerText = '❌ ' + TRANSLATIONS[currentLanguage].notFound; 
         errorMsg.classList.remove('hidden'); 
     } finally { 
@@ -77,10 +78,15 @@ async function verifierIdentiteClient() {
 
 function afficherPagePersonnalisee(pmsData, roomNum) {
     updateGreeting();
-    document.getElementById('welcomeGuestName').innerText = pmsData.guest_name || 'Guest';
-    document.getElementById('displayRoomNumber').innerText = roomNum;
-    document.getElementById('displayRoomType').innerText = pmsData.room_typ || 'Standard';
-    document.getElementById('displayDeparture').innerText = pmsData.departure || '---';
+    const welcomeEl = document.getElementById('welcomeGuestName');
+    const roomEl = document.getElementById('displayRoomNumber');
+    const roomTypeEl = document.getElementById('displayRoomType');
+    const departureEl = document.getElementById('displayDeparture');
+    
+    if (welcomeEl) welcomeEl.innerText = pmsData.guest_name || 'Guest';
+    if (roomEl) roomEl.innerText = roomNum;
+    if (roomTypeEl) roomTypeEl.innerText = pmsData.room_typ || 'Standard';
+    if (departureEl) departureEl.innerText = pmsData.departure || '---';
 }
 
 function changerDeChambre() {
@@ -88,7 +94,6 @@ function changerDeChambre() {
     cachedGuestData = null;
     currentOrderId = null;
     
-    // Arrêter les notifications
     if (typeof stopOrderNotifications === 'function') {
         stopOrderNotifications();
     }
@@ -111,6 +116,7 @@ function changerDeChambre() {
     
     const lockScreen = document.getElementById('lockScreen');
     const mainScreen = document.getElementById('mainScreen');
+    
     mainScreen.classList.add('hidden');
     mainScreen.classList.remove('screen-enter');
     lockScreen.classList.remove('hidden');
@@ -119,8 +125,12 @@ function changerDeChambre() {
 }
 
 function restaurerSession() {
+    console.log('🔄 Tentative de restauration de session...');
+    
     const savedRoom = localStorage.getItem('remal_guest_room');
     const savedData = localStorage.getItem('remal_guest_data');
+    
+    console.log('📦 Données trouvées:', { savedRoom, savedData: savedData ? 'OUI' : 'NON' });
     
     if (savedRoom && savedData) {
         try {
@@ -128,26 +138,33 @@ function restaurerSession() {
             cachedGuestData = parsedData;
             isGuestVerified = true;
             
-            // Afficher directement le mainScreen sans animation
-            document.getElementById('lockScreen').classList.add('hidden');
-            document.getElementById('mainScreen').classList.remove('hidden');
+            const lockScreen = document.getElementById('lockScreen');
+            const mainScreen = document.getElementById('mainScreen');
             
-            afficherPagePersonnalisee(parsedData, savedRoom);
-            
-            // Restaurer la commande en cours et les demandes
-            setTimeout(() => {
-                verifierEtRestaurerCommandeEnCours();
-                fetchServiceRequestsTracking();
-            }, 500);
+            if (lockScreen && mainScreen) {
+                lockScreen.classList.add('hidden');
+                lockScreen.classList.remove('screen-exit');
+                mainScreen.classList.remove('hidden');
+                mainScreen.classList.remove('screen-enter');
+                
+                afficherPagePersonnalisee(parsedData, savedRoom);
+                
+                setTimeout(() => {
+                    verifierEtRestaurerCommandeEnCours();
+                    fetchServiceRequestsTracking();
+                }, 300);
+                
+                console.log('✅ Session restaurée avec succès');
+            } else {
+                console.error('❌ Éléments DOM non trouvés');
+            }
             
         } catch (e) {
-            console.warn('Erreur lors de la restauration de session:', e);
+            console.error('❌ Erreur restauration:', e);
             localStorage.removeItem('remal_guest_room');
             localStorage.removeItem('remal_guest_data');
         }
     } else {
-        // S'assurer que l'écran de verrouillage est visible
-        document.getElementById('lockScreen').classList.remove('hidden');
-        document.getElementById('mainScreen').classList.add('hidden');
+        console.log('ℹ️ Aucune session à restaurer');
     }
 }
