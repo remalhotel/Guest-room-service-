@@ -34,12 +34,12 @@ function renderMenuItems() {
             totalPcs += qty;
             totalPrice += qty * item.price;
             const badgesHTML = getBadgeHTML(item.badges);
-            const isFavorite = favoritesList[item.id] ? 'active' : '';
+            const isFav = favoritesList.dishes && favoritesList.dishes[item.id] ? 'active' : '';
             html += `
                 <div class="flex justify-between items-center py-2.5 border-b border-stone-800">
                     <div class="flex-1 pr-2">
                         <div class="flex items-center gap-2 mb-1">
-                            <button onclick="toggleFavorite('${item.id}')" class="favorite-heart ${isFavorite} text-xs"><i class="fas fa-heart"></i></button>
+                            <button onclick="toggleFavorite('${item.id}', 'dishes')" class="favorite-heart ${isFav} text-xs"><i class="fas fa-heart"></i></button>
                             <p class="font-bold text-stone-100 text-xs">${item.name}</p>
                         </div>
                         ${badgesHTML}
@@ -90,5 +90,7 @@ function toggleFavorite(itemId, category = 'dishes') {
     
     localStorage.setItem('remal_favorites', JSON.stringify(favoritesList));
     renderMenuItems();
-    renderFavoritesView();
+    if (typeof renderFavoritesView === 'function') {
+        renderFavoritesView();
+    }
 }
