@@ -5,11 +5,13 @@ function switchTab(tab) {
     document.getElementById('offersSection').classList.add('hidden');
     document.getElementById('faqSection').classList.add('hidden');
     document.getElementById('favoritesSection').classList.add('hidden');
+    document.getElementById('orderHistorySection').classList.add('hidden');
     
     document.getElementById('tabServices').classList.remove('active');
     document.getElementById('tabOffers').classList.remove('active');
     document.getElementById('tabFaq').classList.remove('active');
     document.getElementById('tabFavorites').classList.remove('active');
+    document.getElementById('tabHistory').classList.remove('active');
     
     if (tab === 'services') {
         document.getElementById('servicesSection').classList.remove('hidden');
@@ -31,11 +33,13 @@ function showFavorites() {
     document.getElementById('offersSection').classList.add('hidden');
     document.getElementById('faqSection').classList.add('hidden');
     document.getElementById('favoritesSection').classList.remove('hidden');
+    document.getElementById('orderHistorySection').classList.add('hidden');
     
     document.getElementById('tabServices').classList.remove('active');
     document.getElementById('tabOffers').classList.remove('active');
     document.getElementById('tabFaq').classList.remove('active');
     document.getElementById('tabFavorites').classList.add('active');
+    document.getElementById('tabHistory').classList.remove('active');
     
     renderFavoritesView();
 }
@@ -47,6 +51,11 @@ function showService(serviceId) {
         document.getElementById('roomServiceSection').classList.remove('hidden');
         document.getElementById('otherServiceSection').classList.add('hidden');
         renderMenuItems();
+        
+        // Charger les suggestions personnalisées
+        if (typeof fetchPersonalizedSuggestions === 'function') {
+            fetchPersonalizedSuggestions();
+        }
     } else {
         document.getElementById('roomServiceSection').classList.add('hidden');
         document.getElementById('otherServiceSection').classList.remove('hidden');
