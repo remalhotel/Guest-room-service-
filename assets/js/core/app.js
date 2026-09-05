@@ -36,12 +36,23 @@ window.openGuestChatModal = openGuestChatModal;
 window.closeGuestChatModal = closeGuestChatModal;
 window.sendGuestChatMessage = sendGuestChatMessage;
 window.toggleChatSound = toggleChatSound;
-window.submitFeedback = submitFeedback;
-window.startOrderNotifications = startOrderNotifications;
-window.stopOrderNotifications = stopOrderNotifications;
+
+// Nouvelles fonctions pour les favoris
+window.showFavorites = showFavorites;
+window.isFavorite = isFavorite;
+window.getFavoritesCount = getFavoritesCount;
+window.renderFavoritesView = renderFavoritesView;
+window.toggleFavoritesView = toggleFavoritesView;
+
+// Fonctions pour le dashboard des demandes
 window.createDashboardView = createDashboardView;
 window.refreshDashboard = refreshDashboard;
 window.cancelRequest = cancelRequest;
 window.viewRequestDetails = viewRequestDetails;
 window.closeRequestDetails = closeRequestDetails;
 window.getRequestStatusConfig = getRequestStatusConfig;
+
+// Fonctions pour les notifications de commande
+window.submitFeedback = submitFeedback;
+window.startOrderNotifications = startOrderNotifications;
+window.stopOrderNotifications = stopOrderNotifications;
