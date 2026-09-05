@@ -74,6 +74,10 @@ function renderServiceRequestsTracking() {
         return;
     }
     
+    // Utiliser le nouveau tableau de bord
+    createDashboardView();
+}
+    
     container.classList.remove('hidden');
     
     container.innerHTML = `
