@@ -158,3 +158,125 @@ function renderServiceRequestsTracking() {
         </div>
     `;
 }
+// ==================== FEEDBACK APRÈS SERVICE ====================
+function showServiceFeedbackPrompt(requestId, serviceType) {
+    const feedbackModal = document.createElement('div');
+    feedbackModal.className = 'fixed inset-0 bg-black/90 z-[500] flex items-center justify-center p-4 backdrop-blur-sm';
+    feedbackModal.id = 'serviceFeedbackModal';
+    
+    feedbackModal.innerHTML = `
+        <div class="bg-stone-900 border border-amber-500/30 w-full max-w-sm rounded-3xl p-6 space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-stone-800 pb-3">
+                <h3 class="text-xs font-serif-luxury font-bold text-[var(--text-gold,#DCA773)] uppercase tracking-widest">
+                    ⭐ Rate Your Experience
+                </h3>
+                <button onclick="closeServiceFeedback()" class="text-stone-400 hover:text-stone-100 text-xl font-bold">✕</button>
+            </div>
+            
+            <div class="space-y-3">
+                <div>
+                    <p class="text-[10px] text-stone-400 font-bold uppercase">Service</p>
+                    <p class="text-sm font-bold text-stone-100">${serviceType}</p>
+                </div>
+                
+                <div>
+                    <p class="text-[10px] text-stone-400 font-bold uppercase mb-2">Your Rating</p>
+                    <div class="flex gap-2 justify-center" id="starRating">
+                        ${[1, 2, 3, 4, 5].map(star => `
+                            <button onclick="selectStar(${star})" class="star-btn text-3xl hover:scale-125 transition text-stone-600" data-star="${star}">
+                                ★
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+                
+                <div>
+                    <p class="text-[10px] text-stone-400 font-bold uppercase mb-2">Comments (optional)</p>
+                    <textarea id="feedbackComment" placeholder="Tell us more about your experience..." class="w-full h-20 bg-stone-950 border border-stone-800 rounded-2xl p-3 outline-none resize-none text-xs text-stone-200"></textarea>
+                </div>
+                
+                <button onclick="submitServiceFeedback('${requestId}')" class="w-full bg-[#DCA773] hover:bg-[#ebd0b3] text-stone-950 font-black py-3.5 rounded-2xl text-xs uppercase tracking-widest transition">
+                    Submit Feedback
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(feedbackModal);
+}
+
+let selectedRating = 0;
+
+function selectStar(star) {
+    selectedRating = star;
+    document.querySelectorAll('.star-btn').forEach(btn => {
+        const btnStar = parseInt(btn.getAttribute('data-star'));
+        if (btnStar <= star) {
+            btn.className = 'star-btn text-3xl hover:scale-125 transition text-amber-400';
+        } else {
+            btn.className = 'star-btn text-3xl hover:scale-125 transition text-stone-600';
+        }
+    });
+}
+
+function closeServiceFeedback() {
+    const modal = document.getElementById('serviceFeedbackModal');
+    if (modal) modal.remove();
+    selectedRating = 0;
+}
+
+async function submitServiceFeedback(requestId) {
+    if (!selectedRating) {
+        showToast('Please select a rating', 'error');
+        return;
+    }
+    
+    const comment = document.getElementById('feedbackComment')?.value?.trim() || '';
+    const room = cachedGuestData?.room || localStorage.getItem('remal_guest_room');
+    
+    const feedbackData = {
+        request_id: requestId,
+        room_number: String(room),
+        rating: selectedRating,
+        feedback_text: comment,
+        created_at: new Date().toISOString()
+    };
+    
+    try {
+        if (supabaseClient) {
+            const { error } = await supabaseClient
+                .from('service_feedback')
+                .insert([feedbackData]);
+                
+            if (error) {
+                console.warn('Error saving feedback:', error);
+                showToast('Error saving feedback', 'error');
+                return;
+            }
+        }
+        
+        closeServiceFeedback();
+        showToast(`Thank you for your ${selectedRating} star rating! 🌟`, 'success');
+        selectedRating = 0;
+        
+    } catch (err) {
+        console.warn('Error saving feedback:', err);
+        showToast('Error saving feedback', 'error');
+    }
+}
+
+// Vérifier et afficher le feedback pour les demandes complétées
+function checkForCompletedRequests() {
+    const requests = window.activeServiceRequests || [];
+    const completedRequests = requests.filter(r => r.status === 'Completed');
+    
+    completedRequests.forEach(request => {
+        const feedbackKey = `feedback_shown_${request.id}`;
+        if (!localStorage.getItem(feedbackKey)) {
+            localStorage.setItem(feedbackKey, 'true');
+            setTimeout(() => {
+                showServiceFeedbackPrompt(request.id, request.service_type);
+            }, 2000);
+        }
+    });
+}
