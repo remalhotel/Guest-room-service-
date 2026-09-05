@@ -126,4 +126,96 @@ function toggleFavoritesView() {
         
         renderFavoritesView();
     }
+}    const totalFavorites = dishFavorites.length + serviceFavorites.length + offerFavorites.length;
+    
+    if (totalFavorites === 0) {
+        container.innerHTML = `
+            <div class="text-center py-8">
+                <i class="fas fa-heart text-3xl text-stone-600 mb-2"></i>
+                <p class="text-[10px] text-stone-400">No favorites yet</p>
+                <p class="text-[8px] text-stone-500 mt-1">Tap the heart icon to save items</p>
+            </div>
+        `;
+        return;
+    }
+    
+    let html = '';
+    
+    // Plats favoris
+    if (dishFavorites.length > 0) {
+        html += `
+            <div class="mb-4">
+                <h4 class="text-[10px] font-bold text-[var(--text-gold,#DCA773)] uppercase tracking-wider mb-2">
+                    <i class="fas fa-utensils mr-1"></i> Favorite Dishes (${dishFavorites.length})
+                </h4>
+                <div class="space-y-2">
+                    ${dishFavorites.map(itemId => {
+                        const item = typeof findMenuItem === 'function' ? findMenuItem(itemId) : null;
+                        if (!item) return '';
+                        return `
+                            <div class="flex justify-between items-center p-2 bg-stone-950/60 border border-stone-800 rounded-xl">
+                                <div>
+                                    <p class="font-bold text-stone-100 text-xs">${item.name}</p>
+                                    <p class="text-[9px] text-stone-400">AED ${item.price.toFixed(2)}</p>
+                                </div>
+                                <button onclick="toggleFavorite('${itemId}', 'dishes')" class="text-red-400 hover:text-red-300">
+                                    <i class="fas fa-heart"></i>
+                                </button>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            </div>
+        `;
+    }
+    
+    // Services favoris
+    if (serviceFavorites.length > 0) {
+        html += `
+            <div class="mb-4">
+                <h4 class="text-[10px] font-bold text-[var(--text-gold,#DCA773)] uppercase tracking-wider mb-2">
+                    <i class="fas fa-concierge-bell mr-1"></i> Favorite Services (${serviceFavorites.length})
+                </h4>
+                <div class="space-y-2">
+                    ${serviceFavorites.map(serviceId => {
+                        const service = SERVICES_DATA[serviceId];
+                        if (!service) return '';
+                        return `
+                            <div class="flex justify-between items-center p-2 bg-stone-950/60 border border-stone-800 rounded-xl cursor-pointer" onclick="showService('${serviceId}')">
+                                <div class="flex items-center gap-2">
+                                    <i class="fas ${service.icon} text-[var(--text-gold,#DCA773)]"></i>
+                                    <p class="font-bold text-stone-100 text-xs">${service.title}</p>
+                                </div>
+                                <button onclick="toggleFavorite('${serviceId}', 'services')" class="text-red-400 hover:text-red-300">
+                                    <i class="fas fa-heart"></i>
+                                </button>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            </div>
+        `;
+    }
+    
+    container.innerHTML = html;
+}
+
+function toggleFavoritesView() {
+    const favoritesSection = document.getElementById('favoritesSection');
+    if (!favoritesSection) return;
+    
+    const isHidden = favoritesSection.classList.contains('hidden');
+    
+    if (isHidden) {
+        favoritesSection.classList.remove('hidden');
+        document.getElementById('servicesSection').classList.add('hidden');
+        document.getElementById('offersSection').classList.add('hidden');
+        document.getElementById('faqSection').classList.add('hidden');
+        
+        document.getElementById('tabServices').classList.remove('active');
+        document.getElementById('tabOffers').classList.remove('active');
+        document.getElementById('tabFaq').classList.remove('active');
+        
+        renderFavoritesView();
+    }
 }
