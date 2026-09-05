@@ -51,6 +51,7 @@ window.addEventListener('load', function() {
 // Exposer les fonctions globalement pour les onclick dans le HTML
 window.setLanguage = setLanguage;
 window.toggleTheme = toggleTheme;
+window.toggleAutoTheme = toggleAutoTheme;
 window.verifierIdentiteClient = verifierIdentiteClient;
 window.changerDeChambre = changerDeChambre;
 window.switchTab = switchTab;
