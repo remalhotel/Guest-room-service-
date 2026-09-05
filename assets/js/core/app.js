@@ -107,3 +107,10 @@ window.initOfflineMode = initOfflineMode;
 window.updateOnlineStatus = updateOnlineStatus;
 window.clearOfflineCache = clearOfflineCache;
 window.getLastSyncTime = getLastSyncTime;
+
+// Fonctions pour le feedback de service
+window.showServiceFeedbackPrompt = showServiceFeedbackPrompt;
+window.selectStar = selectStar;
+window.closeServiceFeedback = closeServiceFeedback;
+window.submitServiceFeedback = submitServiceFeedback;
+window.checkForCompletedRequests = checkForCompletedRequests;
