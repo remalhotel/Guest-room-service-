@@ -10,6 +10,11 @@ function initializeApp() {
         initOfflineMode();
     }
     
+    // Initialiser les rappels
+    if (typeof initReminders === 'function') {
+        initReminders();
+    }
+    
     // Vérifier si le menu est disponible
     if (typeof isMenuAvailable === 'function' && isMenuAvailable()) {
         renderMenuItems();
@@ -118,3 +123,21 @@ window.checkForCompletedRequests = checkForCompletedRequests;
 // Fonctions pour les notifications de demandes
 window.startRequestNotifications = startRequestNotifications;
 window.stopRequestNotifications = stopRequestNotifications;
+
+// Fonctions pour les raccourcis rapides
+window.trackServiceUsage = trackServiceUsage;
+window.getFrequentServices = getFrequentServices;
+window.renderQuickAccess = renderQuickAccess;
+window.quickAccessService = quickAccessService;
+window.initQuickAccess = initQuickAccess;
+
+// Fonctions pour les rappels
+window.initReminders = initReminders;
+window.addReminder = addReminder;
+window.removeReminder = removeReminder;
+window.showRemindersModal = showRemindersModal;
+window.closeRemindersModal = closeRemindersModal;
+window.showAddReminderForm = showAddReminderForm;
+window.saveNewReminder = saveNewReminder;
+window.closeReminder = closeReminder;
+window.snoozeReminder = snoozeReminder;
