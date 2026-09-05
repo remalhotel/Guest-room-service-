@@ -75,12 +75,20 @@ function updateCart(itemId, delta) {
     renderMenuItems();
 }
 
-function toggleFavorite(itemId) {
-    if (favoritesList[itemId]) { 
-        delete favoritesList[itemId]; 
-    } else { 
-        favoritesList[itemId] = true; 
+function toggleFavorite(itemId, category = 'dishes') {
+    if (!favoritesList[category]) {
+        favoritesList[category] = {};
     }
+    
+    if (favoritesList[category][itemId]) {
+        delete favoritesList[category][itemId];
+    } else {
+        favoritesList[category][itemId] = {
+            added_at: new Date().toISOString()
+        };
+    }
+    
     localStorage.setItem('remal_favorites', JSON.stringify(favoritesList));
     renderMenuItems();
+    renderFavoritesView();
 }
