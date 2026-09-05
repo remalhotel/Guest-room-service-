@@ -4,14 +4,31 @@ function initializeApp() {
     
     initTheme();
     setLanguage(currentLanguage);
-    renderMenuItems();
+    
+    // Initialiser le mode hors-ligne
+    if (typeof initOfflineMode === 'function') {
+        initOfflineMode();
+    }
+    
+    // Vérifier si le menu est disponible
+    if (typeof isMenuAvailable === 'function' && isMenuAvailable()) {
+        renderMenuItems();
+    } else {
+        console.warn('Menu non disponible');
+    }
+    
     renderFaqList();
     
     // Restaurer la session APRÈS l'initialisation
     restaurerSession();
     
-    // Charger les offres
-    fetchOffers();
+    // Charger les offres (en ligne ou depuis le cache)
+    if (navigator.onLine) {
+        fetchOffers();
+    } else {
+        const cachedOffers = typeof getOfflineOffers === 'function' ? getOfflineOffers() : [];
+        renderOffers(cachedOffers);
+    }
     
     console.log('✅ Application initialisée');
 }
@@ -25,7 +42,6 @@ window.addEventListener('DOMContentLoaded', function() {
 // Aussi écouter load pour être sûr
 window.addEventListener('load', function() {
     console.log('📄 Page complètement chargée');
-    // Vérifier si la session a été restaurée
     const savedRoom = localStorage.getItem('remal_guest_room');
     if (savedRoom) {
         restaurerSession();
@@ -72,3 +88,21 @@ window.getRequestStatusConfig = getRequestStatusConfig;
 window.submitFeedback = submitFeedback;
 window.startOrderNotifications = startOrderNotifications;
 window.stopOrderNotifications = stopOrderNotifications;
+
+// Fonctions pour l'historique
+window.fetchOrderHistory = fetchOrderHistory;
+window.renderOrderHistory = renderOrderHistory;
+window.trackOrder = trackOrder;
+window.showOrderHistory = showOrderHistory;
+
+// Fonctions pour les suggestions
+window.fetchPersonalizedSuggestions = fetchPersonalizedSuggestions;
+window.renderSuggestions = renderSuggestions;
+window.addSuggestionToCart = addSuggestionToCart;
+window.refreshSuggestions = refreshSuggestions;
+
+// Fonctions pour le mode hors-ligne
+window.initOfflineMode = initOfflineMode;
+window.updateOnlineStatus = updateOnlineStatus;
+window.clearOfflineCache = clearOfflineCache;
+window.getLastSyncTime = getLastSyncTime;
