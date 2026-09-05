@@ -380,17 +380,20 @@
 
             <div id="servicesTrackingContainer" class="hidden space-y-3"></div>
 
-            <div class="flex gap-2">
-                <button onclick="switchTab('services')" id="tabServices" class="tab-btn active flex-1 py-3 rounded-xl text-xs font-bold transition">
+            <div class="flex gap-2 flex-wrap">
+                <button onclick="switchTab('services')" id="tabServices" class="tab-btn active flex-1 min-w-[70px] py-3 rounded-xl text-xs font-bold transition">
                     <i class="fas fa-concierge-bell mr-1"></i> <span data-i18n="services">Services</span>
                 </button>
-                <button onclick="switchTab('offers')" id="tabOffers" class="tab-btn flex-1 py-3 rounded-xl text-xs font-bold transition">
+                <button onclick="switchTab('offers')" id="tabOffers" class="tab-btn flex-1 min-w-[70px] py-3 rounded-xl text-xs font-bold transition">
                     <i class="fas fa-tags mr-1"></i> <span data-i18n="offers">Offers</span>
                 </button>
-                <button onclick="showFavorites()" id="tabFavorites" class="tab-btn flex-1 py-3 rounded-xl text-xs font-bold transition">
+                <button onclick="showFavorites()" id="tabFavorites" class="tab-btn flex-1 min-w-[70px] py-3 rounded-xl text-xs font-bold transition">
                     <i class="fas fa-heart mr-1"></i> <span data-i18n="favorites">Favorites</span>
                 </button>
-                <button onclick="switchTab('faq')" id="tabFaq" class="tab-btn flex-1 py-3 rounded-xl text-xs font-bold transition">
+                <button onclick="showOrderHistory()" id="tabHistory" class="tab-btn flex-1 min-w-[70px] py-3 rounded-xl text-xs font-bold transition">
+                    <i class="fas fa-receipt mr-1"></i> <span data-i18n="history">History</span>
+                </button>
+                <button onclick="switchTab('faq')" id="tabFaq" class="tab-btn flex-1 min-w-[70px] py-3 rounded-xl text-xs font-bold transition">
                     <i class="fas fa-question-circle mr-1"></i> <span data-i18n="faq">FAQ</span>
                 </button>
             </div>
@@ -602,6 +605,13 @@
                     <i class="fas fa-heart mr-1"></i> <span data-i18n="myFavorites">My Favorites</span>
                 </p>
                 <div id="favoritesContainer" class="space-y-4"></div>
+            </div>
+
+            <div id="orderHistorySection" class="hidden space-y-4">
+                <p class="text-center text-[10px] text-stone-400 font-bold uppercase tracking-wider">
+                    <i class="fas fa-receipt mr-1"></i> <span data-i18n="orderHistory">Order History</span>
+                </p>
+                <div id="orderHistoryContainer" class="space-y-3 max-h-96 overflow-y-auto"></div>
             </div>
         </div>
     </div>
