@@ -3,15 +3,27 @@ async function submitOtherService() {
     const room = cachedGuestData?.room || localStorage.getItem('remal_guest_room');
     const notes = document.getElementById('otherServiceNotes').value.trim();
     const serviceData = SERVICES_DATA[currentService];
-    if (!serviceData) return;
+    
+    if (!serviceData) {
+        showToast('Error: Service not found', 'error');
+        return;
+    }
+    
+    if (!room) {
+        showToast('Error: Room not found', 'error');
+        return;
+    }
     
     let details = [];
     serviceData.fields.forEach(field => {
         const element = document.getElementById(field.id);
-        if (element) details.push(`${field.label}: ${element.value}`);
+        if (element) {
+            details.push(`${field.label}: ${element.value}`);
+        }
     });
     
     const fullDetails = details.join('\n') + (notes ? `\n📝 Notes: ${notes}` : '');
+    
     const requestData = {
         room_number: String(room),
         guest_name: cachedGuestData?.guest_name || 'Guest',
@@ -21,20 +33,34 @@ async function submitOtherService() {
         created_at: new Date().toISOString()
     };
     
+    console.log('📤 Submitting service request:', requestData);
+    
     try {
         if (supabaseClient) {
-            const { error } = await supabaseClient.from('guest_requests').insert([requestData]);
-            if (error) { 
-                showToast('Error: ' + error.message, 'error'); 
-                return; 
+            const { data, error } = await supabaseClient
+                .from('guest_requests')
+                .insert([requestData])
+                .select();
+                
+            if (error) {
+                console.error('❌ Supabase error:', error);
+                showToast('Error: ' + error.message, 'error');
+                return;
             }
+            
+            console.log('✅ Request submitted:', data);
+        } else {
+            console.warn('⚠️ No Supabase client, simulating submission');
         }
+        
         showToast('✅ Request submitted!', 'success');
         document.getElementById('otherServiceNotes').value = '';
         backToServices();
         renderServiceRequestsTracking();
-    } catch (err) { 
-        showToast('Error: ' + err.message, 'error'); 
+        
+    } catch (err) {
+        console.error('❌ Error submitting request:', err);
+        showToast('Error: ' + err.message, 'error');
     }
 }
 
@@ -50,13 +76,14 @@ async function fetchServiceRequestsTracking() {
             .order('created_at', { ascending: false })
             .limit(10);
         
-        if (!error && data && data.length > 0) {
-            window.activeServiceRequests = data.filter(r => r.status === 'Pending' || r.status === 'In Progress');
-        } else {
+        if (error) {
+            console.warn('Error loading requests:', error);
             window.activeServiceRequests = [];
+        } else {
+            window.activeServiceRequests = data.filter(r => r.status === 'Pending' || r.status === 'In Progress');
         }
     } catch (err) {
-        console.warn('Erreur lors du chargement des demandes:', err);
+        console.warn('Error loading requests:', err);
         window.activeServiceRequests = [];
     }
     renderServiceRequestsTracking();
@@ -74,22 +101,18 @@ function renderServiceRequestsTracking() {
         return;
     }
     
-    // Utiliser le nouveau tableau de bord
-    createDashboardView();
-}
-    
     container.classList.remove('hidden');
     
     container.innerHTML = `
         <div class="p-4 bg-stone-950/60 border border-amber-500/20 rounded-2xl space-y-3">
             <span class="text-[10px] font-bold text-[var(--text-gold,#DCA773)] uppercase tracking-wider">
-                <i class="fas fa-clipboard-list mr-1"></i> ${TRANSLATIONS[currentLanguage].serviceRequestsTracking}
+                <i class="fas fa-clipboard-list mr-1"></i> ${TRANSLATIONS[currentLanguage]?.serviceRequestsTracking || TRANSLATIONS.en.serviceRequestsTracking}
             </span>
             ${requests.map(request => {
                 const statusColors = {
-                    'Pending': { bg: 'bg-amber-500/20', text: 'text-amber-400', border: 'border-amber-500/30', label: TRANSLATIONS[currentLanguage].pendingStatus },
-                    'In Progress': { bg: 'bg-blue-500/20', text: 'text-blue-400', border: 'border-blue-500/30', label: TRANSLATIONS[currentLanguage].inProgressStatus },
-                    'Completed': { bg: 'bg-emerald-500/20', text: 'text-emerald-400', border: 'border-emerald-500/30', label: TRANSLATIONS[currentLanguage].completedStatus }
+                    'Pending': { bg: 'bg-amber-500/20', text: 'text-amber-400', border: 'border-amber-500/30', label: TRANSLATIONS[currentLanguage]?.pendingStatus || TRANSLATIONS.en.pendingStatus },
+                    'In Progress': { bg: 'bg-blue-500/20', text: 'text-blue-400', border: 'border-blue-500/30', label: TRANSLATIONS[currentLanguage]?.inProgressStatus || TRANSLATIONS.en.inProgressStatus },
+                    'Completed': { bg: 'bg-emerald-500/20', text: 'text-emerald-400', border: 'border-emerald-500/30', label: TRANSLATIONS[currentLanguage]?.completedStatus || TRANSLATIONS.en.completedStatus }
                 };
                 const sc = statusColors[request.status] || statusColors['Pending'];
                 const timeAgo = getTimeAgo(request.created_at);
@@ -105,26 +128,27 @@ function renderServiceRequestsTracking() {
                         <div class="order-progress">
                             <div class="order-progress-step">
                                 <div class="service-tracking-dot ${stepIndex >= 0 ? 'active completed' : ''}"><i class="fas fa-check"></i></div>
-                                <span class="order-progress-label ${stepIndex >= 0 ? 'active' : ''}">${TRANSLATIONS[currentLanguage].pendingStatus}</span>
+                                <span class="order-progress-label ${stepIndex >= 0 ? 'active' : ''}">${TRANSLATIONS[currentLanguage]?.pendingStatus || TRANSLATIONS.en.pendingStatus}</span>
                             </div>
                             <div class="service-tracking-line ${stepIndex >= 1 ? 'completed' : ''}"></div>
                             <div class="order-progress-step">
                                 <div class="service-tracking-dot ${stepIndex >= 1 ? 'active completed' : ''}"><i class="fas fa-cog"></i></div>
-                                <span class="order-progress-label ${stepIndex >= 1 ? 'active' : ''}">${TRANSLATIONS[currentLanguage].inProgressStatus}</span>
+                                <span class="order-progress-label ${stepIndex >= 1 ? 'active' : ''}">${TRANSLATIONS[currentLanguage]?.inProgressStatus || TRANSLATIONS.en.inProgressStatus}</span>
                             </div>
                             <div class="service-tracking-line ${stepIndex >= 2 ? 'completed' : ''}"></div>
                             <div class="order-progress-step">
                                 <div class="service-tracking-dot ${stepIndex >= 2 ? 'active completed' : ''}"><i class="fas fa-check-double"></i></div>
-                                <span class="order-progress-label ${stepIndex >= 2 ? 'active' : ''}">${TRANSLATIONS[currentLanguage].completedStatus}</span>
+                                <span class="order-progress-label ${stepIndex >= 2 ? 'active' : ''}">${TRANSLATIONS[currentLanguage]?.completedStatus || TRANSLATIONS.en.completedStatus}</span>
                             </div>
                         </div>
-                        <p class="text-[9px] text-stone-400 mt-2">${TRANSLATIONS[currentLanguage].submittedAt}: ${timeAgo}</p>
+                        <p class="text-[9px] text-stone-400 mt-2">${TRANSLATIONS[currentLanguage]?.submittedAt || TRANSLATIONS.en.submittedAt}: ${timeAgo}</p>
                     </div>
                 `;
             }).join('')}
         </div>
     `;
 }
+
 // ==================== TABLEAU DE BORD DES DEMANDES ====================
 function createDashboardView() {
     const container = document.getElementById('servicesTrackingContainer');
@@ -136,14 +160,13 @@ function createDashboardView() {
         container.innerHTML = `
             <div class="p-4 bg-stone-950/60 border border-amber-500/20 rounded-2xl text-center">
                 <i class="fas fa-inbox text-2xl text-stone-600 mb-2"></i>
-                <p class="text-[10px] text-stone-400">${TRANSLATIONS[currentLanguage].noActiveRequests}</p>
+                <p class="text-[10px] text-stone-400">${TRANSLATIONS[currentLanguage]?.noActiveRequests || TRANSLATIONS.en.noActiveRequests}</p>
             </div>
         `;
         container.classList.remove('hidden');
         return;
     }
     
-    // Statistiques
     const pendingCount = requests.filter(r => r.status === 'Pending').length;
     const inProgressCount = requests.filter(r => r.status === 'In Progress').length;
     const completedCount = requests.filter(r => r.status === 'Completed').length;
@@ -152,37 +175,35 @@ function createDashboardView() {
         <div class="p-4 bg-stone-950/60 border border-amber-500/20 rounded-2xl space-y-4">
             <div class="flex justify-between items-center">
                 <span class="text-[10px] font-bold text-[var(--text-gold,#DCA773)] uppercase tracking-wider">
-                    <i class="fas fa-chart-bar mr-1"></i> ${TRANSLATIONS[currentLanguage].serviceRequestsTracking}
+                    <i class="fas fa-chart-bar mr-1"></i> ${TRANSLATIONS[currentLanguage]?.serviceRequestsTracking || TRANSLATIONS.en.serviceRequestsTracking}
                 </span>
                 <button onclick="refreshDashboard()" class="text-[10px] text-stone-400 hover:text-[var(--text-gold,#DCA773)]">
                     <i class="fas fa-sync-alt"></i>
                 </button>
             </div>
             
-            <!-- Statistiques rapides -->
             <div class="grid grid-cols-3 gap-2">
                 <div class="bg-amber-500/10 border border-amber-500/20 rounded-xl p-2 text-center">
                     <p class="text-lg font-bold text-amber-400">${pendingCount}</p>
-                    <p class="text-[8px] text-stone-400 uppercase">${TRANSLATIONS[currentLanguage].pendingStatus}</p>
+                    <p class="text-[8px] text-stone-400 uppercase">${TRANSLATIONS[currentLanguage]?.pendingStatus || TRANSLATIONS.en.pendingStatus}</p>
                 </div>
                 <div class="bg-blue-500/10 border border-blue-500/20 rounded-xl p-2 text-center">
                     <p class="text-lg font-bold text-blue-400">${inProgressCount}</p>
-                    <p class="text-[8px] text-stone-400 uppercase">${TRANSLATIONS[currentLanguage].inProgressStatus}</p>
+                    <p class="text-[8px] text-stone-400 uppercase">${TRANSLATIONS[currentLanguage]?.inProgressStatus || TRANSLATIONS.en.inProgressStatus}</p>
                 </div>
                 <div class="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-2 text-center">
                     <p class="text-lg font-bold text-emerald-400">${completedCount}</p>
-                    <p class="text-[8px] text-stone-400 uppercase">${TRANSLATIONS[currentLanguage].completedStatus}</p>
+                    <p class="text-[8px] text-stone-400 uppercase">${TRANSLATIONS[currentLanguage]?.completedStatus || TRANSLATIONS.en.completedStatus}</p>
                 </div>
             </div>
             
-            <!-- Liste des demandes -->
             <div class="space-y-2 max-h-60 overflow-y-auto">
                 ${requests.map(request => {
                     const statusConfig = getRequestStatusConfig(request.status);
                     const timeAgo = getTimeAgo(request.created_at);
                     
                     return `
-                        <div class="bg-stone-900/50 border ${statusConfig.border} rounded-xl p-3 hover:border-${statusConfig.color} transition">
+                        <div class="bg-stone-900/50 border ${statusConfig.border} rounded-xl p-3 transition">
                             <div class="flex justify-between items-start mb-2">
                                 <div class="flex-1">
                                     <p class="font-bold text-stone-100 text-xs">${request.service_type}</p>
@@ -193,7 +214,7 @@ function createDashboardView() {
                                 </span>
                             </div>
                             <div class="flex justify-between items-center">
-                                <span class="text-[8px] text-stone-500">${TRANSLATIONS[currentLanguage].submittedAt}: ${timeAgo}</span>
+                                <span class="text-[8px] text-stone-500">${TRANSLATIONS[currentLanguage]?.submittedAt || TRANSLATIONS.en.submittedAt}: ${timeAgo}</span>
                                 <div class="flex gap-1">
                                     ${request.status === 'Pending' ? `
                                         <button onclick="cancelRequest('${request.id}')" class="text-[8px] text-red-400 hover:text-red-300">
@@ -222,7 +243,7 @@ function getRequestStatusConfig(status) {
             border: 'border-amber-500/30',
             color: 'amber',
             icon: '⏳',
-            label: TRANSLATIONS[currentLanguage].pendingStatus
+            label: TRANSLATIONS[currentLanguage]?.pendingStatus || TRANSLATIONS.en.pendingStatus
         },
         'In Progress': {
             bg: 'bg-blue-500/20',
@@ -230,7 +251,7 @@ function getRequestStatusConfig(status) {
             border: 'border-blue-500/30',
             color: 'blue',
             icon: '🔄',
-            label: TRANSLATIONS[currentLanguage].inProgressStatus
+            label: TRANSLATIONS[currentLanguage]?.inProgressStatus || TRANSLATIONS.en.inProgressStatus
         },
         'Completed': {
             bg: 'bg-emerald-500/20',
@@ -238,7 +259,7 @@ function getRequestStatusConfig(status) {
             border: 'border-emerald-500/30',
             color: 'emerald',
             icon: '✅',
-            label: TRANSLATIONS[currentLanguage].completedStatus
+            label: TRANSLATIONS[currentLanguage]?.completedStatus || TRANSLATIONS.en.completedStatus
         }
     };
     return configs[status] || configs['Pending'];
