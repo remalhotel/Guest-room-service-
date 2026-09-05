@@ -131,7 +131,10 @@ function updateOrderTracking(status) {
         }, 20 * 60 * 1000);
     }
 }
-
+// 🆕 Arrêter les notifications si la commande est terminée
+if (status === 'Delivered' || status === 'Completed') {
+    stopOrderNotifications();
+}
 async function verifierEtRestaurerCommandeEnCours() {
     const savedOrderId = localStorage.getItem('remal_current_order_id');
     if (!savedOrderId || !supabaseClient) return;
