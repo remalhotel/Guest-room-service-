@@ -141,3 +141,9 @@ window.showAddReminderForm = showAddReminderForm;
 window.saveNewReminder = saveNewReminder;
 window.closeReminder = closeReminder;
 window.snoozeReminder = snoozeReminder;
+
+// Fonctions pour les offres
+window.viewOfferDetails = viewOfferDetails;
+window.closeOfferDetails = closeOfferDetails;
+window.bookOffer = bookOffer;
+window.startOfferNotifications = startOfferNotifications;
