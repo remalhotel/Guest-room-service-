@@ -36,3 +36,6 @@ window.openGuestChatModal = openGuestChatModal;
 window.closeGuestChatModal = closeGuestChatModal;
 window.sendGuestChatMessage = sendGuestChatMessage;
 window.toggleChatSound = toggleChatSound;
+window.submitFeedback = submitFeedback;
+window.startOrderNotifications = startOrderNotifications;
+window.stopOrderNotifications = stopOrderNotifications;
