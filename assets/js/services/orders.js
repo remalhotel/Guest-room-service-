@@ -44,9 +44,13 @@ async function submitRoomServiceOrder(method) {
                 currentOrderId = data[0].id;
                 localStorage.setItem('remal_current_order_id', currentOrderId);
                 updateOrderTracking('Pending');
+                
+                // 🆕 Démarrer les notifications en temps réel
+                startOrderNotifications(currentOrderId);
             }
         } else {
             updateOrderTracking('Pending');
+            showToast('Mode démo : les notifications sont simulées', 'info');
         }
 
         if (method === 'whatsapp') {
