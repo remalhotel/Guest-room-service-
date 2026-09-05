@@ -4,17 +4,21 @@ function initializeApp() {
     setLanguage(currentLanguage);
     renderMenuItems();
     renderFaqList();
-    restaurerSession();
-    fetchOffers();
     
-    // Écouteurs d'événements globaux
-    document.addEventListener('DOMContentLoaded', () => {
-        console.log('Guest Hub Application Initialized');
-    });
+    // Restaurer la session APRÈS l'initialisation du DOM
+    restaurerSession();
+    
+    // Charger les offres
+    fetchOffers();
 }
 
-// Initialisation immédiate
-initializeApp();
+// Attendre que le DOM soit complètement chargé avant d'initialiser
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeApp);
+} else {
+    // Le DOM est déjà chargé
+    initializeApp();
+}
 
 // Exposer les fonctions globalement pour les onclick dans le HTML
 window.setLanguage = setLanguage;
