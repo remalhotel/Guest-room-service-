@@ -45,7 +45,6 @@ async function submitRoomServiceOrder(method) {
                 localStorage.setItem('remal_current_order_id', currentOrderId);
                 updateOrderTracking('Pending');
                 
-                // Démarrer les notifications en temps réel
                 if (typeof startOrderNotifications === 'function') {
                     startOrderNotifications(currentOrderId);
                 }
@@ -67,7 +66,6 @@ async function submitRoomServiceOrder(method) {
         document.getElementById('guestSpecialInstructions').value = '';
         renderMenuItems();
         
-        // Rafraîchir l'historique
         if (typeof fetchOrderHistory === 'function') {
             fetchOrderHistory();
         }
@@ -306,6 +304,163 @@ function showOrderHistory() {
     fetchOrderHistory();
 }
 
+// ==================== SUGGESTIONS PERSONNALISÉES ====================
+async function fetchPersonalizedSuggestions() {
+    const room = cachedGuestData?.room || localStorage.getItem('remal_guest_room');
+    if (!room || !supabaseClient) return;
+    
+    try {
+        const { data: orderHistory, error: historyError } = await supabaseClient
+            .from('food_orders')
+            .select('items')
+            .eq('room_number', String(room))
+            .order('created_at', { ascending: false })
+            .limit(10);
+            
+        if (historyError) {
+            console.warn('Erreur historique:', historyError);
+            renderSuggestions([]);
+            return;
+        }
+        
+        const itemFrequency = {};
+        orderHistory?.forEach(order => {
+            try {
+                const items = typeof order.items === 'string' ? JSON.parse(order.items) : order.items;
+                if (Array.isArray(items)) {
+                    items.forEach(item => {
+                        if (item.name) {
+                            itemFrequency[item.name] = (itemFrequency[item.name] || 0) + item.quantity;
+                        }
+                    });
+                }
+            } catch (e) {}
+        });
+        
+        const sortedItems = Object.entries(itemFrequency)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 5)
+            .map(([name, count]) => ({ name, count }));
+        
+        const suggestions = [];
+        if (typeof MENU_DATA !== 'undefined') {
+            for (const [category, items] of Object.entries(MENU_DATA)) {
+                items.forEach(item => {
+                    const match = sortedItems.find(s => s.name === item.name);
+                    if (match) {
+                        suggestions.push({
+                            ...item,
+                            category,
+                            orderCount: match.count,
+                            score: 100
+                        });
+                    }
+                });
+            }
+        }
+        
+        if (suggestions.length < 3 && typeof MENU_DATA !== 'undefined') {
+            const preferredCategories = {};
+            suggestions.forEach(s => {
+                preferredCategories[s.category] = (preferredCategories[s.category] || 0) + 1;
+            });
+            
+            for (const [category, items] of Object.entries(MENU_DATA)) {
+                if (preferredCategories[category]) {
+                    items.forEach(item => {
+                        if (!suggestions.find(s => s.id === item.id) && suggestions.length < 5) {
+                            suggestions.push({
+                                ...item,
+                                category,
+                                orderCount: 0,
+                                score: 50,
+                                reason: 'similar'
+                            });
+                        }
+                    });
+                }
+            }
+        }
+        
+        if (suggestions.length < 3 && typeof MENU_DATA !== 'undefined') {
+            for (const [category, items] of Object.entries(MENU_DATA)) {
+                items.forEach(item => {
+                    if (item.badges && item.badges.includes('popular') && !suggestions.find(s => s.id === item.id) && suggestions.length < 5) {
+                        suggestions.push({
+                            ...item,
+                            category,
+                            orderCount: 0,
+                            score: 30,
+                            reason: 'popular'
+                        });
+                    }
+                });
+            }
+        }
+        
+        window.personalizedSuggestions = suggestions;
+        renderSuggestions(suggestions);
+        
+    } catch (err) {
+        console.warn('Erreur suggestions:', err);
+        renderSuggestions([]);
+    }
+}
+
+function renderSuggestions(suggestions) {
+    const container = document.getElementById('suggestionsContainer');
+    if (!container) return;
+    
+    if (!suggestions || suggestions.length === 0) {
+        container.innerHTML = '';
+        container.classList.add('hidden');
+        return;
+    }
+    
+    container.classList.remove('hidden');
+    
+    container.innerHTML = `
+        <div class="p-3 bg-gradient-to-br from-amber-500/10 to-transparent border border-amber-500/30 rounded-2xl">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] font-bold text-[var(--text-gold,#DCA773)] uppercase tracking-wider">
+                    <i class="fas fa-star mr-1"></i> Recommended For You
+                </span>
+                <button onclick="refreshSuggestions()" class="text-[9px] text-stone-400 hover:text-[var(--text-gold,#DCA773)]">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+            <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
+                ${suggestions.map(item => {
+                    const reasonLabel = item.orderCount > 0 ? 
+                        `Ordered ${item.orderCount}x` : 
+                        item.reason === 'popular' ? 'Popular' : 'Based on your taste';
+                    
+                    return `
+                        <div class="min-w-[120px] bg-stone-950/80 border border-stone-700 rounded-xl p-2.5 flex-shrink-0 hover:border-[var(--text-gold,#DCA773)] transition cursor-pointer" onclick="addSuggestionToCart('${item.id}')">
+                            <div class="text-2xl mb-1">${item.emoji || '🍽️'}</div>
+                            <p class="text-[10px] font-bold text-stone-100 truncate">${item.name}</p>
+                            <p class="text-[9px] text-stone-400">AED ${item.price.toFixed(2)}</p>
+                            <p class="text-[8px] text-amber-400 mt-1">
+                                <i class="fas fa-star mr-0.5"></i>${reasonLabel}
+                            </p>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        </div>
+    `;
+}
+
+function addSuggestionToCart(itemId) {
+    updateCart(itemId, 1);
+    showToast('Added to cart! 🛒', 'success');
+}
+
+function refreshSuggestions() {
+    fetchPersonalizedSuggestions();
+    showToast('Suggestions refreshed', 'info');
+}
+
 // ==================== NOTIFICATIONS TEMPS RÉEL ====================
 let orderNotificationChannel = null;
 
@@ -491,166 +646,4 @@ function stopOrderNotifications() {
         supabaseClient.removeChannel(orderNotificationChannel);
         orderNotificationChannel = null;
     }
-}
-// ==================== SUGGESTIONS PERSONNALISÉES ====================
-async function fetchPersonalizedSuggestions() {
-    const room = cachedGuestData?.room || localStorage.getItem('remal_guest_room');
-    if (!room || !supabaseClient) return;
-    
-    try {
-        // Récupérer l'historique des commandes
-        const { data: orderHistory, error: historyError } = await supabaseClient
-            .from('food_orders')
-            .select('items, total_amount, created_at')
-            .eq('room_number', String(room))
-            .order('created_at', { ascending: false })
-            .limit(10);
-            
-        if (historyError) {
-            console.warn('Erreur historique:', historyError);
-            renderSuggestions([]);
-            return;
-        }
-        
-        // Analyser les items commandés
-        const itemFrequency = {};
-        orderHistory?.forEach(order => {
-            try {
-                const items = typeof order.items === 'string' ? JSON.parse(order.items) : order.items;
-                if (Array.isArray(items)) {
-                    items.forEach(item => {
-                        if (item.name) {
-                            itemFrequency[item.name] = (itemFrequency[item.name] || 0) + item.quantity;
-                        }
-                    });
-                }
-            } catch (e) {}
-        });
-        
-        // Trier par fréquence
-        const sortedItems = Object.entries(itemFrequency)
-            .sort((a, b) => b[1] - a[1])
-            .slice(0, 5)
-            .map(([name, count]) => ({ name, count }));
-        
-        // Trouver les suggestions dans le menu
-        const suggestions = [];
-        if (typeof MENU_DATA !== 'undefined') {
-            for (const [category, items] of Object.entries(MENU_DATA)) {
-                items.forEach(item => {
-                    const match = sortedItems.find(s => s.name === item.name);
-                    if (match) {
-                        suggestions.push({
-                            ...item,
-                            category,
-                            orderCount: match.count,
-                            score: 100
-                        });
-                    }
-                });
-            }
-        }
-        
-        // Ajouter des suggestions basées sur les catégories préférées
-        if (suggestions.length < 3 && typeof MENU_DATA !== 'undefined') {
-            const preferredCategories = {};
-            suggestions.forEach(s => {
-                preferredCategories[s.category] = (preferredCategories[s.category] || 0) + 1;
-            });
-            
-            for (const [category, items] of Object.entries(MENU_DATA)) {
-                if (preferredCategories[category]) {
-                    items.forEach(item => {
-                        if (!suggestions.find(s => s.id === item.id) && suggestions.length < 5) {
-                            suggestions.push({
-                                ...item,
-                                category,
-                                orderCount: 0,
-                                score: 50,
-                                reason: 'similar'
-                            });
-                        }
-                    });
-                }
-            }
-        }
-        
-        // Si toujours pas assez, ajouter des plats populaires (badge "popular")
-        if (suggestions.length < 3 && typeof MENU_DATA !== 'undefined') {
-            for (const [category, items] of Object.entries(MENU_DATA)) {
-                items.forEach(item => {
-                    if (item.badges && item.badges.includes('popular') && !suggestions.find(s => s.id === item.id) && suggestions.length < 5) {
-                        suggestions.push({
-                            ...item,
-                            category,
-                            orderCount: 0,
-                            score: 30,
-                            reason: 'popular'
-                        });
-                    }
-                });
-            }
-        }
-        
-        window.personalizedSuggestions = suggestions;
-        renderSuggestions(suggestions);
-        
-    } catch (err) {
-        console.warn('Erreur suggestions:', err);
-        renderSuggestions([]);
-    }
-}
-
-function renderSuggestions(suggestions) {
-    const container = document.getElementById('suggestionsContainer');
-    if (!container) return;
-    
-    if (!suggestions || suggestions.length === 0) {
-        container.innerHTML = '';
-        container.classList.add('hidden');
-        return;
-    }
-    
-    container.classList.remove('hidden');
-    
-    container.innerHTML = `
-        <div class="p-3 bg-gradient-to-br from-amber-500/10 to-transparent border border-amber-500/30 rounded-2xl">
-            <div class="flex items-center justify-between mb-2">
-                <span class="text-[10px] font-bold text-[var(--text-gold,#DCA773)] uppercase tracking-wider">
-                    <i class="fas fa-star mr-1"></i> Recommended For You
-                </span>
-                <button onclick="refreshSuggestions()" class="text-[9px] text-stone-400 hover:text-[var(--text-gold,#DCA773)]">
-                    <i class="fas fa-sync-alt"></i>
-                </button>
-            </div>
-            <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
-                ${suggestions.map(item => {
-                    const reasonLabel = item.orderCount > 0 ? 
-                        `Ordered ${item.orderCount}x` : 
-                        item.reason === 'popular' ? 'Popular' : 'Based on your taste';
-                    
-                    return `
-                        <div class="min-w-[120px] bg-stone-950/80 border border-stone-700 rounded-xl p-2.5 flex-shrink-0 hover:border-[var(--text-gold,#DCA773)] transition cursor-pointer" onclick="addSuggestionToCart('${item.id}')">
-                            <div class="text-2xl mb-1">${item.emoji || '🍽️'}</div>
-                            <p class="text-[10px] font-bold text-stone-100 truncate">${item.name}</p>
-                            <p class="text-[9px] text-stone-400">AED ${item.price.toFixed(2)}</p>
-                            <p class="text-[8px] text-amber-400 mt-1">
-                                <i class="fas fa-star mr-0.5"></i>${reasonLabel}
-                            </p>
-                        </div>
-                    `;
-                }).join('')}
-            </div>
-        </div>
-    `;
-}
-
-function addSuggestionToCart(itemId) {
-    updateCart(itemId, 1);
-    showToast('Added to cart! 🛒', 'success');
-}
-
-function refreshSuggestions() {
-    fetchPersonalizedSuggestions();
-    showToast('Suggestions refreshed', 'info');
 }
