@@ -147,3 +147,9 @@ window.viewOfferDetails = viewOfferDetails;
 window.closeOfferDetails = closeOfferDetails;
 window.bookOffer = bookOffer;
 window.startOfferNotifications = startOfferNotifications;
+
+// Fonctions pour les réponses rapides du chat
+window.sendQuickReply = sendQuickReply;
+window.renderQuickReplies = renderQuickReplies;
+window.hideQuickReplies = hideQuickReplies;
+window.showQuickReplies = showQuickReplies;
