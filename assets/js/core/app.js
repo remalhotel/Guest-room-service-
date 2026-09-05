@@ -114,3 +114,7 @@ window.selectStar = selectStar;
 window.closeServiceFeedback = closeServiceFeedback;
 window.submitServiceFeedback = submitServiceFeedback;
 window.checkForCompletedRequests = checkForCompletedRequests;
+
+// Fonctions pour les notifications de demandes
+window.startRequestNotifications = startRequestNotifications;
+window.stopRequestNotifications = stopRequestNotifications;
