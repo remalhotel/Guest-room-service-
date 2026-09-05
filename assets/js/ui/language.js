@@ -3,14 +3,29 @@ function setLanguage(lang) {
     currentLanguage = lang;
     localStorage.setItem('remal_language', lang);
     
+    // Mettre à jour tous les éléments avec data-i18n
     document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
         if (TRANSLATIONS[lang] && TRANSLATIONS[lang][key]) {
             el.innerText = TRANSLATIONS[lang][key];
+        } else if (TRANSLATIONS.en && TRANSLATIONS.en[key]) {
+            // Fallback vers l'anglais si la traduction n'existe pas
+            el.innerText = TRANSLATIONS.en[key];
+        }
+    });
+    
+    // Mettre à jour les placeholders
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (TRANSLATIONS[lang] && TRANSLATIONS[lang][key]) {
+            el.placeholder = TRANSLATIONS[lang][key];
+        } else if (TRANSLATIONS.en && TRANSLATIONS.en[key]) {
+            el.placeholder = TRANSLATIONS.en[key];
         }
     });
     
     document.getElementById('htmlRoot').setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+    document.getElementById('htmlRoot').setAttribute('lang', lang);
     
     ['en', 'fr', 'ar', 'hi'].forEach(l => {
         const btn = document.getElementById(`lang${l.charAt(0).toUpperCase() + l.slice(1)}`);
@@ -26,6 +41,9 @@ function setLanguage(lang) {
     renderFaqList();
     updateGreeting();
     renderServiceRequestsTracking();
+    
+    // Mettre à jour les textes du chat si ouvert
+    updateChatLanguage();
 }
 
 function updateGreeting() {
@@ -40,7 +58,7 @@ function updateGreeting() {
     const g = greetings[currentLanguage] || greetings.en;
     const greetingTextEl = document.getElementById('greetingText');
     if (greetingTextEl) {
-        greetingTextEl.innerText = `${g.emoji} ${g.text} - ${TRANSLATIONS[currentLanguage].welcomeTitle}`;
+        greetingTextEl.innerText = `${g.emoji} ${g.text} - ${TRANSLATIONS[currentLanguage]?.welcomeTitle || TRANSLATIONS.en.welcomeTitle}`;
     }
     
     const greetingTimeEl = document.getElementById('greetingTime');
@@ -60,4 +78,53 @@ function renderFaqList() {
             <p class="text-[10px] text-stone-400 mt-1">${faq.a}</p>
         </div>
     `).join('');
+}
+
+function updateChatLanguage() {
+    const chatInput = document.getElementById('guestChatInput');
+    if (chatInput) {
+        const placeholders = {
+            en: 'Write a message...',
+            fr: 'Écrivez un message...',
+            ar: 'اكتب رسالة...',
+            hi: 'संदेश लिखें...'
+        };
+        chatInput.placeholder = placeholders[currentLanguage] || placeholders.en;
+    }
+    
+    const sendBtn = document.getElementById('chatSendButton');
+    if (sendBtn) {
+        const sendTexts = {
+            en: 'Send',
+            fr: 'Envoyer',
+            ar: 'إرسال',
+            hi: 'भेजें'
+        };
+        sendBtn.innerText = sendTexts[currentLanguage] || sendTexts.en;
+    }
+    
+    // Mettre à jour le statut du staff
+    const staffStatus = document.getElementById('staffPresenceStatus');
+    if (staffStatus) {
+        const staffOnline = staffStatus.innerHTML.includes('emerald');
+        const statusTexts = {
+            en: staffOnline ? '● Staff online' : '● Staff offline',
+            fr: staffOnline ? '● Staff en ligne' : '● Staff hors ligne',
+            ar: staffOnline ? '● الموظف متصل' : '● الموظف غير متصل',
+            hi: staffOnline ? '● स्टाफ ऑनलाइन' : '● स्टाफ ऑफलाइन'
+        };
+        staffStatus.innerHTML = `<span class="${staffOnline ? 'text-emerald-400' : 'text-gray-400'} text-[10px]">${statusTexts[currentLanguage] || statusTexts.en}</span>`;
+    }
+    
+    // Mettre à jour l'indicateur de frappe
+    const typingIndicator = document.getElementById('chatTypingIndicator');
+    if (typingIndicator && !typingIndicator.classList.contains('hidden')) {
+        const typingTexts = {
+            en: 'Staff is typing...',
+            fr: 'Le staff est en train d\'écrire...',
+            ar: 'الموظف يكتب...',
+            hi: 'स्टाफ टाइप कर रहा है...'
+        };
+        typingIndicator.textContent = typingTexts[currentLanguage] || typingTexts.en;
+    }
 }
