@@ -87,6 +87,12 @@ function changerDeChambre() {
     isGuestVerified = false;
     cachedGuestData = null;
     currentOrderId = null;
+    
+    // Arrêter les notifications
+    if (typeof stopOrderNotifications === 'function') {
+        stopOrderNotifications();
+    }
+    
     if (trackingTimeout) clearTimeout(trackingTimeout);
     if (serviceRequestsTimeout) clearTimeout(serviceRequestsTimeout);
     if (guestChatManager) {
@@ -106,25 +112,42 @@ function changerDeChambre() {
     const lockScreen = document.getElementById('lockScreen');
     const mainScreen = document.getElementById('mainScreen');
     mainScreen.classList.add('hidden');
+    mainScreen.classList.remove('screen-enter');
     lockScreen.classList.remove('hidden');
+    lockScreen.classList.remove('screen-exit');
     lockScreen.classList.add('screen-enter');
 }
 
 function restaurerSession() {
     const savedRoom = localStorage.getItem('remal_guest_room');
     const savedData = localStorage.getItem('remal_guest_data');
+    
     if (savedRoom && savedData) {
         try {
             const parsedData = JSON.parse(savedData);
             cachedGuestData = parsedData;
             isGuestVerified = true;
-            afficherPagePersonnalisee(parsedData, savedRoom);
+            
+            // Afficher directement le mainScreen sans animation
             document.getElementById('lockScreen').classList.add('hidden');
             document.getElementById('mainScreen').classList.remove('hidden');
-            verifierEtRestaurerCommandeEnCours();
-            fetchServiceRequestsTracking();
+            
+            afficherPagePersonnalisee(parsedData, savedRoom);
+            
+            // Restaurer la commande en cours et les demandes
+            setTimeout(() => {
+                verifierEtRestaurerCommandeEnCours();
+                fetchServiceRequestsTracking();
+            }, 500);
+            
         } catch (e) {
             console.warn('Erreur lors de la restauration de session:', e);
+            localStorage.removeItem('remal_guest_room');
+            localStorage.removeItem('remal_guest_data');
         }
+    } else {
+        // S'assurer que l'écran de verrouillage est visible
+        document.getElementById('lockScreen').classList.remove('hidden');
+        document.getElementById('mainScreen').classList.add('hidden');
     }
 }
