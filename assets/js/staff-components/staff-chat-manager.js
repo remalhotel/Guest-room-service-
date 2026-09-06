@@ -6,6 +6,7 @@ class StaffChatManager {
         this.currentGuest = null;
         this.messages = [];
         this.channel = null;
+        this.typingTimeout = null;
     }
 
     async openChat(roomNumber, guestName) {
@@ -21,6 +22,7 @@ class StaffChatManager {
         await this.loadMessages();
         await this.markMessagesAsRead();
         this.subscribeToRealtime();
+        this.setupTypingIndicator();
     }
 
     closeChat() {
@@ -33,6 +35,11 @@ class StaffChatManager {
         if (this.channel) {
             this.supabase.removeChannel(this.channel);
             this.channel = null;
+        }
+        
+        if (this.typingTimeout) {
+            clearTimeout(this.typingTimeout);
+            this.typingTimeout = null;
         }
     }
 
@@ -48,6 +55,7 @@ class StaffChatManager {
                 .limit(200);
                 
             if (error) {
+                // Essayer avec guest_room
                 const fallback = await this.supabase
                     .from('chat_messages')
                     .select('*')
@@ -76,7 +84,9 @@ class StaffChatManager {
                 .eq('room_number', this.currentRoom)
                 .eq('sender', 'guest')
                 .eq('is_read', false);
-        } catch (e) {}
+        } catch (e) {
+            console.warn('Error marking messages:', e);
+        }
     }
 
     subscribeToRealtime() {
@@ -103,6 +113,11 @@ class StaffChatManager {
                             playNotificationSound();
                         }
                     }
+                }
+            })
+            .on('broadcast', { event: 'typing' }, (payload) => {
+                if (payload.payload.room_number === this.currentRoom && payload.payload.sender === 'guest') {
+                    this.showTypingIndicator(payload.payload.is_typing);
                 }
             })
             .subscribe();
@@ -142,11 +157,58 @@ class StaffChatManager {
             this.messages.push(insertedMessage);
             this.renderMessages();
             
+            // Envoyer l'indicateur de frappe arrêté
+            this.sendTypingIndicator(false);
+            
             return insertedMessage;
         } catch (error) {
             console.error('Error sending message:', error);
             showToast('Error sending message: ' + error.message, 'error');
             return null;
+        }
+    }
+
+    async sendTypingIndicator(isTyping) {
+        if (!this.channel) return;
+        
+        await this.channel.send({
+            type: 'broadcast',
+            event: 'typing',
+            payload: {
+                room_number: this.currentRoom,
+                sender: 'staff',
+                is_typing: isTyping,
+                timestamp: new Date().toISOString()
+            }
+        });
+    }
+
+    setupTypingIndicator() {
+        const input = document.getElementById('chatInput');
+        if (!input) return;
+        
+        input.addEventListener('input', () => {
+            if (input.value.length > 0) {
+                this.sendTypingIndicator(true);
+                clearTimeout(this.typingTimeout);
+                this.typingTimeout = setTimeout(() => {
+                    this.sendTypingIndicator(false);
+                }, 2000);
+            } else {
+                this.sendTypingIndicator(false);
+            }
+        });
+    }
+
+    showTypingIndicator(isTyping) {
+        const typingElement = document.getElementById('chatTypingIndicator');
+        if (typingElement) {
+            if (isTyping) {
+                typingElement.textContent = 'Guest is typing...';
+                typingElement.classList.remove('hidden');
+            } else {
+                typingElement.classList.add('hidden');
+            }
         }
     }
 
