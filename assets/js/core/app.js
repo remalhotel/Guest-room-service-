@@ -35,6 +35,11 @@ function initializeApp() {
         initProfile();
     }
     
+    // Initialiser les raccourcis clavier
+    if (typeof initKeyboardShortcuts === 'function') {
+        initKeyboardShortcuts();
+    }
+    
     // Initialiser les raccourcis et one-tap
     if (typeof initQuickAccess === 'function') {
         initQuickAccess();
@@ -246,3 +251,10 @@ window.toggleAllergy = toggleAllergy;
 window.toggleRoomPref = toggleRoomPref;
 window.toggleNotifications = toggleNotifications;
 window.saveProfile = saveProfile;
+
+// Fonctions pour les raccourcis clavier
+window.initKeyboardShortcuts = initKeyboardShortcuts;
+window.showShortcutsModal = showShortcutsModal;
+window.closeShortcutsModal = closeShortcutsModal;
+window.toggleKeyboardShortcuts = toggleKeyboardShortcuts;
+window.cycleLanguage = cycleLanguage;
