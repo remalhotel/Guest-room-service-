@@ -1,9 +1,11 @@
-// ==================== THEME MANAGEMENT ====================
+// ==================== THEME MANAGEMENT AVEC DÉTECTION AUTO ====================
 let autoThemeEnabled = localStorage.getItem('remal_auto_theme') === 'on';
 let autoThemeInterval = null;
+let nightModeEnabled = false;
+let sunsetHour = 18;
+let sunriseHour = 6;
 
 function toggleTheme() {
-    // Si le mode auto est activé, le désactiver
     if (autoThemeEnabled) {
         autoThemeEnabled = false;
         localStorage.setItem('remal_auto_theme', 'off');
@@ -14,18 +16,24 @@ function toggleTheme() {
     const isLight = document.body.classList.contains('light-mode');
     updateThemeIcons(isLight);
     localStorage.setItem('remal_theme', isLight ? 'light' : 'dark');
-    showAutoThemeToast();
+    
+    showThemeToast(isLight ? 'Light mode activated ☀️' : 'Dark mode activated 🌙');
 }
 
 function initTheme() {
     const savedTheme = localStorage.getItem('remal_theme');
     const savedAutoTheme = localStorage.getItem('remal_auto_theme');
+    const savedNightMode = localStorage.getItem('remal_night_mode');
     
     autoThemeEnabled = savedAutoTheme === 'on';
+    nightModeEnabled = savedNightMode === 'on';
     
     if (autoThemeEnabled) {
         applyAutoTheme();
         startAutoTheme();
+    } else if (nightModeEnabled) {
+        // Mode nuit forcé
+        document.body.classList.remove('light-mode');
     } else if (savedTheme === 'light') {
         document.body.classList.add('light-mode');
     } else {
@@ -34,6 +42,7 @@ function initTheme() {
     
     const isLight = document.body.classList.contains('light-mode');
     updateThemeIcons(isLight);
+    renderThemeIndicator();
 }
 
 function updateThemeIcons(isLight) {
@@ -45,7 +54,7 @@ function updateThemeIcons(isLight) {
 
 function applyAutoTheme() {
     const hour = new Date().getHours();
-    const isDaytime = hour >= 6 && hour < 18; // 6h à 18h = jour
+    const isDaytime = hour >= sunriseHour && hour < sunsetHour;
     
     if (isDaytime) {
         document.body.classList.add('light-mode');
@@ -54,6 +63,7 @@ function applyAutoTheme() {
     }
     
     updateThemeIcons(isDaytime);
+    renderThemeIndicator();
 }
 
 function startAutoTheme() {
@@ -79,22 +89,72 @@ function toggleAutoTheme() {
     if (autoThemeEnabled) {
         applyAutoTheme();
         startAutoTheme();
-        showToast('🌓 Thème automatique activé', 'success');
+        showToast('🌓 Auto theme activated', 'success');
     } else {
         stopAutoTheme();
-        showToast('Thème automatique désactivé', 'info');
+        showToast('Auto theme deactivated', 'info');
     }
 }
 
-function showAutoThemeToast() {
-    const isLight = document.body.classList.contains('light-mode');
-    const themeName = isLight ? 'clair ☀️' : 'sombre 🌙';
-    showToast(`Thème ${themeName} activé`, 'success');
+function toggleNightMode() {
+    nightModeEnabled = !nightModeEnabled;
+    localStorage.setItem('remal_night_mode', nightModeEnabled ? 'on' : 'off');
+    
+    if (nightModeEnabled) {
+        autoThemeEnabled = false;
+        localStorage.setItem('remal_auto_theme', 'off');
+        stopAutoTheme();
+        document.body.classList.remove('light-mode');
+        updateThemeIcons(false);
+        showToast('🌙 Night mode activated', 'success');
+    } else {
+        if (autoThemeEnabled) {
+            applyAutoTheme();
+        } else {
+            document.body.classList.add('light-mode');
+            updateThemeIcons(true);
+        }
+        showToast('Night mode deactivated', 'info');
+    }
+    
+    renderThemeIndicator();
 }
 
-// Vérifier le thème à chaque chargement de page
+function renderThemeIndicator() {
+    const container = document.getElementById('themeIndicatorContainer');
+    if (!container) return;
+    
+    const hour = new Date().getHours();
+    const isDaytime = hour >= sunriseHour && hour < sunsetHour;
+    const isLight = document.body.classList.contains('light-mode');
+    
+    container.innerHTML = `
+        <span class="inline-flex items-center gap-1.5 text-[9px] font-bold ${isLight ? 'text-amber-400' : 'text-purple-400'}">
+            <i class="fas ${isLight ? 'fa-sun' : 'fa-moon'}"></i>
+            ${autoThemeEnabled ? 'Auto Theme' : nightModeEnabled ? 'Night Mode' : isLight ? 'Light Mode' : 'Dark Mode'}
+        </span>
+    `;
+}
+
+function showThemeToast(message) {
+    showToast(message, 'info');
+}
+
+function getThemeStatus() {
+    const isLight = document.body.classList.contains('light-mode');
+    return {
+        mode: isLight ? 'light' : 'dark',
+        autoEnabled: autoThemeEnabled,
+        nightModeEnabled: nightModeEnabled,
+        currentHour: new Date().getHours(),
+        isDaytime: new Date().getHours() >= sunriseHour && new Date().getHours() < sunsetHour
+    };
+}
+
+// Vérifier le thème à chaque chargement
 document.addEventListener('DOMContentLoaded', () => {
     if (autoThemeEnabled) {
         applyAutoTheme();
     }
+    renderThemeIndicator();
 });
