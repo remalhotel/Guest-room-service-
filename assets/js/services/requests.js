@@ -33,8 +33,6 @@ async function submitOtherService() {
         service_type: serviceData.title,
         details: fullDetails,
         status: 'Pending',
-        is_read: false,
-        read_at: null,
         created_at: new Date().toISOString()
     };
     
@@ -121,9 +119,8 @@ function renderServiceRequestsTracking() {
                 const stepIndex = request.status === 'Pending' ? 0 : request.status === 'In Progress' ? 1 : 2;
                 const waitTime = getWaitTime(request.created_at);
                 
-                // Indicateur de lecture par le staff
                 const readIndicator = request.is_read ? 
-                    `<span class="text-[8px] text-emerald-400"><i class="fas fa-check-double mr-1"></i>Seen by staff ${request.read_at ? new Date(request.read_at).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'}) : ''}</span>` :
+                    `<span class="text-[8px] text-emerald-400"><i class="fas fa-check-double mr-1"></i>Seen by staff</span>` :
                     `<span class="text-[8px] text-gray-400"><i class="fas fa-check mr-1"></i>Not seen yet</span>`;
                 
                 return `
@@ -256,7 +253,7 @@ function stopPendingReminders() {
     }
 }
 
-// ==================== NOTIFICATIONS TEMPS RÉEL POUR DEMANDES ====================
+// ==================== NOTIFICATIONS TEMPS RÉEL ====================
 function startRequestNotifications(requestId) {
     if (!supabaseClient || !requestId) return;
     
@@ -275,7 +272,6 @@ function startRequestNotifications(requestId) {
             const newStatus = payload.new.status;
             const oldStatus = payload.old.status;
             
-            // Vérifier si le staff a lu la demande
             if (payload.new.is_read && !payload.old.is_read) {
                 showRequestReadConfirmation(payload.new);
             }
