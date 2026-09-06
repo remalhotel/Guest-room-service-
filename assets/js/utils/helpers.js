@@ -7,15 +7,28 @@ function getGreeting() {
 }
 
 function getTimeAgo(timestamp) {
+    if (!timestamp) return 'Just now';
+    
     const now = new Date();
     const then = new Date(timestamp);
-    const diffMins = Math.floor((now - then) / 60000);
+    
+    // Vérifier si la date est valide
+    if (isNaN(then.getTime())) return 'Just now';
+    
+    const diffMs = now.getTime() - then.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    
     if (diffMins < 1) return 'Just now';
     if (diffMins < 60) return `${diffMins} min ago`;
+    
     const diffHours = Math.floor(diffMins / 60);
     if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+    
     const diffDays = Math.floor(diffHours / 24);
-    return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+    if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+    
+    const diffWeeks = Math.floor(diffDays / 7);
+    return `${diffWeeks} week${diffWeeks > 1 ? 's' : ''} ago`;
 }
 
 function getBadgeHTML(badges) {
