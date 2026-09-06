@@ -232,7 +232,6 @@ function renderCheckoutStep(modal) {
                 <button onclick="closeCheckoutWizard()" class="text-stone-400 hover:text-stone-100 text-xl font-bold">✕</button>
             </div>
             
-            <!-- Progress bar -->
             <div class="flex items-center gap-1">
                 ${steps.map((step, index) => `
                     <div class="flex-1">
@@ -365,6 +364,123 @@ function quickRateStay(star) {
     }
 }
 
+// ==================== DEMANDES CHECK-OUT CONNECTÉES AU STAFF ====================
+function requestExpressCheckout() {
+    closeCheckoutOptions();
+    
+    const room = cachedGuestData?.room || localStorage.getItem('remal_guest_room');
+    
+    const requestData = {
+        room_number: String(room),
+        guest_name: cachedGuestData?.guest_name || 'Guest',
+        service_type: 'Late Check-out / Extension',
+        details: 'Guest requests express check-out service',
+        status: 'Pending',
+        created_at: new Date().toISOString()
+    };
+    
+    try {
+        if (supabaseClient) {
+            supabaseClient.from('guest_requests').insert([requestData]).then(({ data, error }) => {
+                if (error) {
+                    showToast('Error: ' + error.message, 'error');
+                    return;
+                }
+                
+                if (data && data.length > 0 && typeof startRequestNotifications === 'function') {
+                    startRequestNotifications(data[0].id);
+                }
+            });
+        }
+        showToast('✅ Express check-out requested!', 'success');
+    } catch (err) {
+        showToast('Error: ' + err.message, 'error');
+    }
+}
+
+function requestBillReview() {
+    closeCheckoutOptions();
+    
+    const room = cachedGuestData?.room || localStorage.getItem('remal_guest_room');
+    
+    const requestData = {
+        room_number: String(room),
+        guest_name: cachedGuestData?.guest_name || 'Guest',
+        service_type: 'Front Desk Inquiry',
+        details: 'Guest requests bill review before check-out',
+        status: 'Pending',
+        created_at: new Date().toISOString()
+    };
+    
+    try {
+        if (supabaseClient) {
+            supabaseClient.from('guest_requests').insert([requestData]).then(({ data, error }) => {
+                if (error) {
+                    showToast('Error: ' + error.message, 'error');
+                    return;
+                }
+                
+                if (data && data.length > 0 && typeof startRequestNotifications === 'function') {
+                    startRequestNotifications(data[0].id);
+                }
+            });
+        }
+        showToast('✅ Bill review requested!', 'success');
+    } catch (err) {
+        showToast('Error: ' + err.message, 'error');
+    }
+}
+
+function requestLateCheckout() {
+    closeCheckoutOptions();
+    showService('late_checkout');
+}
+
+function showCheckoutOptions() {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black/90 z-[700] flex items-center justify-center p-4 backdrop-blur-sm';
+    modal.id = 'checkoutOptionsModal';
+    
+    const departure = cachedGuestData?.departure || localStorage.getItem('remal_departure');
+    
+    modal.innerHTML = `
+        <div class="bg-stone-900 border border-amber-500/30 w-full max-w-sm rounded-3xl p-6 space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-stone-800 pb-3">
+                <h3 class="text-xs font-serif-luxury font-bold text-[var(--text-gold,#DCA773)] uppercase tracking-widest">
+                    🏨 Check-out Options
+                </h3>
+                <button onclick="closeCheckoutOptions()" class="text-stone-400 hover:text-stone-100 text-xl font-bold">✕</button>
+            </div>
+            
+            <div class="space-y-3">
+                <div class="bg-stone-950/60 border border-stone-800 rounded-xl p-3">
+                    <p class="text-[10px] text-stone-400">Current departure</p>
+                    <p class="text-sm font-bold text-stone-100">${departure ? new Date(departure).toLocaleString() : 'Not set'}</p>
+                </div>
+                
+                <button onclick="requestLateCheckout()" class="w-full bg-[#DCA773] hover:bg-[#ebd0b3] text-stone-950 font-black py-3.5 rounded-2xl text-xs uppercase tracking-widest transition">
+                    <i class="fas fa-hourglass-half mr-1"></i> Request Late Check-out
+                </button>
+                
+                <button onclick="requestExpressCheckout()" class="w-full bg-stone-800 hover:bg-stone-700 text-stone-200 font-bold py-3.5 rounded-2xl text-xs uppercase tracking-widest transition">
+                    <i class="fas fa-bolt mr-1"></i> Express Check-out
+                </button>
+                
+                <button onclick="requestBillReview()" class="w-full bg-stone-800 hover:bg-stone-700 text-stone-200 font-bold py-3.5 rounded-2xl text-xs uppercase tracking-widest transition">
+                    <i class="fas fa-receipt mr-1"></i> Review My Bill
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+}
+
+function closeCheckoutOptions() {
+    const modal = document.getElementById('checkoutOptionsModal');
+    if (modal) modal.remove();
+}
+
 async function completeCheckout() {
     const room = cachedGuestData?.room || localStorage.getItem('remal_guest_room');
     
@@ -381,10 +497,23 @@ async function completeCheckout() {
         } catch (e) {}
     }
     
+    // Envoyer une demande de check-out au staff
+    if (supabaseClient) {
+        try {
+            await supabaseClient.from('guest_requests').insert([{
+                room_number: String(room),
+                guest_name: cachedGuestData?.guest_name || 'Guest',
+                service_type: 'Late Check-out / Extension',
+                details: 'Guest completed check-out process via Guest Hub',
+                status: 'Completed',
+                created_at: new Date().toISOString()
+            }]);
+        } catch (e) {}
+    }
+    
     closeCheckoutWizard();
     showToast('✅ Check-out completed! Have a safe journey!', 'success');
     
-    // Nettoyer la session
     setTimeout(() => {
         changerDeChambre();
     }, 2000);
