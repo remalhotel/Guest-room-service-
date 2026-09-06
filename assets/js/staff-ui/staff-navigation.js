@@ -6,11 +6,8 @@ function switchStaffTab(tab) {
     tabs.forEach(t => {
         const btn = document.getElementById(`staffTab${t.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('')}`);
         if (btn) {
-            if (t === tab) {
-                btn.classList.add('active');
-            } else {
-                btn.classList.remove('active');
-            }
+            if (t === tab) btn.classList.add('active');
+            else btn.classList.remove('active');
         }
     });
     
@@ -37,19 +34,6 @@ function switchStaffTab(tab) {
 
 function filterStaffOrders(filter) {
     currentFilter = filter;
-    
-    const filterIds = ['all', 'Pending', 'Preparing', 'Ready', 'Delivered', 'Completed', 'In Progress'];
-    filterIds.forEach(f => {
-        const btn = document.getElementById(`filter${f.replace(' ', '')}`);
-        if (btn) {
-            if (f === filter) {
-                btn.className = 'px-4 py-2 rounded-xl bg-[var(--text-gold)] text-stone-950 text-xs font-bold whitespace-nowrap';
-            } else {
-                btn.className = 'px-4 py-2 rounded-xl remal-card text-muted-custom text-xs font-bold whitespace-nowrap';
-            }
-        }
-    });
-    
     renderStaffOrders();
 }
 
@@ -60,22 +44,17 @@ function handleSearch() {
 
 function filterBySearch(requests) {
     if (!searchQuery) return requests;
-    
     return requests.filter(r => {
         const roomMatch = String(r.room_number || '').toLowerCase().includes(searchQuery);
         const guestMatch = String(r.guest_name || '').toLowerCase().includes(searchQuery);
         const serviceMatch = String(r.serviceLabel || '').toLowerCase().includes(searchQuery);
-        const itemsMatch = r.requestType === 'food' && Array.isArray(r.items) 
-            ? r.items.some(i => String(i.name || '').toLowerCase().includes(searchQuery)) 
-            : false;
-        return roomMatch || guestMatch || serviceMatch || itemsMatch;
+        return roomMatch || guestMatch || serviceMatch;
     });
 }
 
 function updateFoodBeverageStats() {
     const fbOrders = allRequests.filter(r => r.tabCategory === 'food_beverage' && r.requestType === 'food');
     const statsContainer = document.getElementById('foodBeverageStats');
-    
     if (!statsContainer) return;
     
     if (currentStaffTab === 'food_beverage') {
@@ -102,20 +81,16 @@ function updateFoodBeverageStats() {
     let topItem = '---';
     let topCount = 0;
     for (const [name, count] of Object.entries(itemCounts)) {
-        if (count > topCount) {
-            topCount = count;
-            topItem = name;
-        }
+        if (count > topCount) { topCount = count; topItem = name; }
     }
     
     document.getElementById('fbStatTotalOrders').innerText = totalOrders;
     document.getElementById('fbStatRevenue').innerText = 'AED ' + totalRevenue.toFixed(2);
     document.getElementById('fbStatAvgOrder').innerText = 'AED ' + avgOrder.toFixed(2);
     document.getElementById('fbStatTopItem').innerText = truncateString(topItem, 15);
-}    
-    // Mettre à jour l'interface
-    document.getElementById('fbStatTotalOrders').innerText = totalOrders;
-    document.getElementById('fbStatRevenue').innerText = 'AED ' + totalRevenue.toFixed(2);
-    document.getElementById('fbStatAvgOrder').innerText = 'AED ' + avgOrder.toFixed(2);
-    document.getElementById('fbStatTopItem').innerText = truncateString(topItem, 15);
-}}
+}
+
+window.switchStaffTab = switchStaffTab;
+window.filterStaffOrders = filterStaffOrders;
+window.handleSearch = handleSearch;
+window.updateFoodBeverageStats = updateFoodBeverageStats;
