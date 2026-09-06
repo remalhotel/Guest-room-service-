@@ -1,0 +1,160 @@
+// ==================== SYSTÈME DE PARTAGE ====================
+function showShareModal() {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black/90 z-[900] flex items-center justify-center p-4 backdrop-blur-sm';
+    modal.id = 'shareModal';
+    
+    const shareUrl = window.location.href;
+    const shareText = '🏨 Remal Hotel & Villas - Guest Hub';
+    
+    modal.innerHTML = `
+        <div class="bg-stone-900 border border-amber-500/30 w-full max-w-sm rounded-3xl p-6 space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-stone-800 pb-3">
+                <h3 class="text-xs font-serif-luxury font-bold text-[var(--text-gold,#DCA773)] uppercase tracking-widest">
+                    📤 Share
+                </h3>
+                <button onclick="closeShareModal()" class="text-stone-400 hover:text-stone-100 text-xl font-bold">✕</button>
+            </div>
+            
+            <div class="text-center space-y-3">
+                <div class="text-4xl">🏨</div>
+                <p class="text-sm font-bold text-stone-100">Remal Hotel & Villas</p>
+                <p class="text-[10px] text-stone-400">Share Guest Hub with other guests</p>
+            </div>
+            
+            <div class="grid grid-cols-4 gap-2">
+                <button onclick="shareViaWhatsApp()" class="bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 rounded-2xl p-3 text-center transition">
+                    <i class="fab fa-whatsapp text-2xl text-emerald-400"></i>
+                    <p class="text-[8px] text-stone-400 mt-1">WhatsApp</p>
+                </button>
+                <button onclick="shareViaSMS()" class="bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 rounded-2xl p-3 text-center transition">
+                    <i class="fas fa-sms text-2xl text-blue-400"></i>
+                    <p class="text-[8px] text-stone-400 mt-1">SMS</p>
+                </button>
+                <button onclick="copyShareLink()" class="bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 rounded-2xl p-3 text-center transition">
+                    <i class="fas fa-link text-2xl text-amber-400"></i>
+                    <p class="text-[8px] text-stone-400 mt-1">Copy Link</p>
+                </button>
+                <button onclick="shareViaEmail()" class="bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 rounded-2xl p-3 text-center transition">
+                    <i class="fas fa-envelope text-2xl text-purple-400"></i>
+                    <p class="text-[8px] text-stone-400 mt-1">Email</p>
+                </button>
+            </div>
+            
+            <div class="bg-stone-950/60 border border-stone-800 rounded-xl p-3">
+                <p class="text-[8px] text-stone-500 uppercase font-bold mb-1">Share Link</p>
+                <div class="flex gap-2">
+                    <input type="text" id="shareLinkInput" value="${shareUrl}" readonly class="flex-1 bg-transparent text-[9px] text-stone-300 outline-none">
+                    <button onclick="copyShareLink()" class="bg-stone-800 hover:bg-stone-700 text-stone-200 px-3 py-1 rounded-lg text-[9px] font-bold transition">
+                        Copy
+                    </button>
+                </div>
+            </div>
+            
+            <button onclick="shareNative()" class="w-full bg-[#DCA773] hover:bg-[#ebd0b3] text-stone-950 font-black py-3.5 rounded-2xl text-xs uppercase tracking-widest transition">
+                <i class="fas fa-share-alt mr-1"></i> Share
+            </button>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+}
+
+function closeShareModal() {
+    const modal = document.getElementById('shareModal');
+    if (modal) modal.remove();
+}
+
+function getShareData() {
+    return {
+        url: window.location.href,
+        text: '🏨 Remal Hotel & Villas - Guest Hub\nAccess all hotel services from your phone!',
+        title: 'Guest Hub'
+    };
+}
+
+function shareViaWhatsApp() {
+    const data = getShareData();
+    const waUrl = `https://wa.me/?text=${encodeURIComponent(data.text + '\n' + data.url)}`;
+    window.open(waUrl, '_blank');
+    closeShareModal();
+}
+
+function shareViaSMS() {
+    const data = getShareData();
+    const smsUrl = `sms:?body=${encodeURIComponent(data.text + '\n' + data.url)}`;
+    window.open(smsUrl, '_blank');
+    closeShareModal();
+}
+
+function shareViaEmail() {
+    const data = getShareData();
+    const emailUrl = `mailto:?subject=${encodeURIComponent(data.title)}&body=${encodeURIComponent(data.text + '\n' + data.url)}`;
+    window.open(emailUrl, '_blank');
+    closeShareModal();
+}
+
+function copyShareLink() {
+    const input = document.getElementById('shareLinkInput');
+    const url = input ? input.value : window.location.href;
+    
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(() => {
+            showToast('✅ Link copied!', 'success');
+        }).catch(() => {
+            fallbackCopy(url);
+        });
+    } else {
+        fallbackCopy(url);
+    }
+}
+
+function fallbackCopy(text) {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.select();
+    
+    try {
+        document.execCommand('copy');
+        showToast('✅ Link copied!', 'success');
+    } catch (err) {
+        showToast('Failed to copy', 'error');
+    }
+    
+    document.body.removeChild(textarea);
+}
+
+function shareNative() {
+    const data = getShareData();
+    
+    if (navigator.share) {
+        navigator.share({
+            title: data.title,
+            text: data.text,
+            url: data.url
+        }).then(() => {
+            showToast('✅ Shared!', 'success');
+        }).catch((err) => {
+            console.warn('Share cancelled:', err);
+        });
+    } else {
+        // Fallback : copier le lien
+        copyShareLink();
+        showToast('Link copied - share it manually', 'info');
+    }
+    closeShareModal();
+}
+
+function showShareButton() {
+    const container = document.getElementById('shareButtonContainer');
+    if (!container) return;
+    
+    container.innerHTML = `
+        <button onclick="showShareModal()" class="fixed bottom-20 left-20 z-50 bg-stone-800 text-amber-400 w-10 h-10 rounded-full flex items-center justify-center shadow-2xl transition hover:scale-110">
+            <i class="fas fa-share-alt text-sm"></i>
+        </button>
+    `;
+}
