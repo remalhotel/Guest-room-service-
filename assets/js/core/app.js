@@ -183,3 +183,9 @@ window.showImagePreview = showImagePreview;
 window.clearImagePreview = clearImagePreview;
 window.sendImageMessage = sendImageMessage;
 window.compressImage = compressImage;
+
+// Fonctions pour les notifications de menu
+window.startMenuNotifications = startMenuNotifications;
+window.stopMenuNotifications = stopMenuNotifications;
+window.filterMenuByCategory = filterMenuByCategory;
+window.sortMenuByPrice = sortMenuByPrice;
