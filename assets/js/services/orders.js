@@ -11,8 +11,102 @@ async function submitRoomServiceOrder(method) {
         return; 
     }
 
+    // Afficher le récapitulatif avant confirmation
+    showOrderSummary(method, room, instructions);
+}
+
+function showOrderSummary(method, room, instructions) {
     let itemsArray = [];
     let totalAmount = 0;
+    let totalPrepTime = 0;
+    
+    for (const [itemId, qty] of Object.entries(menuCart)) {
+        const item = typeof findMenuItem === 'function' ? findMenuItem(itemId) : null;
+        if (item) {
+            itemsArray.push({ name: item.name, quantity: qty, price: item.price, total: qty * item.price, prepTime: item.prepTime || '20m' });
+            totalAmount += qty * item.price;
+            
+            // Calculer le temps de préparation
+            const prepMinutes = parseInt(item.prepTime || '20');
+            totalPrepTime = Math.max(totalPrepTime, prepMinutes * qty);
+        }
+    }
+    
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black/90 z-[600] flex items-center justify-center p-4 backdrop-blur-sm';
+    modal.id = 'orderSummaryModal';
+    
+    modal.innerHTML = `
+        <div class="bg-stone-900 border border-amber-500/30 w-full max-w-md rounded-3xl p-6 space-y-4 shadow-2xl max-h-[80vh] flex flex-col">
+            <div class="flex justify-between items-center border-b border-stone-800 pb-3">
+                <h3 class="text-xs font-serif-luxury font-bold text-[var(--text-gold,#DCA773)] uppercase tracking-widest">
+                    🛎️ Order Summary
+                </h3>
+                <button onclick="closeOrderSummary()" class="text-stone-400 hover:text-stone-100 text-xl font-bold">✕</button>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto space-y-2 pr-1">
+                ${itemsArray.map(item => `
+                    <div class="flex justify-between items-center p-2.5 bg-stone-950/60 border border-stone-800 rounded-xl">
+                        <div>
+                            <p class="font-bold text-stone-100 text-xs">${item.quantity}x ${item.name}</p>
+                            <p class="text-[8px] text-stone-400">⏱️ ~${item.prepTime} prep time</p>
+                        </div>
+                        <p class="font-bold text-[var(--text-gold,#DCA773)] text-xs">AED ${item.total.toFixed(2)}</p>
+                    </div>
+                `).join('')}
+                
+                ${instructions ? `
+                    <div class="p-2.5 bg-amber-500/10 border border-amber-500/20 rounded-xl">
+                        <p class="text-[9px] text-stone-400 font-bold uppercase">Special Instructions</p>
+                        <p class="text-[10px] text-stone-200 mt-1">${instructions}</p>
+                    </div>
+                ` : ''}
+            </div>
+            
+            <div class="border-t border-stone-800 pt-3 space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="text-[10px] text-stone-400">Total Items</span>
+                    <span class="text-xs font-bold text-stone-100">${itemsArray.reduce((sum, item) => sum + item.quantity, 0)}</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-[10px] text-stone-400">Estimated Time</span>
+                    <span class="text-xs font-bold text-amber-400">⏱️ ~${totalPrepTime} minutes</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-[10px] text-stone-400">Total Amount</span>
+                    <span class="text-sm font-serif-luxury font-bold text-[var(--text-gold,#DCA773)]">AED ${totalAmount.toFixed(2)}</span>
+                </div>
+                
+                <div class="flex gap-2">
+                    <button onclick="closeOrderSummary()" class="flex-1 bg-stone-800 hover:bg-stone-700 text-stone-200 font-bold py-3.5 rounded-2xl text-xs uppercase tracking-widest transition">
+                        Cancel
+                    </button>
+                    <button onclick="confirmOrder('${method}')" class="flex-1 bg-[#DCA773] hover:bg-[#ebd0b3] text-stone-950 font-black py-3.5 rounded-2xl text-xs uppercase tracking-widest transition">
+                        ${method === 'whatsapp' ? 'Send via WhatsApp' : 'Confirm Order'}
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+}
+
+function closeOrderSummary() {
+    const modal = document.getElementById('orderSummaryModal');
+    if (modal) modal.remove();
+}
+
+async function confirmOrder(method) {
+    closeOrderSummary();
+    
+    const room = cachedGuestData?.room || localStorage.getItem('remal_guest_room');
+    const instructions = document.getElementById('guestSpecialInstructions').value.trim();
+    
+    let itemsArray = [];
+    let totalAmount = 0;
+    
     for (const [itemId, qty] of Object.entries(menuCart)) {
         const item = typeof findMenuItem === 'function' ? findMenuItem(itemId) : null;
         if (item) {
@@ -51,7 +145,6 @@ async function submitRoomServiceOrder(method) {
             }
         } else {
             updateOrderTracking('Pending');
-            showToast('Mode démo : les notifications sont simulées', 'info');
         }
 
         if (method === 'whatsapp') {
@@ -82,11 +175,11 @@ function updateOrderTracking(status) {
     if (trackingTimeout) clearTimeout(trackingTimeout);
     
     const statusMap = {
-        'Pending': { step: 'received', text: TRANSLATIONS[currentLanguage].orderReceived, color: 'text-amber-400' },
-        'Preparing': { step: 'preparing', text: TRANSLATIONS[currentLanguage].beingPrepared, color: 'text-blue-400' },
-        'Ready': { step: 'ready', text: TRANSLATIONS[currentLanguage].readyForDelivery, color: 'text-purple-400' },
-        'Delivered': { step: 'delivered', text: TRANSLATIONS[currentLanguage].orderDelivered, color: 'text-emerald-400' },
-        'Completed': { step: 'delivered', text: TRANSLATIONS[currentLanguage].orderDelivered, color: 'text-emerald-400' }
+        'Pending': { step: 'received', text: 'Order Received', color: 'text-amber-400' },
+        'Preparing': { step: 'preparing', text: 'Being Prepared', color: 'text-blue-400' },
+        'Ready': { step: 'ready', text: 'Ready for Delivery', color: 'text-purple-400' },
+        'Delivered': { step: 'delivered', text: 'Delivered', color: 'text-emerald-400' },
+        'Completed': { step: 'delivered', text: 'Delivered', color: 'text-emerald-400' }
     };
     
     const config = statusMap[status] || statusMap['Pending'];
@@ -175,7 +268,7 @@ async function verifierEtRestaurerCommandeEnCours() {
             startOrderNotifications(savedOrderId);
         }
     } catch (err) {
-        console.warn('Erreur lors de la vérification de la commande:', err);
+        console.warn('Error checking order:', err);
     }
 }
 
@@ -192,15 +285,11 @@ async function fetchOrderHistory() {
             .order('created_at', { ascending: false })
             .limit(20);
             
-        if (error) {
-            console.warn('Erreur lors du chargement de l\'historique:', error);
-            return;
-        }
+        if (error) return;
         
         window.orderHistory = data || [];
         renderOrderHistory();
     } catch (err) {
-        console.warn('Erreur lors du chargement de l\'historique:', err);
         window.orderHistory = [];
         renderOrderHistory();
     }
@@ -310,15 +399,14 @@ async function fetchPersonalizedSuggestions() {
     if (!room || !supabaseClient) return;
     
     try {
-        const { data: orderHistory, error: historyError } = await supabaseClient
+        const { data: orderHistory, error } = await supabaseClient
             .from('food_orders')
             .select('items')
             .eq('room_number', String(room))
             .order('created_at', { ascending: false })
             .limit(10);
             
-        if (historyError) {
-            console.warn('Erreur historique:', historyError);
+        if (error) {
             renderSuggestions([]);
             return;
         }
@@ -348,12 +436,7 @@ async function fetchPersonalizedSuggestions() {
                 items.forEach(item => {
                     const match = sortedItems.find(s => s.name === item.name);
                     if (match) {
-                        suggestions.push({
-                            ...item,
-                            category,
-                            orderCount: match.count,
-                            score: 100
-                        });
+                        suggestions.push({ ...item, category, orderCount: match.count, score: 100 });
                     }
                 });
             }
@@ -369,40 +452,16 @@ async function fetchPersonalizedSuggestions() {
                 if (preferredCategories[category]) {
                     items.forEach(item => {
                         if (!suggestions.find(s => s.id === item.id) && suggestions.length < 5) {
-                            suggestions.push({
-                                ...item,
-                                category,
-                                orderCount: 0,
-                                score: 50,
-                                reason: 'similar'
-                            });
+                            suggestions.push({ ...item, category, orderCount: 0, score: 50, reason: 'similar' });
                         }
                     });
                 }
             }
         }
         
-        if (suggestions.length < 3 && typeof MENU_DATA !== 'undefined') {
-            for (const [category, items] of Object.entries(MENU_DATA)) {
-                items.forEach(item => {
-                    if (item.badges && item.badges.includes('popular') && !suggestions.find(s => s.id === item.id) && suggestions.length < 5) {
-                        suggestions.push({
-                            ...item,
-                            category,
-                            orderCount: 0,
-                            score: 30,
-                            reason: 'popular'
-                        });
-                    }
-                });
-            }
-        }
-        
-        window.personalizedSuggestions = suggestions;
         renderSuggestions(suggestions);
         
     } catch (err) {
-        console.warn('Erreur suggestions:', err);
         renderSuggestions([]);
     }
 }
@@ -425,27 +484,15 @@ function renderSuggestions(suggestions) {
                 <span class="text-[10px] font-bold text-[var(--text-gold,#DCA773)] uppercase tracking-wider">
                     <i class="fas fa-star mr-1"></i> Recommended For You
                 </span>
-                <button onclick="refreshSuggestions()" class="text-[9px] text-stone-400 hover:text-[var(--text-gold,#DCA773)]">
-                    <i class="fas fa-sync-alt"></i>
-                </button>
             </div>
             <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
-                ${suggestions.map(item => {
-                    const reasonLabel = item.orderCount > 0 ? 
-                        `Ordered ${item.orderCount}x` : 
-                        item.reason === 'popular' ? 'Popular' : 'Based on your taste';
-                    
-                    return `
-                        <div class="min-w-[120px] bg-stone-950/80 border border-stone-700 rounded-xl p-2.5 flex-shrink-0 hover:border-[var(--text-gold,#DCA773)] transition cursor-pointer" onclick="addSuggestionToCart('${item.id}')">
-                            <div class="text-2xl mb-1">${item.emoji || '🍽️'}</div>
-                            <p class="text-[10px] font-bold text-stone-100 truncate">${item.name}</p>
-                            <p class="text-[9px] text-stone-400">AED ${item.price.toFixed(2)}</p>
-                            <p class="text-[8px] text-amber-400 mt-1">
-                                <i class="fas fa-star mr-0.5"></i>${reasonLabel}
-                            </p>
-                        </div>
-                    `;
-                }).join('')}
+                ${suggestions.map(item => `
+                    <div class="min-w-[120px] bg-stone-950/80 border border-stone-700 rounded-xl p-2.5 flex-shrink-0 cursor-pointer" onclick="addSuggestionToCart('${item.id}')">
+                        <div class="text-2xl mb-1">${item.emoji || '🍽️'}</div>
+                        <p class="text-[10px] font-bold text-stone-100 truncate">${item.name}</p>
+                        <p class="text-[9px] text-stone-400">AED ${item.price.toFixed(2)}</p>
+                    </div>
+                `).join('')}
             </div>
         </div>
     `;
@@ -464,10 +511,14 @@ function refreshSuggestions() {
 // ==================== NOTIFICATIONS TEMPS RÉEL ====================
 let orderNotificationChannel = null;
 
-function subscribeToOrderUpdates(orderId) {
-    if (!supabaseClient || !orderId) return null;
+function startOrderNotifications(orderId) {
+    if (!supabaseClient || !orderId) return;
     
-    const channel = supabaseClient
+    if (orderNotificationChannel) {
+        supabaseClient.removeChannel(orderNotificationChannel);
+    }
+    
+    orderNotificationChannel = supabaseClient
         .channel(`order-updates-${orderId}`)
         .on('postgres_changes', {
             event: 'UPDATE',
@@ -479,15 +530,17 @@ function subscribeToOrderUpdates(orderId) {
             const oldStatus = payload.old.status;
             
             if (newStatus !== oldStatus) {
-                handleOrderStatusChange(newStatus, oldStatus);
+                handleOrderStatusChange(newStatus);
             }
         })
         .subscribe();
-        
-    return channel;
+    
+    if ('Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission();
+    }
 }
 
-function handleOrderStatusChange(newStatus, oldStatus) {
+function handleOrderStatusChange(newStatus) {
     updateOrderTracking(newStatus);
     
     const statusMessages = {
@@ -495,8 +548,7 @@ function handleOrderStatusChange(newStatus, oldStatus) {
         'Preparing': { icon: '👨‍🍳', title: 'Being Prepared', message: 'The chef is preparing your order', type: 'info' },
         'Ready': { icon: '🔔', title: 'Ready for Delivery', message: 'Your order is ready!', type: 'success' },
         'Delivered': { icon: '✅', title: 'Delivered', message: 'Enjoy your meal!', type: 'success' },
-        'Completed': { icon: '🌟', title: 'Completed', message: 'Order completed. Thank you!', type: 'success' },
-        'Cancelled': { icon: '❌', title: 'Cancelled', message: 'Your order has been cancelled', type: 'error' }
+        'Completed': { icon: '🌟', title: 'Completed', message: 'Order completed. Thank you!', type: 'success' }
     };
     
     const config = statusMessages[newStatus] || statusMessages['Pending'];
@@ -554,16 +606,7 @@ function playOrderNotificationSound() {
             oscillator.stop(audioContext.currentTime + index * 0.1 + 0.3);
         });
     } catch (error) {
-        console.warn('Son non disponible:', error);
-    }
-}
-
-function showSystemNotification(icon, title, message) {
-    if ('Notification' in window && Notification.permission === 'granted') {
-        new Notification(`${icon} ${title}`, {
-            body: message,
-            icon: '/assets/images/logo.png'
-        });
+        console.warn('Sound not available:', error);
     }
 }
 
@@ -615,7 +658,6 @@ async function submitFeedback(rating) {
                 .insert([feedbackData]);
                 
             if (error) {
-                console.warn('Erreur feedback:', error);
                 showToast('Error saving feedback', 'error');
                 return;
             }
@@ -624,20 +666,7 @@ async function submitFeedback(rating) {
         document.querySelectorAll('.toast-notification').forEach(t => t.remove());
         showToast(`Thank you for your ${rating} star rating! 🌟`, 'success');
     } catch (error) {
-        console.warn('Erreur feedback:', error);
         showToast('Error saving feedback', 'error');
-    }
-}
-
-function startOrderNotifications(orderId) {
-    if (orderNotificationChannel && supabaseClient) {
-        supabaseClient.removeChannel(orderNotificationChannel);
-    }
-    
-    orderNotificationChannel = subscribeToOrderUpdates(orderId);
-    
-    if ('Notification' in window && Notification.permission === 'default') {
-        Notification.requestPermission();
     }
 }
 
@@ -646,4 +675,4 @@ function stopOrderNotifications() {
         supabaseClient.removeChannel(orderNotificationChannel);
         orderNotificationChannel = null;
     }
-}
+}}
