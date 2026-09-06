@@ -30,6 +30,11 @@ function initializeApp() {
         initReviewSystem();
     }
     
+    // Initialiser le profil client
+    if (typeof initProfile === 'function') {
+        initProfile();
+    }
+    
     // Initialiser les raccourcis et one-tap
     if (typeof initQuickAccess === 'function') {
         initQuickAccess();
@@ -219,3 +224,13 @@ window.selectCategoryStar = selectCategoryStar;
 window.setRecommendation = setRecommendation;
 window.submitReview = submitReview;
 window.initReviewSystem = initReviewSystem;
+
+// Fonctions pour le profil client
+window.initProfile = initProfile;
+window.showProfileModal = showProfileModal;
+window.closeProfileModal = closeProfileModal;
+window.toggleDietary = toggleDietary;
+window.toggleAllergy = toggleAllergy;
+window.toggleRoomPref = toggleRoomPref;
+window.toggleNotifications = toggleNotifications;
+window.saveProfile = saveProfile;
