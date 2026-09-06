@@ -14,6 +14,18 @@ let searchQuery = '';
 let analyticsCharts = {};
 let staffChatManager = null;
 let selectedOfferImage = null;
+let currentOffersList = [];
+
+// Statistiques
+let stats = {
+    totalOrders: 0,
+    pendingOrders: 0,
+    inProgressOrders: 0,
+    completedOrders: 0,
+    totalRevenue: 0,
+    avgOrderValue: 0,
+    topItem: '---'
+};
 
 // Mapping des services vers les onglets
 const SERVICE_TAB_MAPPING = {
@@ -24,14 +36,10 @@ const SERVICE_TAB_MAPPING = {
     'Room Service / Order Food': 'food_beverage',
     'Table Reservation': 'food_beverage',
     'Housekeeping / Room Cleaning': 'housekeeping',
-    'Maintenance / Technical Support': 'maintenance',
-    'Express Check-out': 'front_desk',
-    'Bill Review': 'front_desk',
-    'Profile Update': 'front_desk'
+    'Maintenance / Technical Support': 'maintenance'
 };
 
-// Exposer globalement
-window.supabaseClient = supabaseClient;
-
-console.log('✅ Staff state initialized');
-console.log('🔌 supabaseClient:', supabaseClient ? 'OK' : 'MISSING');
+// Initialiser l'état
+function initStaffState() {
+    console.log('📊 Staff state initialized');
+}
