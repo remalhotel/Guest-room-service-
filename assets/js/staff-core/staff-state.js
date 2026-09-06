@@ -26,6 +26,13 @@ const SERVICE_TAB_MAPPING = {
     'Table Reservation': 'food_beverage',
     'Housekeeping / Room Cleaning': 'housekeeping',
     'Maintenance / Technical Support': 'maintenance'
+    // Mapping supplémentaire pour les demandes spéciales
+const SPECIAL_SERVICE_MAPPING = {
+    'Express Check-out': 'front_desk',
+    'Bill Review': 'front_desk',
+    'Profile Update': 'front_desk',
+    'Offer Booking': 'front_desk'
+};
 };
 
 // Initialiser l'état
