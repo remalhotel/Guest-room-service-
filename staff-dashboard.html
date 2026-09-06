@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Remal Hotel - Guest Hub Staff Dashboard</title>
+    
+    <!-- CDNs -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- jsPDF pour les PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
+    <!-- JsBarcode pour les codes-barres -->
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    
+    <!-- Chart.js pour les graphiques -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- Fichiers locaux -->
+    <link rel="stylesheet" href="assets/css/style.css">
+    
+    <style>
+        @keyframes slideInRight { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
+        .animate-slide-in { animation: slideInRight 0.3s ease forwards; }
+        
+        @keyframes pulse-ring {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+        .pulse-ring { animation: pulse-ring 2s infinite; }
+        
+        @keyframes shake-alert {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-3px); }
+            20%, 40%, 60%, 80% { transform: translateX(3px); }
+        }
+        .shake-alert { animation: shake-alert 0.5s ease; }
+        
+        .staff-tab-btn { transition: all 0.3s ease; cursor: pointer; }
+        .staff-tab-btn.active { background: var(--text-gold); color: #1c1917; font-weight: 900; box-shadow: 0 5px 15px rgba(220, 167, 115, 0.3); }
+        .staff-tab-btn:not(.active) { background: var(--bg-card-hover); color: var(--text-muted); border: 1px solid var(--border-gold); }
+        .staff-tab-btn:not(.active):hover { color: var(--text-gold); border-color: var(--text-gold); }
+        
+        .service-type-badge { display: inline-block; padding: 3px 10px; border-radius: 9999px; font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; border: 1px solid; margin-right: 4px; }
+        
+        .tab-notification-badge {
+            display: inline-block;
+            background: #ef4444;
+            color: white;
+            font-size: 8px;
+            font-weight: 900;
+            padding: 2px 6px;
+            border-radius: 9999px;
+            margin-left: 4px;
+            animation: pulse-ring 1.5s infinite;
+        }
+        
+        .notification-popup {
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            z-index: 200;
+            background: var(--bg-card);
+            border: 2px solid #ef4444;
+            border-radius: 16px;
+            padding: 15px 20px;
+            box-shadow: 0 10px 40px rgba(239, 68, 68, 0.5);
+            animation: slideInRight 0.5s ease forwards;
+            max-width: 350px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .notification-popup .icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #ef4444;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            animation: pulse-ring 1s infinite;
+        }
+        
+        .sound-toggle-btn { transition: all 0.3s ease; }
+        .sound-toggle-btn.active { background: #10b981; color: white; border-color: #10b981; }
+        
+        .mini-stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-gold);
+            border-radius: 1rem;
+            padding: 0.75rem;
+            text-align: center;
+        }
+        
+        body.light-mode {
+            background-color: #f8fafc !important;
+            color: #0f172a !important;
+        }
+        body.light-mode .remal-card,
+        body.light-mode .mini-stat-card {
+            background-color: #ffffff !important;
+            border-color: rgba(217, 119, 6, 0.2) !important;
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.08) !important;
+        }
+        body.light-mode .text-muted-custom {
+            color: #64748b !important;
+        }
+        
+        .search-input {
+            background: var(--bg-input);
+            border: 1px solid var(--border-gold-strong);
+            color: var(--text-main);
+            border-radius: 12px;
+            padding: 10px 14px;
+            font-size: 11px;
+            outline: none;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        .search-input:focus {
+            border-color: var(--text-gold);
+            box-shadow: 0 0 15px rgba(220, 167, 115, 0.3);
+        }
+        
+        .chat-message {
+            padding: 8px 12px;
+            border-radius: 12px;
+            margin-bottom: 6px;
+            max-width: 80%;
+            font-size: 11px;
+        }
+        .chat-message.staff { background: var(--text-gold); color: #1c1917; margin-left: auto; }
+        .chat-message.guest { background: var(--bg-card-hover); color: var(--text-main); margin-right: auto; }
+        
+        .chat-typing-indicator { font-size: 9px; color: var(--text-muted); font-style: italic; margin-left: 12px; }
+        .chat-presence-status { font-size: 10px; margin-bottom: 8px; }
+    </style>
+</head>
+<body class="min-h-screen p-3 sm:p-6">
+
+    <div class="max-w-7xl mx-auto space-y-6">
+        
+        <!-- ==================== EN-TÊTE ==================== -->
+        <div class="flex justify-between items-center remal-card p-4 rounded-2xl shadow-lg">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-2xl bg-[var(--text-gold)] text-stone-950 flex items-center justify-center text-xl">
+                    <i class="fas fa-concierge-bell"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-serif-luxury font-bold text-[var(--text-gold)]">GUEST HUB DASHBOARD</h1>
+                    <p class="text-[10px] text-muted-custom uppercase">Remal Hotel & Villas • All Services</p>
+                    <p class="text-[10px] text-muted-custom font-mono" id="currentDateTimeDisplay"></p>
+                    <p class="text-[10px] font-mono" id="tabTitleNotification">Guest Hub Dashboard</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <span class="text-[10px] text-emerald-400 font-bold flex items-center gap-1">
+                    <span class="w-2 h-2 bg-emerald-400 rounded-full"></span>
+                    LIVE
+                </span>
+                <button onclick="toggleSoundAlerts()" id="btnSoundToggle" class="sound-toggle-btn text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-3 py-2 rounded-xl font-bold hover:bg-amber-500/40 transition">
+                    🔊 Sound ON
+                </button>
+                <button onclick="toggleTheme()" class="theme-toggle-btn" title="Toggle Theme">
+                    <i class="fas fa-sun text-sm" id="themeIconStaff"></i>
+                </button>
+                <button onclick="logoutStaff()" class="bg-red-500/20 text-red-400 border border-red-500/30 px-4 py-2 rounded-xl text-xs font-bold hover:bg-red-500/30 transition">
+                    <i class="fas fa-sign-out-alt"></i> Exit
+                </button>
+            </div>
+        </div>
+
+        <!-- ==================== ONGLETS STAFF ==================== -->
+        <div class="grid grid-cols-2 md:grid-cols-6 gap-2">
+            <button onclick="switchStaffTab('front_desk')" id="staffTabFrontDesk" class="staff-tab-btn active px-4 py-3 rounded-xl text-xs font-bold whitespace-nowrap relative">
+                🛎️ Front Desk
+                <span id="badgeFrontDesk" class="tab-notification-badge hidden">0</span>
+            </button>
+            <button onclick="switchStaffTab('food_beverage')" id="staffTabFoodBeverage" class="staff-tab-btn px-4 py-3 rounded-xl text-xs font-bold whitespace-nowrap relative">
+                🍽️ F&B
+                <span id="badgeFoodBeverage" class="tab-notification-badge hidden">0</span>
+            </button>
+            <button onclick="switchStaffTab('housekeeping')" id="staffTabHousekeeping" class="staff-tab-btn px-4 py-3 rounded-xl text-xs font-bold whitespace-nowrap relative">
+                🧹 Housekeeping
+                <span id="badgeHousekeeping" class="tab-notification-badge hidden">0</span>
+            </button>
+            <button onclick="switchStaffTab('maintenance')" id="staffTabMaintenance" class="staff-tab-btn px-4 py-3 rounded-xl text-xs font-bold whitespace-nowrap relative">
+                🔧 Maintenance
+                <span id="badgeMaintenance" class="tab-notification-badge hidden">0</span>
+            </button>
+            <button onclick="switchStaffTab('offers')" id="staffTabOffers" class="staff-tab-btn px-4 py-3 rounded-xl text-xs font-bold whitespace-nowrap relative">
+                🏷️ Offers
+            </button>
+            <button onclick="switchStaffTab('analytics')" id="staffTabAnalytics" class="staff-tab-btn px-4 py-3 rounded-xl text-xs font-bold whitespace-nowrap relative">
+                📊 Analytics
+            </button>
+        </div>
+
+        <!-- ==================== SECTION ANALYTICS ==================== -->
+        <div id="analyticsSection" class="hidden space-y-6">
+            <div class="flex gap-2 overflow-x-auto scrollbar-none">
+                <button onclick="setAnalyticsPeriod('today')" id="periodToday" class="px-4 py-2 rounded-xl bg-[var(--text-gold)] text-stone-950 text-xs font-bold whitespace-nowrap">Aujourd'hui</button>
+                <button onclick="setAnalyticsPeriod('week')" id="periodWeek" class="px-4 py-2 rounded-xl remal-card text-muted-custom text-xs font-bold whitespace-nowrap">Cette semaine</button>
+                <button onclick="setAnalyticsPeriod('month')" id="periodMonth" class="px-4 py-2 rounded-xl remal-card text-muted-custom text-xs font-bold whitespace-nowrap">Ce mois</button>
+                <button onclick="setAnalyticsPeriod('all')" id="periodAll" class="px-4 py-2 rounded-xl remal-card text-muted-custom text-xs font-bold whitespace-nowrap">Tout</button>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="mini-stat-card">
+                    <div class="text-2xl font-serif-luxury font-bold text-[var(--text-gold)]" id="analyticsTotalOrders">0</div>
+                    <p class="text-[9px] text-muted-custom uppercase font-bold">Commandes totales</p>
+                </div>
+                <div class="mini-stat-card">
+                    <div class="text-2xl font-serif-luxury font-bold text-green-400" id="analyticsTotalRevenue">AED 0</div>
+                    <p class="text-[9px] text-muted-custom uppercase font-bold">Revenu total</p>
+                </div>
+                <div class="mini-stat-card">
+                    <div class="text-2xl font-serif-luxury font-bold text-blue-400" id="analyticsAvgTime">0 min</div>
+                    <p class="text-[9px] text-muted-custom uppercase font-bold">Temps moyen</p>
+                </div>
+                <div class="mini-stat-card">
+                    <div class="text-2xl font-serif-luxury font-bold text-purple-400" id="analyticsResolutionRate">0%</div>
+                    <p class="text-[9px] text-muted-custom uppercase font-bold">Taux résolution</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="remal-card rounded-2xl p-4">
+                    <h3 class="text-xs font-bold text-[var(--text-gold)] uppercase tracking-wider mb-3">Commandes par heure</h3>
+                    <canvas id="chartOrdersByHour" width="400" height="200"></canvas>
+                </div>
+                <div class="remal-card rounded-2xl p-4">
+                    <h3 class="text-xs font-bold text-[var(--text-gold)] uppercase tracking-wider mb-3">Répartition par service</h3>
+                    <canvas id="chartServiceBreakdown" width="400" height="200"></canvas>
+                </div>
+            </div>
+            
+            <div class="remal-card rounded-2xl p-4">
+                <h3 class="text-xs font-bold text-[var(--text-gold)] uppercase tracking-wider mb-3">Performance par statut</h3>
+                <canvas id="chartStatusBreakdown" width="400" height="150"></canvas>
+            </div>
+            
+            <div class="flex gap-2">
+                <button onclick="exportAnalyticsCSV()" class="flex-1 bg-emerald-500/20 text-emerald-400 py-3 rounded-xl text-xs font-bold hover:bg-emerald-500/40 transition">
+                    📥 Export CSV
+                </button>
+                <button onclick="exportAnalyticsPDF()" class="flex-1 bg-blue-500/20 text-blue-400 py-3 rounded-xl text-xs font-bold hover:bg-blue-500/40 transition">
+                    📄 Export PDF
+                </button>
+            </div>
+        </div>
+
+        <!-- ==================== SECTION OFFRES ==================== -->
+        <div id="offersManagementSection" class="hidden space-y-6">
+            <div class="remal-card rounded-2xl p-6 space-y-4">
+                <h2 class="text-sm font-serif-luxury font-bold text-[var(--text-gold)] border-b border-[var(--border-gold)] pb-3">
+                    <i class="fas fa-plus-circle mr-2"></i> Create New Offer
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="space-y-3">
+                        <label class="block text-[10px] font-bold text-[var(--text-gold)] uppercase tracking-wider">
+                            <i class="fas fa-image mr-1"></i> Offer Photo
+                        </label>
+                        <div id="uploadZone" onclick="document.getElementById('offerImageInput').click()" style="border:2px dashed var(--border-gold-strong);border-radius:1rem;padding:2rem;text-align:center;cursor:pointer;">
+                            <div id="uploadPlaceholder">
+                                <i class="fas fa-cloud-upload-alt text-3xl text-[var(--text-gold)] mb-2"></i>
+                                <p class="text-xs font-bold text-stone-100">Click to upload or drag & drop</p>
+                                <p class="text-[9px] text-stone-400 mt-1">JPG, PNG, WEBP (Max 5MB)</p>
+                            </div>
+                            <img id="offerImagePreview" class="hidden w-full h-40 object-cover rounded-xl" alt="Preview">
+                        </div>
+                        <input type="file" id="offerImageInput" accept="image/*" class="hidden" onchange="handleOfferImageSelect(event)">
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-[10px] font-bold text-[var(--text-gold)] uppercase tracking-wider mb-1">
+                                <i class="fas fa-heading mr-1"></i> Title
+                            </label>
+                            <input type="text" id="offerTitle" placeholder="e.g., Pool Day Pass Special" class="w-full remal-input rounded-xl p-3 text-xs font-bold">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-[var(--text-gold)] uppercase tracking-wider mb-1">
+                                <i class="fas fa-tag mr-1"></i> Price
+                            </label>
+                            <input type="text" id="offerPrice" placeholder="e.g., AED 75" class="w-full remal-input rounded-xl p-3 text-xs font-bold">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-[var(--text-gold)] uppercase tracking-wider mb-1">
+                                <i class="fas fa-align-left mr-1"></i> Description / Accroche
+                            </label>
+                            <textarea id="offerDescription" rows="3" placeholder="e.g., Full day access to Al Waha Pool..." class="w-full remal-input rounded-xl p-3 text-xs"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-[var(--text-gold)] uppercase tracking-wider mb-1">
+                                <i class="fas fa-folder mr-1"></i> Category
+                            </label>
+                            <select id="offerCategory" class="w-full remal-input rounded-xl p-3 text-xs font-bold">
+                                <option value="Pool & Beach">🏖️ Pool & Beach</option>
+                                <option value="Spa & Wellness">💆 Spa & Wellness</option>
+                                <option value="Dining">🍽️ Dining</option>
+                                <option value="Activities">🎯 Activities</option>
+                                <option value="Special Events">🎉 Special Events</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <button onclick="publishOffer()" class="w-full bg-[#DCA773] hover:bg-[#ebd0b3] text-stone-950 font-black py-4 rounded-2xl text-xs uppercase tracking-widest transition-all shadow-lg hover:scale-[1.01]">
+                    <i class="fas fa-rocket mr-2"></i> Publish Offer
+                </button>
+            </div>
+            
+            <div class="remal-card rounded-2xl p-6 space-y-4">
+                <h3 class="text-sm font-serif-luxury font-bold text-[var(--text-gold)] border-b border-[var(--border-gold)] pb-3">
+                    <i class="fas fa-list mr-2"></i> Active Offers
+                </h3>
+                <div id="offersListContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            </div>
+        </div>
+
+        <!-- ==================== SECTION REQUÊTES ==================== -->
+        <div id="requestsSection" class="space-y-6">
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="stat-card remal-card rounded-2xl p-4 text-center">
+                    <div class="text-3xl font-serif-luxury font-bold text-[var(--text-gold)]" id="statTotalOrders">0</div>
+                    <p class="text-[10px] text-muted-custom uppercase mt-1 font-bold">Total Requests</p>
+                </div>
+                <div class="stat-card remal-card rounded-2xl p-4 text-center">
+                    <div class="text-3xl font-serif-luxury font-bold text-amber-400" id="statPendingOrders">0</div>
+                    <p class="text-[10px] text-muted-custom uppercase mt-1 font-bold">Pending</p>
+                </div>
+                <div class="stat-card remal-card rounded-2xl p-4 text-center">
+                    <div class="text-3xl font-serif-luxury font-bold text-blue-400" id="statPreparingOrders">0</div>
+                    <p class="text-[10px] text-muted-custom uppercase mt-1 font-bold">In Progress</p>
+                </div>
+                <div class="stat-card remal-card rounded-2xl p-4 text-center">
+                    <div class="text-3xl font-serif-luxury font-bold text-emerald-400" id="statCompletedOrders">0</div>
+                    <p class="text-[10px] text-muted-custom uppercase mt-1 font-bold">Completed</p>
+                </div>
+            </div>
+
+            <div id="foodBeverageStats" class="hidden grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div class="mini-stat-card">
+                    <div class="text-lg font-serif-luxury font-bold text-[var(--text-gold)]" id="fbStatTotalOrders">0</div>
+                    <p class="text-[8px] text-muted-custom uppercase font-bold">F&B Orders</p>
+                </div>
+                <div class="mini-stat-card">
+                    <div class="text-lg font-serif-luxury font-bold text-green-400" id="fbStatRevenue">AED 0</div>
+                    <p class="text-[8px] text-muted-custom uppercase font-bold">Revenue</p>
+                </div>
+                <div class="mini-stat-card">
+                    <div class="text-lg font-serif-luxury font-bold text-purple-400" id="fbStatAvgOrder">AED 0</div>
+                    <p class="text-[8px] text-muted-custom uppercase font-bold">Avg Order</p>
+                </div>
+                <div class="mini-stat-card">
+                    <div class="text-lg font-serif-luxury font-bold text-blue-400" id="fbStatTopItem">---</div>
+                    <p class="text-[8px] text-muted-custom uppercase font-bold">Top Item</p>
+                </div>
+            </div>
+
+            <div class="relative">
+                <i class="fas fa-search absolute left-3.5 top-3 text-muted-custom text-xs"></i>
+                <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Rechercher par chambre, nom, article..." class="search-input pl-9">
+            </div>
+
+            <div class="flex gap-2 overflow-x-auto scrollbar-none">
+                <button onclick="filterStaffOrders('all')" id="filterAll" class="px-4 py-2 rounded-xl bg-[var(--text-gold)] text-stone-950 text-xs font-bold whitespace-nowrap">All</button>
+                <button onclick="filterStaffOrders('Pending')" id="filterPending" class="px-4 py-2 rounded-xl remal-card text-muted-custom text-xs font-bold whitespace-nowrap">🕐 Pending</button>
+                <button onclick="filterStaffOrders('Preparing')" id="filterPreparing" class="px-4 py-2 rounded-xl remal-card text-muted-custom text-xs font-bold whitespace-nowrap">👨‍🍳 Preparing</button>
+                <button onclick="filterStaffOrders('Ready')" id="filterReady" class="px-4 py-2 rounded-xl remal-card text-muted-custom text-xs font-bold whitespace-nowrap">✅ Ready</button>
+                <button onclick="filterStaffOrders('Delivered')" id="filterDelivered" class="px-4 py-2 rounded-xl remal-card text-muted-custom text-xs font-bold whitespace-nowrap">🚚 Delivered</button>
+                <button onclick="filterStaffOrders('Completed')" id="filterCompleted" class="px-4 py-2 rounded-xl remal-card text-muted-custom text-xs font-bold whitespace-nowrap">✔️ Completed</button>
+                <button onclick="filterStaffOrders('In Progress')" id="filterInProgress" class="px-4 py-2 rounded-xl remal-card text-muted-custom text-xs font-bold whitespace-nowrap">👨‍💼 In Progress</button>
+            </div>
+
+            <div id="staffOrdersContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        </div>
+
+        <!-- ==================== MODALE CHAT ==================== -->
+        <div id="chatModal" class="hidden fixed inset-0 bg-black/90 z-[300] flex items-center justify-center p-4">
+            <div class="bg-stone-900 border border-amber-500/30 w-full max-w-md rounded-3xl p-6 space-y-4 max-h-[80vh] flex flex-col shadow-2xl">
+                <div class="flex justify-between items-center border-b border-stone-800 pb-3">
+                    <h3 class="text-sm font-serif-luxury font-bold text-[var(--text-gold)]">
+                        💬 Chat avec <span id="chatGuestName">---</span>
+                    </h3>
+                    <button onclick="closeChatModal()" class="text-stone-400 hover:text-stone-100 text-xl">✕</button>
+                </div>
+                <div id="chatPresenceStatus" class="chat-presence-status text-gray-400">● Invité hors ligne</div>
+                <div id="chatMessagesContainer" class="flex-1 overflow-y-auto space-y-2 pr-2"></div>
+                <div id="chatTypingIndicator" class="chat-typing-indicator hidden">L'invité est en train d'écrire...</div>
+                <div class="flex gap-2 pt-2 border-t border-stone-800">
+                    <input type="text" id="chatInput" placeholder="Écrire un message..." class="flex-1 bg-stone-950 border border-stone-800 rounded-xl px-3 py-2 text-xs text-stone-100 outline-none focus:border-amber-500" onkeypress="if(event.key==='Enter') sendChatMessage()">
+                    <button onclick="sendChatMessage()" class="bg-[#DCA773] text-stone-950 font-bold px-4 py-2 rounded-xl text-xs">Envoyer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts dans l'ordre correct -->
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/menu.js"></script>
+    <script src="assets/js/staff-core/staff-state.js"></script>
+    <script src="assets/js/staff-utils/staff-helpers.js"></script>
+    <script src="assets/js/staff-components/staff-notifications.js"></script>
+    <script src="assets/js/staff-components/staff-chat-manager.js"></script>
+    <script src="assets/js/staff-components/staff-pdf.js"></script>
+    <script src="assets/js/staff-services/staff-auth.js"></script>
+    <script src="assets/js/staff-services/staff-orders.js"></script>
+    <script src="assets/js/staff-services/staff-offers.js"></script>
+    <script src="assets/js/staff-services/staff-analytics.js"></script>
+    <script src="assets/js/staff-ui/staff-navigation.js"></script>
+    <script src="assets/js/staff-ui/staff-render.js"></script>
+    <script src="assets/js/staff-ui/staff-chat-ui.js"></script>
+    <script src="assets/js/staff-ui/staff-theme.js"></script>
+    <script src="assets/js/staff-core/staff-app.js"></script>
+</body>
+</html>
