@@ -1,9 +1,40 @@
 // ==================== PROFIL CLIENT ET PRÉFÉRENCES ====================
 let guestPreferences = null;
 
+const ROOM_PREFERENCE_ICONS = {
+    'High Floor': { icon: '🏢', color: 'text-blue-400', bg: 'bg-blue-500/10' },
+    'Low Floor': { icon: '🏠', color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
+    'Quiet Room': { icon: '🤫', color: 'text-purple-400', bg: 'bg-purple-500/10' },
+    'Extra Pillows': { icon: '🛏️', color: 'text-amber-400', bg: 'bg-amber-500/10' },
+    'Extra Blanket': { icon: '🧣', color: 'text-orange-400', bg: 'bg-orange-500/10' },
+    'Feather-Free': { icon: '🪶', color: 'text-red-400', bg: 'bg-red-500/10' }
+};
+
+const DIETARY_ICONS = {
+    'Vegetarian': { icon: '🥗', color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
+    'Vegan': { icon: '🌱', color: 'text-green-400', bg: 'bg-green-500/10' },
+    'Halal': { icon: '✅', color: 'text-blue-400', bg: 'bg-blue-500/10' },
+    'Gluten-Free': { icon: '🌾', color: 'text-amber-400', bg: 'bg-amber-500/10' },
+    'Dairy-Free': { icon: '🥛', color: 'text-purple-400', bg: 'bg-purple-500/10' },
+    'Nut-Free': { icon: '🥜', color: 'text-orange-400', bg: 'bg-orange-500/10' },
+    'No Preference': { icon: '👌', color: 'text-stone-400', bg: 'bg-stone-500/10' }
+};
+
+const ALLERGY_ICONS = {
+    'Peanuts': { icon: '🥜', color: 'text-red-400', bg: 'bg-red-500/10' },
+    'Shellfish': { icon: '🦐', color: 'text-orange-400', bg: 'bg-orange-500/10' },
+    'Eggs': { icon: '🥚', color: 'text-yellow-400', bg: 'bg-yellow-500/10' },
+    'Milk': { icon: '🥛', color: 'text-blue-400', bg: 'bg-blue-500/10' },
+    'Soy': { icon: '🌱', color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
+    'Wheat': { icon: '🌾', color: 'text-amber-400', bg: 'bg-amber-500/10' },
+    'Fish': { icon: '🐟', color: 'text-cyan-400', bg: 'bg-cyan-500/10' },
+    'None': { icon: '✅', color: 'text-green-400', bg: 'bg-green-500/10' }
+};
+
 function initProfile() {
     loadPreferences();
     renderProfileButton();
+    renderPreferencesSummary();
 }
 
 function loadPreferences() {
@@ -62,6 +93,63 @@ function renderProfileButton() {
     `;
 }
 
+function renderPreferencesSummary() {
+    const container = document.getElementById('preferencesSummaryContainer');
+    if (!container) return;
+    
+    const totalPreferences = 
+        (guestPreferences.dietary?.length || 0) + 
+        (guestPreferences.allergies?.length || 0) + 
+        (guestPreferences.room_preferences?.length || 0);
+    
+    if (totalPreferences === 0) {
+        container.innerHTML = `
+            <div class="p-3 bg-stone-950/60 border border-stone-800 rounded-2xl text-center">
+                <p class="text-[9px] text-stone-400">No preferences set yet</p>
+                <button onclick="showProfileModal()" class="text-[9px] text-[var(--text-gold,#DCA773)] font-bold mt-1">
+                    Set Preferences
+                </button>
+            </div>
+        `;
+        return;
+    }
+    
+    container.innerHTML = `
+        <div class="p-3 bg-stone-950/60 border border-amber-500/20 rounded-2xl">
+            <p class="text-[9px] font-bold text-[var(--text-gold,#DCA773)] uppercase tracking-wider mb-2">
+                <i class="fas fa-sliders-h mr-1"></i> My Preferences
+            </p>
+            
+            ${guestPreferences.dietary.length > 0 ? `
+                <div class="flex flex-wrap gap-1.5 mb-2">
+                    ${guestPreferences.dietary.map(diet => {
+                        const info = DIETARY_ICONS[diet] || { icon: '✓', color: 'text-stone-400', bg: 'bg-stone-500/10' };
+                        return `<span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[8px] font-bold ${info.bg} ${info.color}">${info.icon} ${diet}</span>`;
+                    }).join('')}
+                </div>
+            ` : ''}
+            
+            ${guestPreferences.allergies.length > 0 ? `
+                <div class="flex flex-wrap gap-1.5 mb-2">
+                    ${guestPreferences.allergies.map(allergy => {
+                        const info = ALLERGY_ICONS[allergy] || { icon: '⚠️', color: 'text-red-400', bg: 'bg-red-500/10' };
+                        return `<span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[8px] font-bold ${info.bg} ${info.color}">${info.icon} ${allergy}</span>`;
+                    }).join('')}
+                </div>
+            ` : ''}
+            
+            ${guestPreferences.room_preferences.length > 0 ? `
+                <div class="flex flex-wrap gap-1.5">
+                    ${guestPreferences.room_preferences.map(pref => {
+                        const info = ROOM_PREFERENCE_ICONS[pref] || { icon: '✓', color: 'text-stone-400', bg: 'bg-stone-500/10' };
+                        return `<span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[8px] font-bold ${info.bg} ${info.color}">${info.icon} ${pref}</span>`;
+                    }).join('')}
+                </div>
+            ` : ''}
+        </div>
+    `;
+}
+
 function showProfileModal() {
     const modal = document.createElement('div');
     modal.className = 'fixed inset-0 bg-black/90 z-[800] flex items-center justify-center p-4 backdrop-blur-sm';
@@ -101,10 +189,10 @@ function showProfileModal() {
                 <!-- Préférences alimentaires -->
                 <div>
                     <p class="text-[10px] font-bold text-[var(--text-gold,#DCA773)] uppercase mb-2">Dietary Preferences</p>
-                    <div class="flex flex-wrap gap-2" id="dietaryContainer">
-                        ${['Vegetarian', 'Vegan', 'Halal', 'Gluten-Free', 'Dairy-Free', 'Nut-Free', 'No Preference'].map(diet => `
+                    <div class="flex flex-wrap gap-2">
+                        ${Object.keys(DIETARY_ICONS).map(diet => `
                             <button onclick="toggleDietary('${diet}')" class="pref-btn px-3 py-1.5 rounded-full text-[9px] font-bold transition border ${guestPreferences.dietary.includes(diet) ? 'bg-amber-400 text-stone-950 border-amber-400' : 'bg-stone-800 text-stone-400 border-stone-700'}" data-diet="${diet}">
-                                ${diet}
+                                ${DIETARY_ICONS[diet].icon} ${diet}
                             </button>
                         `).join('')}
                     </div>
@@ -113,10 +201,10 @@ function showProfileModal() {
                 <!-- Allergies -->
                 <div>
                     <p class="text-[10px] font-bold text-[var(--text-gold,#DCA773)] uppercase mb-2">Allergies</p>
-                    <div class="flex flex-wrap gap-2" id="allergiesContainer">
-                        ${['Peanuts', 'Shellfish', 'Eggs', 'Milk', 'Soy', 'Wheat', 'Fish', 'None'].map(allergy => `
+                    <div class="flex flex-wrap gap-2">
+                        ${Object.keys(ALLERGY_ICONS).map(allergy => `
                             <button onclick="toggleAllergy('${allergy}')" class="pref-btn px-3 py-1.5 rounded-full text-[9px] font-bold transition border ${guestPreferences.allergies.includes(allergy) ? 'bg-red-400 text-stone-950 border-red-400' : 'bg-stone-800 text-stone-400 border-stone-700'}" data-allergy="${allergy}">
-                                ${allergy}
+                                ${ALLERGY_ICONS[allergy].icon} ${allergy}
                             </button>
                         `).join('')}
                     </div>
@@ -125,10 +213,10 @@ function showProfileModal() {
                 <!-- Préférences de chambre -->
                 <div>
                     <p class="text-[10px] font-bold text-[var(--text-gold,#DCA773)] uppercase mb-2">Room Preferences</p>
-                    <div class="flex flex-wrap gap-2" id="roomPrefsContainer">
-                        ${['High Floor', 'Low Floor', 'Quiet Room', 'Extra Pillows', 'Extra Blanket', 'Feather-Free'].map(pref => `
+                    <div class="flex flex-wrap gap-2">
+                        ${Object.keys(ROOM_PREFERENCE_ICONS).map(pref => `
                             <button onclick="toggleRoomPref('${pref}')" class="pref-btn px-3 py-1.5 rounded-full text-[9px] font-bold transition border ${guestPreferences.room_preferences.includes(pref) ? 'bg-blue-400 text-stone-950 border-blue-400' : 'bg-stone-800 text-stone-400 border-stone-700'}" data-pref="${pref}">
-                                ${pref}
+                                ${ROOM_PREFERENCE_ICONS[pref].icon} ${pref}
                             </button>
                         `).join('')}
                     </div>
@@ -218,9 +306,9 @@ function toggleNotifications() {
 function saveProfile() {
     savePreferences();
     closeProfileModal();
+    renderPreferencesSummary();
     showToast('✅ Preferences saved!', 'success');
     
-    // Envoyer les préférences au staff
     const room = cachedGuestData?.room || localStorage.getItem('remal_guest_room');
     const requestData = {
         room_number: String(room),
