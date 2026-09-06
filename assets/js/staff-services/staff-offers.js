@@ -74,6 +74,7 @@ async function publishOffer() {
         
         showToast('✅ Offer published successfully!', 'success');
         
+        // Réinitialiser le formulaire
         document.getElementById('offerTitle').value = '';
         document.getElementById('offerPrice').value = '';
         document.getElementById('offerDescription').value = '';
@@ -88,6 +89,7 @@ async function publishOffer() {
         fetchOffers();
         
     } catch (err) {
+        console.error('Error publishing offer:', err);
         showToast('Error: ' + err.message, 'error');
     }
 }
@@ -105,7 +107,8 @@ async function fetchOffers() {
             return;
         }
         
-        renderOffersList(data || []);
+        currentOffersList = data || [];
+        renderOffersList(currentOffersList);
         
     } catch (err) {
         console.warn('Error fetching offers:', err);
