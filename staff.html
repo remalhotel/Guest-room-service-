@@ -400,6 +400,7 @@
                 <div id="chatPresenceStatus" class="chat-presence-status text-gray-400">● Invité hors ligne</div>
                 <div id="chatMessagesContainer" class="flex-1 overflow-y-auto space-y-2 pr-2"></div>
                 <div id="chatTypingIndicator" class="chat-typing-indicator hidden">L'invité est en train d'écrire...</div>
+                <div id="staffQuickRepliesContainer"></div>
                 <div class="flex gap-2 pt-2 border-t border-stone-800">
                     <input type="text" id="chatInput" placeholder="Écrire un message..." class="flex-1 bg-stone-950 border border-stone-800 rounded-xl px-3 py-2 text-xs text-stone-100 outline-none focus:border-amber-500" onkeypress="if(event.key==='Enter') sendChatMessage()">
                     <button onclick="sendChatMessage()" class="bg-[#DCA773] text-stone-950 font-bold px-4 py-2 rounded-xl text-xs">Envoyer</button>
