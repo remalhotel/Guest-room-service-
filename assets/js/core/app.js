@@ -53,6 +53,11 @@ function initializeApp() {
         initQuickAccess();
     }
     
+    // Afficher le bouton de partage
+    if (typeof showShareButton === 'function') {
+        showShareButton();
+    }
+    
     // Vérifier si le menu est disponible
     if (typeof isMenuAvailable === 'function' && isMenuAvailable()) {
         renderMenuItems();
@@ -297,3 +302,13 @@ window.selectLanguage = selectLanguage;
 window.closeLanguageDropdown = closeLanguageDropdown;
 window.showLanguageSettings = showLanguageSettings;
 window.closeLanguageSettings = closeLanguageSettings;
+
+// Fonctions pour le partage
+window.showShareModal = showShareModal;
+window.closeShareModal = closeShareModal;
+window.shareViaWhatsApp = shareViaWhatsApp;
+window.shareViaSMS = shareViaSMS;
+window.shareViaEmail = shareViaEmail;
+window.copyShareLink = copyShareLink;
+window.shareNative = shareNative;
+window.showShareButton = showShareButton;
