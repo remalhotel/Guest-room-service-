@@ -23,6 +23,11 @@ function initializeApp() {
         initCheckoutReminder();
     }
     
+    // Initialiser le résumé quotidien
+    if (typeof initDailySummary === 'function') {
+        initDailySummary();
+    }
+    
     // Initialiser la météo
     if (typeof initWeather === 'function') {
         initWeather();
@@ -204,6 +209,13 @@ window.toggleAmbientSound = toggleAmbientSound;
 window.stopAmbientSound = stopAmbientSound;
 window.adjustAmbientVolume = adjustAmbientVolume;
 window.showAmbientSoundsButton = showAmbientSoundsButton;
+
+// Fonctions pour le résumé quotidien
+window.initDailySummary = initDailySummary;
+window.generateDailySummary = generateDailySummary;
+window.showDailySummaryModal = showDailySummaryModal;
+window.closeDailySummary = closeDailySummary;
+window.stopDailySummary = stopDailySummary;
 
 // Fonctions pour le mode hors-ligne
 window.initOfflineMode = initOfflineMode;
