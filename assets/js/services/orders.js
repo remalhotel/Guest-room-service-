@@ -11,7 +11,6 @@ async function submitRoomServiceOrder(method) {
         return; 
     }
 
-    // Afficher le récapitulatif avant confirmation
     showOrderSummary(method, room, instructions);
 }
 
@@ -25,8 +24,6 @@ function showOrderSummary(method, room, instructions) {
         if (item) {
             itemsArray.push({ name: item.name, quantity: qty, price: item.price, total: qty * item.price, prepTime: item.prepTime || '20m' });
             totalAmount += qty * item.price;
-            
-            // Calculer le temps de préparation
             const prepMinutes = parseInt(item.prepTime || '20');
             totalPrepTime = Math.max(totalPrepTime, prepMinutes * qty);
         }
@@ -274,8 +271,12 @@ async function verifierEtRestaurerCommandeEnCours() {
 
 // ==================== ORDER HISTORY ====================
 async function fetchOrderHistory() {
+    console.log('📜 fetchOrderHistory called');
     const room = cachedGuestData?.room || localStorage.getItem('remal_guest_room');
-    if (!room || !supabaseClient) return;
+    if (!room || !supabaseClient) {
+        console.warn('⚠️ No room or no supabaseClient');
+        return;
+    }
     
     try {
         const { data, error } = await supabaseClient
@@ -285,21 +286,31 @@ async function fetchOrderHistory() {
             .order('created_at', { ascending: false })
             .limit(20);
             
-        if (error) return;
+        if (error) {
+            console.error('❌ Error fetching history:', error);
+            return;
+        }
         
+        console.log('✅ History fetched:', data?.length || 0, 'orders');
         window.orderHistory = data || [];
         renderOrderHistory();
     } catch (err) {
+        console.error('❌ Exception fetching history:', err);
         window.orderHistory = [];
         renderOrderHistory();
     }
 }
 
 function renderOrderHistory() {
+    console.log('📜 renderOrderHistory called');
     const container = document.getElementById('orderHistoryContainer');
-    if (!container) return;
+    if (!container) {
+        console.error('❌ orderHistoryContainer not found');
+        return;
+    }
     
     const orders = window.orderHistory || [];
+    console.log('📦 Orders to render:', orders.length);
     
     if (orders.length === 0) {
         container.innerHTML = `
@@ -378,301 +389,29 @@ function trackOrder(orderId) {
 }
 
 function showOrderHistory() {
+    console.log('📜 showOrderHistory called');
+    
+    // Masquer toutes les sections
     document.getElementById('servicesSection').classList.add('hidden');
     document.getElementById('offersSection').classList.add('hidden');
     document.getElementById('faqSection').classList.add('hidden');
     document.getElementById('favoritesSection').classList.add('hidden');
-    document.getElementById('orderHistorySection').classList.remove('hidden');
     
+    // Afficher la section historique
+    const historySection = document.getElementById('orderHistorySection');
+    if (historySection) {
+        historySection.classList.remove('hidden');
+    } else {
+        console.error('❌ orderHistorySection not found');
+    }
+    
+    // Mettre à jour les onglets
     document.getElementById('tabServices').classList.remove('active');
     document.getElementById('tabOffers').classList.remove('active');
     document.getElementById('tabFaq').classList.remove('active');
     document.getElementById('tabFavorites').classList.remove('active');
     document.getElementById('tabHistory').classList.add('active');
     
+    // Charger l'historique
     fetchOrderHistory();
 }
-
-// ==================== SUGGESTIONS PERSONNALISÉES ====================
-async function fetchPersonalizedSuggestions() {
-    const room = cachedGuestData?.room || localStorage.getItem('remal_guest_room');
-    if (!room || !supabaseClient) return;
-    
-    try {
-        const { data: orderHistory, error } = await supabaseClient
-            .from('food_orders')
-            .select('items')
-            .eq('room_number', String(room))
-            .order('created_at', { ascending: false })
-            .limit(10);
-            
-        if (error) {
-            renderSuggestions([]);
-            return;
-        }
-        
-        const itemFrequency = {};
-        orderHistory?.forEach(order => {
-            try {
-                const items = typeof order.items === 'string' ? JSON.parse(order.items) : order.items;
-                if (Array.isArray(items)) {
-                    items.forEach(item => {
-                        if (item.name) {
-                            itemFrequency[item.name] = (itemFrequency[item.name] || 0) + item.quantity;
-                        }
-                    });
-                }
-            } catch (e) {}
-        });
-        
-        const sortedItems = Object.entries(itemFrequency)
-            .sort((a, b) => b[1] - a[1])
-            .slice(0, 5)
-            .map(([name, count]) => ({ name, count }));
-        
-        const suggestions = [];
-        if (typeof MENU_DATA !== 'undefined') {
-            for (const [category, items] of Object.entries(MENU_DATA)) {
-                items.forEach(item => {
-                    const match = sortedItems.find(s => s.name === item.name);
-                    if (match) {
-                        suggestions.push({ ...item, category, orderCount: match.count, score: 100 });
-                    }
-                });
-            }
-        }
-        
-        if (suggestions.length < 3 && typeof MENU_DATA !== 'undefined') {
-            const preferredCategories = {};
-            suggestions.forEach(s => {
-                preferredCategories[s.category] = (preferredCategories[s.category] || 0) + 1;
-            });
-            
-            for (const [category, items] of Object.entries(MENU_DATA)) {
-                if (preferredCategories[category]) {
-                    items.forEach(item => {
-                        if (!suggestions.find(s => s.id === item.id) && suggestions.length < 5) {
-                            suggestions.push({ ...item, category, orderCount: 0, score: 50, reason: 'similar' });
-                        }
-                    });
-                }
-            }
-        }
-        
-        renderSuggestions(suggestions);
-        
-    } catch (err) {
-        renderSuggestions([]);
-    }
-}
-
-function renderSuggestions(suggestions) {
-    const container = document.getElementById('suggestionsContainer');
-    if (!container) return;
-    
-    if (!suggestions || suggestions.length === 0) {
-        container.innerHTML = '';
-        container.classList.add('hidden');
-        return;
-    }
-    
-    container.classList.remove('hidden');
-    
-    container.innerHTML = `
-        <div class="p-3 bg-gradient-to-br from-amber-500/10 to-transparent border border-amber-500/30 rounded-2xl">
-            <div class="flex items-center justify-between mb-2">
-                <span class="text-[10px] font-bold text-[var(--text-gold,#DCA773)] uppercase tracking-wider">
-                    <i class="fas fa-star mr-1"></i> Recommended For You
-                </span>
-            </div>
-            <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
-                ${suggestions.map(item => `
-                    <div class="min-w-[120px] bg-stone-950/80 border border-stone-700 rounded-xl p-2.5 flex-shrink-0 cursor-pointer" onclick="addSuggestionToCart('${item.id}')">
-                        <div class="text-2xl mb-1">${item.emoji || '🍽️'}</div>
-                        <p class="text-[10px] font-bold text-stone-100 truncate">${item.name}</p>
-                        <p class="text-[9px] text-stone-400">AED ${item.price.toFixed(2)}</p>
-                    </div>
-                `).join('')}
-            </div>
-        </div>
-    `;
-}
-
-function addSuggestionToCart(itemId) {
-    updateCart(itemId, 1);
-    showToast('Added to cart! 🛒', 'success');
-}
-
-function refreshSuggestions() {
-    fetchPersonalizedSuggestions();
-    showToast('Suggestions refreshed', 'info');
-}
-
-// ==================== NOTIFICATIONS TEMPS RÉEL ====================
-let orderNotificationChannel = null;
-
-function startOrderNotifications(orderId) {
-    if (!supabaseClient || !orderId) return;
-    
-    if (orderNotificationChannel) {
-        supabaseClient.removeChannel(orderNotificationChannel);
-    }
-    
-    orderNotificationChannel = supabaseClient
-        .channel(`order-updates-${orderId}`)
-        .on('postgres_changes', {
-            event: 'UPDATE',
-            schema: 'public',
-            table: 'food_orders',
-            filter: `id=eq.${orderId}`
-        }, (payload) => {
-            const newStatus = payload.new.status;
-            const oldStatus = payload.old.status;
-            
-            if (newStatus !== oldStatus) {
-                handleOrderStatusChange(newStatus);
-            }
-        })
-        .subscribe();
-    
-    if ('Notification' in window && Notification.permission === 'default') {
-        Notification.requestPermission();
-    }
-}
-
-function handleOrderStatusChange(newStatus) {
-    updateOrderTracking(newStatus);
-    
-    const statusMessages = {
-        'Pending': { icon: '📝', title: 'Order Received', message: 'Your order has been registered', type: 'info' },
-        'Preparing': { icon: '👨‍🍳', title: 'Being Prepared', message: 'The chef is preparing your order', type: 'info' },
-        'Ready': { icon: '🔔', title: 'Ready for Delivery', message: 'Your order is ready!', type: 'success' },
-        'Delivered': { icon: '✅', title: 'Delivered', message: 'Enjoy your meal!', type: 'success' },
-        'Completed': { icon: '🌟', title: 'Completed', message: 'Order completed. Thank you!', type: 'success' }
-    };
-    
-    const config = statusMessages[newStatus] || statusMessages['Pending'];
-    showEnhancedToast(config.icon, config.title, config.message, config.type);
-    playOrderNotificationSound();
-    
-    if (newStatus === 'Delivered' || newStatus === 'Completed') {
-        setTimeout(() => {
-            showFeedbackPrompt();
-        }, 5000);
-        if (typeof fetchOrderHistory === 'function') {
-            fetchOrderHistory();
-        }
-    }
-}
-
-function showEnhancedToast(icon, title, message, type = 'info') {
-    const toast = document.createElement('div');
-    toast.className = 'toast-notification toast-in';
-    toast.style.borderColor = type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#DCA773';
-    
-    toast.innerHTML = `
-        <div class="flex items-center gap-3">
-            <span class="text-2xl">${icon}</span>
-            <div>
-                <p class="text-xs font-bold text-stone-100">${title}</p>
-                <p class="text-[10px] text-stone-300">${message}</p>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(toast);
-    setTimeout(() => { 
-        toast.style.opacity = '0'; 
-        toast.style.transition = 'opacity 0.3s ease'; 
-        setTimeout(() => toast.remove(), 300); 
-    }, 4000);
-}
-
-function playOrderNotificationSound() {
-    try {
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const notes = [523.25, 659.25, 783.99];
-        
-        notes.forEach((frequency, index) => {
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            oscillator.type = 'sine';
-            oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime + index * 0.1);
-            gainNode.gain.setValueAtTime(0.2, audioContext.currentTime + index * 0.1);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + index * 0.1 + 0.3);
-            oscillator.start(audioContext.currentTime + index * 0.1);
-            oscillator.stop(audioContext.currentTime + index * 0.1 + 0.3);
-        });
-    } catch (error) {
-        console.warn('Sound not available:', error);
-    }
-}
-
-function showFeedbackPrompt() {
-    const feedbackToast = document.createElement('div');
-    feedbackToast.className = 'toast-notification toast-in';
-    feedbackToast.style.borderColor = '#DCA773';
-    
-    feedbackToast.innerHTML = `
-        <div class="flex items-center gap-3">
-            <span class="text-2xl">⭐</span>
-            <div class="flex-1">
-                <p class="text-xs font-bold text-stone-100">How was your experience?</p>
-                <div class="flex gap-2 mt-2">
-                    ${[1, 2, 3, 4, 5].map(star => `
-                        <button onclick="submitFeedback(${star})" class="text-xl hover:scale-125 transition">⭐</button>
-                    `).join('')}
-                </div>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(feedbackToast);
-    setTimeout(() => { 
-        feedbackToast.style.opacity = '0'; 
-        feedbackToast.style.transition = 'opacity 0.3s ease'; 
-        setTimeout(() => feedbackToast.remove(), 300); 
-    }, 10000);
-}
-
-async function submitFeedback(rating) {
-    const orderId = currentOrderId;
-    const room = cachedGuestData?.room || localStorage.getItem('remal_guest_room');
-    
-    if (!orderId || !room) return;
-    
-    const feedbackData = {
-        order_id: orderId,
-        room_number: String(room),
-        rating: rating,
-        feedback_text: '',
-        created_at: new Date().toISOString()
-    };
-    
-    try {
-        if (supabaseClient) {
-            const { error } = await supabaseClient
-                .from('order_feedback')
-                .insert([feedbackData]);
-                
-            if (error) {
-                showToast('Error saving feedback', 'error');
-                return;
-            }
-        }
-        
-        document.querySelectorAll('.toast-notification').forEach(t => t.remove());
-        showToast(`Thank you for your ${rating} star rating! 🌟`, 'success');
-    } catch (error) {
-        showToast('Error saving feedback', 'error');
-    }
-}
-
-function stopOrderNotifications() {
-    if (orderNotificationChannel && supabaseClient) {
-        supabaseClient.removeChannel(orderNotificationChannel);
-        orderNotificationChannel = null;
-    }
-}}
