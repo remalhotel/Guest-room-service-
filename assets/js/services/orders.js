@@ -269,14 +269,10 @@ async function verifierEtRestaurerCommandeEnCours() {
     }
 }
 
-// ==================== ORDER HISTORY ====================
+// ==================== ORDER HISTORY AVEC RE-COMMANDE ====================
 async function fetchOrderHistory() {
-    console.log('📜 fetchOrderHistory called');
     const room = cachedGuestData?.room || localStorage.getItem('remal_guest_room');
-    if (!room || !supabaseClient) {
-        console.warn('⚠️ No room or no supabaseClient');
-        return;
-    }
+    if (!room || !supabaseClient) return;
     
     try {
         const { data, error } = await supabaseClient
@@ -286,31 +282,21 @@ async function fetchOrderHistory() {
             .order('created_at', { ascending: false })
             .limit(20);
             
-        if (error) {
-            console.error('❌ Error fetching history:', error);
-            return;
-        }
+        if (error) return;
         
-        console.log('✅ History fetched:', data?.length || 0, 'orders');
         window.orderHistory = data || [];
         renderOrderHistory();
     } catch (err) {
-        console.error('❌ Exception fetching history:', err);
         window.orderHistory = [];
         renderOrderHistory();
     }
 }
 
 function renderOrderHistory() {
-    console.log('📜 renderOrderHistory called');
     const container = document.getElementById('orderHistoryContainer');
-    if (!container) {
-        console.error('❌ orderHistoryContainer not found');
-        return;
-    }
+    if (!container) return;
     
     const orders = window.orderHistory || [];
-    console.log('📦 Orders to render:', orders.length);
     
     if (orders.length === 0) {
         container.innerHTML = `
@@ -336,10 +322,11 @@ function renderOrderHistory() {
         const time = new Date(order.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         
         let itemsList = '';
+        let itemsData = [];
         try {
-            const items = typeof order.items === 'string' ? JSON.parse(order.items) : order.items;
-            if (Array.isArray(items)) {
-                itemsList = items.map(item => `${item.quantity}x ${item.name}`).join(', ');
+            itemsData = typeof order.items === 'string' ? JSON.parse(order.items) : order.items;
+            if (Array.isArray(itemsData)) {
+                itemsList = itemsData.map(item => `${item.quantity}x ${item.name}`).join(', ');
             }
         } catch (e) {
             itemsList = 'Items';
@@ -365,15 +352,58 @@ function renderOrderHistory() {
                     <span class="text-[10px] font-bold text-[var(--text-gold,#DCA773)]">
                         AED ${(order.total_amount || 0).toFixed(2)}
                     </span>
-                    ${order.status === 'Pending' || order.status === 'Preparing' ? `
-                        <button onclick="trackOrder('${order.id}')" class="text-[9px] text-blue-400 hover:text-blue-300">
-                            <i class="fas fa-satellite-dish mr-1"></i> Track
+                    <div class="flex gap-2">
+                        ${order.status === 'Pending' || order.status === 'Preparing' ? `
+                            <button onclick="trackOrder('${order.id}')" class="text-[9px] text-blue-400 hover:text-blue-300">
+                                <i class="fas fa-satellite-dish mr-1"></i> Track
+                            </button>
+                        ` : ''}
+                        <button onclick="reorderFromHistory('${order.id}')" class="text-[9px] text-[var(--text-gold,#DCA773)] hover:text-amber-300 font-bold">
+                            <i class="fas fa-redo mr-1"></i> Re-order
                         </button>
-                    ` : ''}
+                    </div>
                 </div>
             </div>
         `;
     }).join('');
+}
+
+function reorderFromHistory(orderId) {
+    const order = (window.orderHistory || []).find(o => o.id === orderId);
+    if (!order) return;
+    
+    let itemsData = [];
+    try {
+        itemsData = typeof order.items === 'string' ? JSON.parse(order.items) : order.items;
+    } catch (e) {
+        showToast('Error parsing order', 'error');
+        return;
+    }
+    
+    if (!Array.isArray(itemsData) || itemsData.length === 0) {
+        showToast('No items in this order', 'error');
+        return;
+    }
+    
+    // Remplir le panier avec les items de la commande
+    menuCart = {};
+    itemsData.forEach(item => {
+        // Chercher l'item dans le menu
+        if (typeof MENU_DATA !== 'undefined') {
+            for (const [category, menuItems] of Object.entries(MENU_DATA)) {
+                const foundItem = menuItems.find(mi => mi.name === item.name);
+                if (foundItem) {
+                    menuCart[foundItem.id] = item.quantity;
+                }
+            }
+        }
+    });
+    
+    showToast('🛒 Items added to cart!', 'success');
+    
+    // Aller au room service
+    showService('room_service');
+    renderMenuItems();
 }
 
 function trackOrder(orderId) {
@@ -389,29 +419,21 @@ function trackOrder(orderId) {
 }
 
 function showOrderHistory() {
-    console.log('📜 showOrderHistory called');
-    
-    // Masquer toutes les sections
     document.getElementById('servicesSection').classList.add('hidden');
     document.getElementById('offersSection').classList.add('hidden');
     document.getElementById('faqSection').classList.add('hidden');
     document.getElementById('favoritesSection').classList.add('hidden');
     
-    // Afficher la section historique
     const historySection = document.getElementById('orderHistorySection');
     if (historySection) {
         historySection.classList.remove('hidden');
-    } else {
-        console.error('❌ orderHistorySection not found');
     }
     
-    // Mettre à jour les onglets
     document.getElementById('tabServices').classList.remove('active');
     document.getElementById('tabOffers').classList.remove('active');
     document.getElementById('tabFaq').classList.remove('active');
     document.getElementById('tabFavorites').classList.remove('active');
     document.getElementById('tabHistory').classList.add('active');
     
-    // Charger l'historique
     fetchOrderHistory();
 }
