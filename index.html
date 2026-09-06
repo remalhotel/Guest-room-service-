@@ -243,7 +243,101 @@
 
 .fa-sync-alt:active {
     animation: spin 0.5s ease;
-}  
+}
+
+/* ==================== CORRECTIONS MODE CLAIR ==================== */
+body.light-mode .chat-message.guest {
+    background-color: #DCA773 !important;
+    color: #1c1917 !important;
+}
+
+body.light-mode #quickRepliesContainer button {
+    background-color: #e2e8f0 !important;
+    color: #0f172a !important;
+    border: 1px solid #cbd5e1 !important;
+}
+
+body.light-mode #quickRepliesContainer button:hover {
+    background-color: #cbd5e1 !important;
+    color: #0f172a !important;
+}
+
+body.light-mode #quickRepliesContainer p {
+    color: #64748b !important;
+}
+
+body.light-mode #guestChatContainer .chat-message {
+    color: #0f172a !important;
+}
+
+body.light-mode #guestChatContainer .chat-message p {
+    color: inherit !important;
+}
+
+body.light-mode .service-tracking-card p,
+body.light-mode .service-tracking-card span {
+    color: inherit !important;
+}
+
+body.light-mode .service-tracking-card .text-stone-100 {
+    color: #1e293b !important;
+}
+
+body.light-mode .service-tracking-card .text-stone-400 {
+    color: #64748b !important;
+}
+
+body.light-mode #orderHistoryContainer .text-stone-100 {
+    color: #1e293b !important;
+}
+
+body.light-mode #orderHistoryContainer .text-stone-400 {
+    color: #64748b !important;
+}
+
+body.light-mode #suggestionsContainer .text-stone-100 {
+    color: #1e293b !important;
+}
+
+body.light-mode #suggestionsContainer .text-stone-400 {
+    color: #64748b !important;
+}
+
+body.light-mode #favoritesContainer .text-stone-100 {
+    color: #1e293b !important;
+}
+
+body.light-mode #favoritesContainer .text-stone-400 {
+    color: #64748b !important;
+}
+
+body.light-mode #remindersContainer .text-stone-100 {
+    color: #1e293b !important;
+}
+
+body.light-mode #remindersContainer .text-stone-400 {
+    color: #64748b !important;
+}
+
+body.light-mode #checkoutCountdown .text-stone-100 {
+    color: #1e293b !important;
+}
+
+body.light-mode #checkoutCountdown .text-stone-400 {
+    color: #64748b !important;
+}
+
+body.light-mode .toast-notification .text-stone-300 {
+    color: #334155 !important;
+}
+
+body.light-mode #staffPresenceStatus span {
+    color: inherit !important;
+}
+
+body.light-mode #chatTypingIndicator {
+    color: #64748b !important;
+}
     </style>
 </head>
 <body class="min-h-screen lock-screen bg-stone-950 text-stone-100 font-sans">
@@ -259,12 +353,12 @@
         </div>
 
         <div class="fixed top-4 right-4 z-50 flex gap-2">
-    <button onclick="toggleAutoTheme()" id="autoThemeToggle" class="theme-toggle-btn p-3 rounded-full bg-stone-900 border border-stone-800 text-amber-400 shadow-xl" title="Auto theme">
-        <i class="fas fa-magic text-sm"></i>
-    </button>
-    <button onclick="toggleTheme()" id="themeToggleLock" class="theme-toggle-btn p-3 rounded-full bg-stone-900 border border-stone-800 text-amber-400 shadow-xl">
-        <i class="fas fa-sun text-sm" id="themeIconLock"></i>
-    </button>
+            <button onclick="toggleAutoTheme()" id="autoThemeToggle" class="theme-toggle-btn p-3 rounded-full bg-stone-900 border border-stone-800 text-amber-400 shadow-xl" title="Auto theme">
+                <i class="fas fa-magic text-sm"></i>
+            </button>
+            <button onclick="toggleTheme()" id="themeToggleLock" class="theme-toggle-btn p-3 rounded-full bg-stone-900 border border-stone-800 text-amber-400 shadow-xl">
+                <i class="fas fa-sun text-sm" id="themeIconLock"></i>
+            </button>
         </div>
         
         <div class="w-full max-w-md lock-card p-8 rounded-[2rem] space-y-6 bg-stone-900/80 border border-amber-500/20 backdrop-blur-xl shadow-2xl">
@@ -285,7 +379,6 @@
             <div class="text-center space-y-1">
                 <h2 class="text-sm font-bold text-stone-100" id="greetingText" data-i18n="welcomeTitle">Welcome to Guest Hub</h2>
                 <p class="text-[10px] text-stone-400" data-i18n="verifyPrompt">Please verify your identity to access all services</p>
-                <div id="onlineStatusIndicator" class="mt-1"></div>
             </div>
 
             <div class="space-y-4">
@@ -335,19 +428,20 @@
         </div>
 
         <div class="fixed top-4 right-4 z-50 flex gap-2">
-    <button onclick="toggleAutoTheme()" id="autoThemeToggleMain" class="theme-toggle-btn p-3 rounded-full bg-stone-900 border border-stone-800 text-amber-400 shadow-xl" title="Auto theme">
-        <i class="fas fa-magic text-sm"></i>
-    </button>
-    <button onclick="toggleTheme()" id="themeToggleMain" class="theme-toggle-btn p-3 rounded-full bg-stone-900 border border-stone-800 text-amber-400 shadow-xl">
-        <i class="fas fa-sun text-sm" id="themeIconMain"></i>
-    </button>
+            <button onclick="toggleAutoTheme()" id="autoThemeToggleMain" class="theme-toggle-btn p-3 rounded-full bg-stone-900 border border-stone-800 text-amber-400 shadow-xl" title="Auto theme">
+                <i class="fas fa-magic text-sm"></i>
+            </button>
+            <button onclick="toggleTheme()" id="themeToggleMain" class="theme-toggle-btn p-3 rounded-full bg-stone-900 border border-stone-800 text-amber-400 shadow-xl">
+                <i class="fas fa-sun text-sm" id="themeIconMain"></i>
+            </button>
         </div>
 
         <button onclick="openGuestChatModal()" class="fixed bottom-4 left-4 z-50 bg-[#DCA773] text-stone-950 w-14 h-14 rounded-full flex items-center justify-center shadow-2xl transition hover:scale-110">
             <i class="fas fa-comments text-lg"></i>
         </button>
+
         <button onclick="showRemindersModal()" class="fixed bottom-20 right-4 z-50 bg-stone-800 text-amber-400 w-12 h-12 rounded-full flex items-center justify-center shadow-2xl transition hover:scale-110">
-    <i class="fas fa-bell text-lg"></i>
+            <i class="fas fa-bell text-lg"></i>
         </button>
         
         <a href="tel:+971526966865" class="fixed bottom-4 right-4 z-50 bg-emerald-600 hover:bg-emerald-700 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-2xl transition hover:scale-110">
@@ -363,6 +457,7 @@
                     
                     <div class="pt-3">
                         <p class="text-[10px] text-stone-400 uppercase tracking-wider drop-shadow-md" id="greetingTime">Welcome</p>
+                        <div id="onlineStatusIndicator" class="mt-1"></div>
                         <h2 id="welcomeGuestName" class="text-lg font-serif-luxury font-bold text-[var(--text-gold,#DCA773)] tracking-wide uppercase drop-shadow-md">---</h2>
                     </div>
                     
@@ -392,8 +487,9 @@
                 </button>
             </div>
 
-            <div id="servicesTrackingContainer" class="hidden space-y-3"></div>
             <div id="checkoutCountdown"></div>
+
+            <div id="servicesTrackingContainer" class="hidden space-y-3"></div>
 
             <div class="flex gap-2 flex-wrap">
                 <button onclick="switchTab('services')" id="tabServices" class="tab-btn active flex-1 min-w-[70px] py-3 rounded-xl text-xs font-bold transition">
@@ -414,6 +510,7 @@
             </div>
 
             <div id="servicesSection" class="space-y-4">
+                <div id="quickAccessContainer" class="hidden"></div>
                 <div id="servicesList" class="space-y-3">
                     <p class="text-center text-[10px] text-stone-400 font-bold uppercase tracking-wider" data-i18n="selectService">Select a Service</p>
                     
@@ -552,7 +649,9 @@
                             <span id="selectedBadgeCount" class="bg-[var(--text-gold,#DCA773)] text-stone-950 px-3.5 py-1 rounded-full text-[11px] font-black">0</span>
                         </button>
                     </div>
-                   <div id="suggestionsContainer" class="hidden"></div>
+
+                    <div id="suggestionsContainer" class="hidden"></div>
+
                     <div>
                         <label class="block font-bold text-[var(--text-gold,#DCA773)] mb-1.5 uppercase tracking-wider text-[10px]" data-i18n="specialInstructions">Special Instructions / Allergies</label>
                         <textarea id="guestSpecialInstructions" placeholder="e.g., No onions, gluten allergy..." class="w-full h-20 bg-stone-950 border border-stone-800 rounded-2xl p-3.5 outline-none resize-none text-xs text-stone-200"></textarea>
@@ -643,14 +742,18 @@
                     <button onclick="closeGuestChatModal()" class="text-stone-400 hover:text-stone-100 text-xl font-bold">✕</button>
                 </div>
             </div>
-            <div id="staffPresenceStatus" class="chat-presence-status text-gray-400">● Staff hors ligne</div>
+            <div id="staffPresenceStatus" class="chat-presence-status text-gray-400">● Staff offline</div>
             <div id="guestChatContainer" class="flex-1 overflow-y-auto space-y-2 pr-1 max-h-[50vh]"></div>
-            <div id="chatTypingIndicator" class="chat-typing-indicator hidden">Le staff est en train d'écrire...</div>
+            <div id="chatTypingIndicator" class="chat-typing-indicator hidden">Staff is typing...</div>
             <div id="chatError" class="hidden text-center text-[10px] text-red-400 font-bold"></div>
             <div id="quickRepliesContainer" class="hidden"></div>
-            <div class="flex gap-2 pt-2 border-t border-stone-800">
+            <div id="imagePreviewContainer" class="hidden pb-2"></div>
+            <div class="flex gap-2 pt-2 border-t border-stone-800 items-center">
+                <button onclick="triggerImageUpload()" class="bg-stone-800 hover:bg-stone-700 text-stone-200 p-2 rounded-xl text-xs transition">
+                    <i class="fas fa-camera"></i>
+                </button>
                 <input type="text" id="guestChatInput" placeholder="Write a message..." class="flex-1 bg-stone-950 border border-stone-800 rounded-xl px-3 py-2 text-xs text-stone-100 outline-none focus:border-amber-500" onkeypress="if(event.key==='Enter') sendGuestChatMessage()">
-                <button onclick="sendGuestChatMessage()" class="bg-[var(--text-gold,#DCA773)] text-stone-950 font-bold px-4 py-2 rounded-xl text-xs hover:bg-[#ebd0b3]">Send</button>
+                <button onclick="sendGuestChatMessage()" id="chatSendButton" class="bg-[var(--text-gold,#DCA773)] text-stone-950 font-bold px-4 py-2 rounded-xl text-xs hover:bg-[#ebd0b3]">Send</button>
             </div>
         </div>
     </div>
@@ -685,14 +788,14 @@
 <script src="assets/js/config.js"></script>
 <script src="assets/js/menu.js"></script>
 <script src="assets/js/utils/translations.js"></script>
-<script src="assets/js/core/constants.js"></script>
 <script src="assets/js/utils/helpers.js"></script>
-<script src="assets/js/utils/offline.js"></script>    
+<script src="assets/js/utils/offline.js"></script>
+<script src="assets/js/core/constants.js"></script>
 <script src="assets/js/core/state.js"></script>
 <script src="assets/js/components/toast.js"></script>
 <script src="assets/js/components/chat-manager.js"></script>
-<script src="assets/js/components/reminders.js"></script> 
-<script src="assets/js/components/checkout.js"></script>    
+<script src="assets/js/components/reminders.js"></script>
+<script src="assets/js/components/checkout.js"></script>
 <script src="assets/js/ui/theme.js"></script>
 <script src="assets/js/ui/language.js"></script>
 <script src="assets/js/ui/navigation.js"></script>
