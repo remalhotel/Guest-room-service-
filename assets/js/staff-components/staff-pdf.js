@@ -10,7 +10,6 @@ function generateFoodOrderPDF(orderId) {
     let y = margin;
     const items = Array.isArray(order.items) ? order.items : [];
     
-    // En-tête
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(14);
     doc.text('REMAL HOTEL & VILLAS', pageWidth / 2, y, { align: 'center' });
@@ -19,7 +18,6 @@ function generateFoodOrderPDF(orderId) {
     doc.text('Room Service Ticket', pageWidth / 2, y + 6, { align: 'center' });
     y += 14;
     
-    // Informations
     doc.setFontSize(9);
     doc.text('Room: ' + (order.room_number || 'N/A'), margin, y);
     doc.text('Ticket #: ' + order.id, pageWidth - margin, y, { align: 'right' });
@@ -28,13 +26,11 @@ function generateFoodOrderPDF(orderId) {
     doc.text('Date: ' + new Date(order.created_at).toLocaleString(), pageWidth - margin, y, { align: 'right' });
     y += 8;
     
-    // Ligne séparatrice
     doc.setDrawColor(0);
     doc.setLineWidth(0.3);
     doc.line(margin, y, pageWidth - margin, y);
     y += 6;
     
-    // Items
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(8);
     doc.text('ITEMS', margin, y);
@@ -48,7 +44,6 @@ function generateFoodOrderPDF(orderId) {
         y += 5;
     });
     
-    // Total
     y += 3;
     doc.setDrawColor(0);
     doc.setLineWidth(0.3);
@@ -73,7 +68,6 @@ function printFoodOrderPDF(orderId) {
     let y = margin;
     const items = Array.isArray(order.items) ? order.items : [];
     
-    // En-tête
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(14);
     doc.text('REMAL HOTEL & VILLAS', pageWidth / 2, y, { align: 'center' });
@@ -82,7 +76,6 @@ function printFoodOrderPDF(orderId) {
     doc.text('Room Service Ticket', pageWidth / 2, y + 6, { align: 'center' });
     y += 14;
     
-    // Informations
     doc.setFontSize(9);
     doc.text('Room: ' + (order.room_number || 'N/A'), margin, y);
     doc.text('Ticket #: ' + order.id, pageWidth - margin, y, { align: 'right' });
@@ -90,13 +83,11 @@ function printFoodOrderPDF(orderId) {
     doc.text('Guest: ' + (order.guest_name || 'Guest'), margin, y);
     y += 8;
     
-    // Ligne séparatrice
     doc.setDrawColor(0);
     doc.setLineWidth(0.3);
     doc.line(margin, y, pageWidth - margin, y);
     y += 6;
     
-    // Items
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(8);
     doc.text('ITEMS', margin, y);
@@ -110,7 +101,6 @@ function printFoodOrderPDF(orderId) {
         y += 5;
     });
     
-    // Total
     y += 3;
     doc.setDrawColor(0);
     doc.setLineWidth(0.3);
@@ -121,7 +111,6 @@ function printFoodOrderPDF(orderId) {
     doc.setFontSize(11);
     doc.text('TOTAL: AED ' + (parseFloat(order.total_amount) || 0).toFixed(2), pageWidth - margin, y, { align: 'right' });
     
-    // Ouvrir dans un nouvel onglet
     const pdfBlob = doc.output('blob');
     const pdfUrl = URL.createObjectURL(pdfBlob);
     window.open(pdfUrl, '_blank');
