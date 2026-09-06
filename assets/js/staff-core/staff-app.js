@@ -19,7 +19,7 @@ function initStaffApp() {
 }
 
 function setupRealtime() {
-    if (realtimeChannel) {
+    if (realtimeChannel && supabaseClient) {
         supabaseClient.removeChannel(realtimeChannel);
     }
     
@@ -30,10 +30,11 @@ function setupRealtime() {
             schema: 'public', 
             table: 'food_orders' 
         }, (payload) => {
-            console.log('📩 Realtime food_orders event:', payload.eventType);
+            console.log('📩 Realtime food_orders:', payload.eventType);
             if (payload.eventType === 'INSERT') {
                 playNotificationSound();
                 showNotificationPopup('🔔 New food order received!');
+                sendBrowserNotification('New Order!', 'A new food order has been placed');
             }
             fetchAllData();
         })
@@ -42,12 +43,20 @@ function setupRealtime() {
             schema: 'public', 
             table: 'guest_requests' 
         }, (payload) => {
-            console.log('📩 Realtime guest_requests event:', payload.eventType);
+            console.log('📩 Realtime guest_requests:', payload.eventType);
             if (payload.eventType === 'INSERT') {
                 playNotificationSound();
                 showNotificationPopup('🔔 New service request received!');
+                sendBrowserNotification('New Request!', 'A new service request has been placed');
             }
             fetchAllData();
+        })
+        .on('postgres_changes', { 
+            event: '*', 
+            schema: 'public', 
+            table: 'offers' 
+        }, () => {
+            fetchOffers();
         })
         .subscribe((status) => {
             console.log('📡 Realtime status:', status);
@@ -88,8 +97,6 @@ window.deleteGuestRequest = deleteGuestRequest;
 window.openChatModal = openChatModal;
 window.closeChatModal = closeChatModal;
 window.sendChatMessage = sendChatMessage;
-window.sendStaffQuickReply = sendStaffQuickReply;
-window.renderStaffQuickReplies = renderStaffQuickReplies;
 window.toggleTheme = toggleTheme;
 window.enableSoundAlerts = enableSoundAlerts;
 window.toggleSoundAlerts = toggleSoundAlerts;
@@ -103,3 +110,5 @@ window.exportAnalyticsPDF = exportAnalyticsPDF;
 window.generateFoodOrderPDF = generateFoodOrderPDF;
 window.printFoodOrderPDF = printFoodOrderPDF;
 window.logoutStaff = logoutStaff;
+
+console.log('✅ All staff functions exposed globally');
