@@ -2,8 +2,10 @@
 function initStaffApp() {
     console.log('🚀 Initializing Staff Dashboard...');
     
+    initStaffState();
     initTheme();
     updateDateTimeDisplay();
+    requestNotificationPermission();
     
     // Démarrer l'horloge
     setInterval(updateDateTimeDisplay, 1000);
@@ -19,7 +21,7 @@ function initStaffApp() {
 }
 
 function setupRealtime() {
-    if (realtimeChannel && supabaseClient) {
+    if (realtimeChannel) {
         supabaseClient.removeChannel(realtimeChannel);
     }
     
@@ -30,7 +32,6 @@ function setupRealtime() {
             schema: 'public', 
             table: 'food_orders' 
         }, (payload) => {
-            console.log('📩 Realtime food_orders:', payload.eventType);
             if (payload.eventType === 'INSERT') {
                 playNotificationSound();
                 showNotificationPopup('🔔 New food order received!');
@@ -43,7 +44,6 @@ function setupRealtime() {
             schema: 'public', 
             table: 'guest_requests' 
         }, (payload) => {
-            console.log('📩 Realtime guest_requests:', payload.eventType);
             if (payload.eventType === 'INSERT') {
                 playNotificationSound();
                 showNotificationPopup('🔔 New service request received!');
@@ -58,30 +58,15 @@ function setupRealtime() {
         }, () => {
             fetchOffers();
         })
-        .subscribe((status) => {
-            console.log('📡 Realtime status:', status);
-        });
+        .subscribe();
     
     console.log('✅ Realtime configured');
 }
 
 // Vérification de session au chargement
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('📄 DOM loaded, checking session...');
-    
     const isAuthorized = checkStaffSession();
-    console.log('🔐 Session authorized:', isAuthorized);
-    
     if (isAuthorized) {
-        initStaffApp();
-    }
-});
-
-// Aussi écouter load pour être sûr
-window.addEventListener('load', () => {
-    console.log('📄 Page fully loaded');
-    const isAuthorized = sessionStorage.getItem('staff_authorized');
-    if (isAuthorized && !document.querySelector('.staff-tab-btn.active')) {
         initStaffApp();
     }
 });
@@ -97,6 +82,7 @@ window.deleteGuestRequest = deleteGuestRequest;
 window.openChatModal = openChatModal;
 window.closeChatModal = closeChatModal;
 window.sendChatMessage = sendChatMessage;
+window.sendStaffQuickReply = sendStaffQuickReply;
 window.toggleTheme = toggleTheme;
 window.enableSoundAlerts = enableSoundAlerts;
 window.toggleSoundAlerts = toggleSoundAlerts;
@@ -110,5 +96,4 @@ window.exportAnalyticsPDF = exportAnalyticsPDF;
 window.generateFoodOrderPDF = generateFoodOrderPDF;
 window.printFoodOrderPDF = printFoodOrderPDF;
 window.logoutStaff = logoutStaff;
-
-console.log('✅ All staff functions exposed globally');
+window.renderStaffQuickReplies = renderStaffQuickReplies;
