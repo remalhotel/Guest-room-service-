@@ -15,6 +15,11 @@ function initializeApp() {
         initReminders();
     }
     
+    // Initialiser le check-out reminder
+    if (typeof initCheckoutReminder === 'function') {
+        initCheckoutReminder();
+    }
+    
     // Vérifier si le menu est disponible
     if (typeof isMenuAvailable === 'function' && isMenuAvailable()) {
         renderMenuItems();
@@ -153,3 +158,12 @@ window.sendQuickReply = sendQuickReply;
 window.renderQuickReplies = renderQuickReplies;
 window.hideQuickReplies = hideQuickReplies;
 window.showQuickReplies = showQuickReplies;
+
+// Fonctions pour le check-out
+window.initCheckoutReminder = initCheckoutReminder;
+window.updateCheckoutCountdown = updateCheckoutCountdown;
+window.showCheckoutOptions = showCheckoutOptions;
+window.closeCheckoutOptions = closeCheckoutOptions;
+window.requestLateCheckout = requestLateCheckout;
+window.requestExpressCheckout = requestExpressCheckout;
+window.requestBillReview = requestBillReview;
