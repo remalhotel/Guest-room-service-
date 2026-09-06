@@ -38,7 +38,6 @@ function renderAnalytics() {
     const completedRequests = filteredRequests.filter(r => r.status === 'Completed' || r.status === 'Delivered');
     const resolutionRate = filteredRequests.length > 0 ? Math.round((completedRequests.length / filteredRequests.length) * 100) : 0;
     
-    // Mettre à jour les statistiques
     const elTotal = document.getElementById('analyticsTotalOrders');
     const elRev = document.getElementById('analyticsTotalRevenue');
     const elRate = document.getElementById('analyticsResolutionRate');
@@ -48,7 +47,6 @@ function renderAnalytics() {
     if (elRev) elRev.innerText = 'AED ' + totalRevenue.toFixed(2);
     if (elRate) elRate.innerText = resolutionRate + '%';
     
-    // Calculer le temps moyen
     let totalTime = 0;
     let timeCount = 0;
     completedRequests.forEach(r => {
@@ -63,13 +61,8 @@ function renderAnalytics() {
     const avgTime = timeCount > 0 ? Math.round(totalTime / timeCount) : 0;
     if (elAvg) elAvg.innerText = avgTime + ' min';
     
-    // Graphique : Commandes par heure
     renderHourlyChart(filteredRequests);
-    
-    // Graphique : Répartition par service
     renderServiceChart(filteredRequests);
-    
-    // Graphique : Performance par statut
     renderStatusChart(filteredRequests);
 }
 
