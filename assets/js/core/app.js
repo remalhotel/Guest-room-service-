@@ -205,6 +205,13 @@ window.stopMenuNotifications = stopMenuNotifications;
 window.filterMenuByCategory = filterMenuByCategory;
 window.sortMenuByPrice = sortMenuByPrice;
 
+// Fonctions pour les filtres du menu
+window.setMenuCategory = setMenuCategory;
+window.toggleMenuBadge = toggleMenuBadge;
+window.setMenuSort = setMenuSort;
+window.resetMenuFilters = resetMenuFilters;
+window.renderMenuFilters = renderMenuFilters;
+
 // Fonctions pour la notation du personnel
 window.showStaffRatingModal = showStaffRatingModal;
 window.selectStaffStar = selectStaffStar;
