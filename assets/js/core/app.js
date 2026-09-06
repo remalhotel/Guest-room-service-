@@ -20,6 +20,11 @@ function initializeApp() {
         initCheckoutReminder();
     }
     
+    // Initialiser les raccourcis et one-tap
+    if (typeof initQuickAccess === 'function') {
+        initQuickAccess();
+    }
+    
     // Vérifier si le menu est disponible
     if (typeof isMenuAvailable === 'function' && isMenuAvailable()) {
         renderMenuItems();
@@ -135,6 +140,10 @@ window.getFrequentServices = getFrequentServices;
 window.renderQuickAccess = renderQuickAccess;
 window.quickAccessService = quickAccessService;
 window.initQuickAccess = initQuickAccess;
+
+// Fonctions pour les one-tap services
+window.oneTapService = oneTapService;
+window.renderOneTapServices = renderOneTapServices;
 
 // Fonctions pour les rappels
 window.initReminders = initReminders;
