@@ -25,6 +25,11 @@ function initializeApp() {
         initWeather();
     }
     
+    // Initialiser le système d'avis
+    if (typeof initReviewSystem === 'function') {
+        initReviewSystem();
+    }
+    
     // Initialiser les raccourcis et one-tap
     if (typeof initQuickAccess === 'function') {
         initQuickAccess();
@@ -205,3 +210,12 @@ window.submitStaffRating = submitStaffRating;
 window.fetchWeather = fetchWeather;
 window.renderWeather = renderWeather;
 window.initWeather = initWeather;
+
+// Fonctions pour les avis de séjour
+window.showReviewModal = showReviewModal;
+window.closeReviewModal = closeReviewModal;
+window.selectReviewStar = selectReviewStar;
+window.selectCategoryStar = selectCategoryStar;
+window.setRecommendation = setRecommendation;
+window.submitReview = submitReview;
+window.initReviewSystem = initReviewSystem;
