@@ -3,7 +3,7 @@ function requestNotificationPermission() {
     if ('Notification' in window) {
         Notification.requestPermission().then(permission => {
             if (permission === 'granted') {
-                showToast('✅ Notifications activated!', 'success');
+                showToast('✅ Notifications activées !', 'success');
             }
         });
     }
@@ -45,15 +45,19 @@ function enableSoundAlerts() {
     }
 }
 
+function disableSoundAlerts() {
+    soundEnabled = false;
+    const btn = document.getElementById('btnSoundToggle');
+    if (btn) {
+        btn.className = 'sound-toggle-btn text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-3 py-2 rounded-xl font-bold hover:bg-amber-500/40 transition';
+        btn.innerText = '🔇 Sound OFF';
+    }
+    showToast('Sound disabled', 'info');
+}
+
 function toggleSoundAlerts() {
     if (soundEnabled) {
-        soundEnabled = false;
-        const btn = document.getElementById('btnSoundToggle');
-        if (btn) {
-            btn.className = 'sound-toggle-btn text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-3 py-2 rounded-xl font-bold hover:bg-amber-500/40 transition';
-            btn.innerText = '🔇 Sound OFF';
-        }
-        showToast('Sound disabled', 'info');
+        disableSoundAlerts();
     } else {
         enableSoundAlerts();
     }
@@ -86,7 +90,9 @@ function playNotificationSound() {
             osc2.start();
             osc2.stop(audioContext.currentTime + 0.4);
         }, 300);
-    } catch (e) {}
+    } catch (e) {
+        console.warn('Sound error:', e);
+    }
 }
 
 function showNotificationPopup(message) {
