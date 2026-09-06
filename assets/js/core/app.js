@@ -53,6 +53,11 @@ function initializeApp() {
         initQuickAccess();
     }
     
+    // Initialiser le message de bienvenue
+    if (typeof initWelcomeSystem === 'function') {
+        initWelcomeSystem();
+    }
+    
     // Afficher le bouton de partage
     if (typeof showShareButton === 'function') {
         showShareButton();
@@ -312,3 +317,7 @@ window.shareViaEmail = shareViaEmail;
 window.copyShareLink = copyShareLink;
 window.shareNative = shareNative;
 window.showShareButton = showShareButton;
+
+// Fonctions pour le message de bienvenue
+window.showWelcomeMessage = showWelcomeMessage;
+window.initWelcomeSystem = initWelcomeSystem;
