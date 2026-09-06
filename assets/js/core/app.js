@@ -185,6 +185,13 @@ window.renderSmartSuggestions = renderSmartSuggestions;
 window.handleSmartSuggestion = handleSmartSuggestion;
 window.stopSmartSuggestions = stopSmartSuggestions;
 
+// Fonctions pour la commande famille
+window.showFamilyOrderModal = showFamilyOrderModal;
+window.closeFamilyOrder = closeFamilyOrder;
+window.adjustFamilyCount = adjustFamilyCount;
+window.submitFamilyOrder = submitFamilyOrder;
+window.updateFamilySelectedItems = updateFamilySelectedItems;
+
 // Fonctions pour le mode hors-ligne
 window.initOfflineMode = initOfflineMode;
 window.updateOnlineStatus = updateOnlineStatus;
