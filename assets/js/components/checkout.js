@@ -1,5 +1,11 @@
 // ==================== SYSTÈME DE CHECK-OUT ====================
 let checkoutInterval = null;
+let checkoutNotificationsSent = {
+    day24: false,
+    day12: false,
+    day6: false,
+    day2: false
+};
 
 function initCheckoutReminder() {
     const departure = cachedGuestData?.departure || localStorage.getItem('remal_departure');
@@ -8,15 +14,118 @@ function initCheckoutReminder() {
     
     updateCheckoutCountdown();
     startCheckoutCountdown();
+    checkCheckoutNotifications();
 }
 
 function startCheckoutCountdown() {
     if (checkoutInterval) clearInterval(checkoutInterval);
     
-    // Mettre à jour toutes les heures
+    // Mettre à jour toutes les 5 minutes
     checkoutInterval = setInterval(() => {
         updateCheckoutCountdown();
-    }, 60 * 60 * 1000);
+        checkCheckoutNotifications();
+    }, 5 * 60 * 1000);
+}
+
+function checkCheckoutNotifications() {
+    const departure = cachedGuestData?.departure || localStorage.getItem('remal_departure');
+    if (!departure) return;
+    
+    const departureDate = new Date(departure);
+    const now = new Date();
+    const hoursDiff = (departureDate.getTime() - now.getTime()) / (1000 * 60 * 60);
+    
+    // Notifications selon le temps restant
+    if (hoursDiff <= 24 && hoursDiff > 12 && !checkoutNotificationsSent.day24) {
+        sendCheckoutNotification(24, hoursDiff);
+        checkoutNotificationsSent.day24 = true;
+    } else if (hoursDiff <= 12 && hoursDiff > 6 && !checkoutNotificationsSent.day12) {
+        sendCheckoutNotification(12, hoursDiff);
+        checkoutNotificationsSent.day12 = true;
+    } else if (hoursDiff <= 6 && hoursDiff > 2 && !checkoutNotificationsSent.day6) {
+        sendCheckoutNotification(6, hoursDiff);
+        checkoutNotificationsSent.day6 = true;
+    } else if (hoursDiff <= 2 && hoursDiff > 0 && !checkoutNotificationsSent.day2) {
+        sendCheckoutNotification(2, hoursDiff);
+        checkoutNotificationsSent.day2 = true;
+    }
+}
+
+function sendCheckoutNotification(hoursMark, actualHours) {
+    const messages = {
+        24: { icon: '📅', title: 'Check-out Reminder', message: `24 hours until check-out` },
+        12: { icon: '⏰', title: 'Check-out Reminder', message: `12 hours until check-out` },
+        6: { icon: '⚠️', title: 'Check-out Soon', message: `Only 6 hours left!` },
+        2: { icon: '🚨', title: 'Check-out Very Soon', message: `Less than 2 hours remaining!` }
+    };
+    
+    const config = messages[hoursMark];
+    
+    // Toast notification
+    showCheckoutToast(config.icon, config.title, config.message);
+    
+    // Notification système
+    if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification(`${config.icon} ${config.title}`, {
+            body: config.message,
+            icon: '/assets/images/logo.png'
+        });
+    }
+    
+    // Son de notification
+    playCheckoutSound();
+}
+
+function showCheckoutToast(icon, title, message) {
+    const toast = document.createElement('div');
+    toast.className = 'toast-notification toast-in';
+    toast.style.borderColor = '#DCA773';
+    
+    toast.innerHTML = `
+        <div class="flex items-center gap-3">
+            <span class="text-2xl">${icon}</span>
+            <div>
+                <p class="text-xs font-bold text-stone-100">${title}</p>
+                <p class="text-[10px] text-stone-300">${message}</p>
+            </div>
+            <button onclick="showCheckoutOptions()" class="text-[9px] text-amber-400 font-bold ml-2">
+                Options
+            </button>
+        </div>
+    `;
+    
+    document.body.appendChild(toast);
+    setTimeout(() => { 
+        toast.style.opacity = '0'; 
+        toast.style.transition = 'opacity 0.3s ease'; 
+        setTimeout(() => toast.remove(), 300); 
+    }, 8000);
+}
+
+function playCheckoutSound() {
+    try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const notes = [440, 554, 659];
+        
+        notes.forEach((frequency, index) => {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime + index * 0.15);
+            
+            gainNode.gain.setValueAtTime(0.25, audioContext.currentTime + index * 0.15);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + index * 0.15 + 0.35);
+            
+            oscillator.start(audioContext.currentTime + index * 0.15);
+            oscillator.stop(audioContext.currentTime + index * 0.15 + 0.35);
+        });
+    } catch (error) {
+        console.warn('Sound not available:', error);
+    }
 }
 
 function updateCheckoutCountdown() {
@@ -43,16 +152,15 @@ function updateCheckoutCountdown() {
     
     const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
     const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
     
     let message = '';
     let urgency = 'normal';
     
     if (days > 3) {
         message = `${days} days until check-out`;
-        urgency = 'normal';
     } else if (days > 1) {
         message = `${days} days and ${hours} hours until check-out`;
-        urgency = 'normal';
     } else if (days === 1) {
         message = `1 day and ${hours} hours until check-out`;
         urgency = 'soon';
@@ -63,14 +171,20 @@ function updateCheckoutCountdown() {
         message = `Only ${hours} hours until check-out`;
         urgency = 'urgent';
     } else {
-        message = `Check-out in less than ${hours} hours!`;
+        message = `Check-out in ${hours}h ${minutes}m!`;
         urgency = 'urgent';
     }
     
     const bgColors = {
-        'normal': 'bg-stone-950/60 border-amber-500/20',
-        'soon': 'bg-amber-500/10 border-amber-500/30',
-        'urgent': 'bg-red-500/10 border-red-500/30'
+        'normal': 'bg-stone-950/60',
+        'soon': 'bg-amber-500/10',
+        'urgent': 'bg-red-500/10'
+    };
+    
+    const borderColors = {
+        'normal': 'border-amber-500/20',
+        'soon': 'border-amber-500/30',
+        'urgent': 'border-red-500/30'
     };
     
     const textColors = {
@@ -80,7 +194,7 @@ function updateCheckoutCountdown() {
     };
     
     container.innerHTML = `
-        <div class="p-3 ${bgColors[urgency]} border ${urgency === 'normal' ? 'border-amber-500/20' : urgency === 'soon' ? 'border-amber-500/30' : 'border-red-500/30'} rounded-2xl">
+        <div class="p-3 ${bgColors[urgency]} border ${borderColors[urgency]} rounded-2xl">
             <div class="flex items-center justify-between">
                 <p class="text-[10px] font-bold ${textColors[urgency]}">
                     <i class="fas fa-clock mr-1"></i> ${message}
