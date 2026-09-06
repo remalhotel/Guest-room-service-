@@ -120,6 +120,11 @@ window.submitFeedback = submitFeedback;
 window.startOrderNotifications = startOrderNotifications;
 window.stopOrderNotifications = stopOrderNotifications;
 
+// Fonctions pour le récapitulatif de commande
+window.showOrderSummary = showOrderSummary;
+window.closeOrderSummary = closeOrderSummary;
+window.confirmOrder = confirmOrder;
+
 // Fonctions pour l'historique
 window.fetchOrderHistory = fetchOrderHistory;
 window.renderOrderHistory = renderOrderHistory;
