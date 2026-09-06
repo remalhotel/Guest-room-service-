@@ -28,6 +28,11 @@ function initializeApp() {
         initWeather();
     }
     
+    // Initialiser les suggestions intelligentes
+    if (typeof initSmartSuggestions === 'function') {
+        initSmartSuggestions();
+    }
+    
     // Initialiser le système d'avis
     if (typeof initReviewSystem === 'function') {
         initReviewSystem();
@@ -173,6 +178,12 @@ window.fetchPersonalizedSuggestions = fetchPersonalizedSuggestions;
 window.renderSuggestions = renderSuggestions;
 window.addSuggestionToCart = addSuggestionToCart;
 window.refreshSuggestions = refreshSuggestions;
+
+// Fonctions pour les suggestions intelligentes
+window.initSmartSuggestions = initSmartSuggestions;
+window.renderSmartSuggestions = renderSmartSuggestions;
+window.handleSmartSuggestion = handleSmartSuggestion;
+window.stopSmartSuggestions = stopSmartSuggestions;
 
 // Fonctions pour le mode hors-ligne
 window.initOfflineMode = initOfflineMode;
