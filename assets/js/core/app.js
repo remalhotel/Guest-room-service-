@@ -38,6 +38,11 @@ function initializeApp() {
         initProfile();
     }
     
+    // Initialiser les préférences de notification
+    if (typeof initNotificationSettings === 'function') {
+        initNotificationSettings();
+    }
+    
     // Initialiser les raccourcis clavier
     if (typeof initKeyboardShortcuts === 'function') {
         initKeyboardShortcuts();
@@ -274,6 +279,14 @@ window.toggleAllergy = toggleAllergy;
 window.toggleRoomPref = toggleRoomPref;
 window.toggleNotifications = toggleNotifications;
 window.saveProfile = saveProfile;
+
+// Fonctions pour les préférences de notification
+window.initNotificationSettings = initNotificationSettings;
+window.showNotificationSettingsModal = showNotificationSettingsModal;
+window.closeNotificationSettings = closeNotificationSettings;
+window.toggleNotificationPref = toggleNotificationPref;
+window.saveNotificationSettingsAndClose = saveNotificationSettingsAndClose;
+window.shouldNotify = shouldNotify;
 
 // Fonctions pour les raccourcis clavier
 window.initKeyboardShortcuts = initKeyboardShortcuts;
