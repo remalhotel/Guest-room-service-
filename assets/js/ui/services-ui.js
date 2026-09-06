@@ -1,7 +1,4 @@
 // ==================== SERVICES UI ====================
-// Utiliser le supabaseClient global
-const supabaseClient = window.supabaseClient || null;
-
 function renderServiceFields(fields) {
     const container = document.getElementById('otherServiceFields');
     if (!container) {
