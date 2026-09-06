@@ -1,9 +1,8 @@
 // ==================== SERVICE REQUESTS ====================
 let requestNotificationChannel = null;
+let pendingReminderInterval = null;
 
 async function submitOtherService() {
-    console.log('📤 submitOtherService called');
-    
     const room = cachedGuestData?.room || localStorage.getItem('remal_guest_room');
     const notes = document.getElementById('otherServiceNotes')?.value?.trim() || '';
     const serviceData = SERVICES_DATA[currentService];
@@ -59,6 +58,7 @@ async function submitOtherService() {
         document.getElementById('otherServiceNotes').value = '';
         backToServices();
         await fetchServiceRequestsTracking();
+        startPendingReminders();
         
     } catch (err) {
         console.error('❌ Exception:', err);
@@ -106,7 +106,7 @@ function renderServiceRequestsTracking() {
     container.innerHTML = `
         <div class="p-4 bg-stone-950/60 border border-amber-500/20 rounded-2xl space-y-3">
             <span class="text-[10px] font-bold text-[var(--text-gold,#DCA773)] uppercase tracking-wider">
-                <i class="fas fa-clipboard-list mr-1"></i> ${TRANSLATIONS[currentLanguage]?.serviceRequestsTracking || TRANSLATIONS.en.serviceRequestsTracking}
+                <i class="fas fa-clipboard-list mr-1"></i> Service Requests Tracking
             </span>
             ${requests.map(request => {
                 const statusColors = {
@@ -117,6 +117,7 @@ function renderServiceRequestsTracking() {
                 const sc = statusColors[request.status] || statusColors['Pending'];
                 const timeAgo = getTimeAgo(request.created_at);
                 const stepIndex = request.status === 'Pending' ? 0 : request.status === 'In Progress' ? 1 : 2;
+                const waitTime = getWaitTime(request.created_at);
                 
                 return `
                     <div class="service-tracking-card">
@@ -124,6 +125,15 @@ function renderServiceRequestsTracking() {
                             <p class="font-bold text-stone-100 text-xs">${request.service_type}</p>
                             <span class="text-[9px] font-bold px-2 py-0.5 rounded-full ${sc.bg} ${sc.text} border ${sc.border}">${sc.label}</span>
                         </div>
+                        
+                        ${request.status === 'Pending' && waitTime.minutes > 15 ? `
+                            <div class="bg-amber-500/10 border border-amber-500/20 rounded-lg p-2 mb-2">
+                                <p class="text-[8px] text-amber-400 font-bold">
+                                    <i class="fas fa-hourglass-half mr-1"></i> Waiting for ${waitTime.display}
+                                </p>
+                            </div>
+                        ` : ''}
+                        
                         <div class="order-progress">
                             <div class="order-progress-step">
                                 <div class="service-tracking-dot ${stepIndex >= 0 ? 'active completed' : ''}"><i class="fas fa-check"></i></div>
@@ -146,6 +156,101 @@ function renderServiceRequestsTracking() {
             }).join('')}
         </div>
     `;
+}
+
+function getWaitTime(createdAt) {
+    const now = new Date();
+    const then = new Date(createdAt);
+    const diffMinutes = Math.floor((now - then) / 60000);
+    
+    if (diffMinutes < 1) return { minutes: diffMinutes, display: 'just now' };
+    if (diffMinutes < 60) return { minutes: diffMinutes, display: `${diffMinutes} min` };
+    const hours = Math.floor(diffMinutes / 60);
+    const mins = diffMinutes % 60;
+    return { minutes: diffMinutes, display: `${hours}h ${mins}m` };
+}
+
+// ==================== RAPPELS POUR DEMANDES EN ATTENTE ====================
+function startPendingReminders() {
+    if (pendingReminderInterval) clearInterval(pendingReminderInterval);
+    
+    // Vérifier toutes les 5 minutes
+    pendingReminderInterval = setInterval(() => {
+        checkPendingRequests();
+    }, 5 * 60 * 1000);
+}
+
+function checkPendingRequests() {
+    const requests = window.activeServiceRequests || [];
+    const pendingRequests = requests.filter(r => r.status === 'Pending');
+    
+    pendingRequests.forEach(request => {
+        const waitTime = getWaitTime(request.created_at);
+        const reminderKey = `reminder_sent_${request.id}`;
+        
+        // Rappel après 15 minutes
+        if (waitTime.minutes >= 15 && waitTime.minutes < 20 && !localStorage.getItem(reminderKey)) {
+            localStorage.setItem(reminderKey, '15min');
+            showPendingReminder(request, '15 minutes');
+        }
+        // Rappel après 30 minutes
+        else if (waitTime.minutes >= 30 && waitTime.minutes < 35 && localStorage.getItem(reminderKey) !== '30min') {
+            localStorage.setItem(reminderKey, '30min');
+            showPendingReminder(request, '30 minutes');
+        }
+        // Rappel après 60 minutes
+        else if (waitTime.minutes >= 60 && waitTime.minutes < 65 && localStorage.getItem(reminderKey) !== '60min') {
+            localStorage.setItem(reminderKey, '60min');
+            showPendingReminder(request, '1 hour');
+        }
+    });
+}
+
+function showPendingReminder(request, timeText) {
+    const toast = document.createElement('div');
+    toast.className = 'toast-notification toast-in';
+    toast.style.borderColor = '#f59e0b';
+    
+    toast.innerHTML = `
+        <div class="flex items-center gap-3">
+            <span class="text-2xl">⏳</span>
+            <div>
+                <p class="text-xs font-bold text-stone-100">Request Still Pending</p>
+                <p class="text-[10px] text-stone-300">${request.service_type} - Waiting for ${timeText}</p>
+                <button onclick="contactStaffAboutRequest('${request.id}')" class="text-[9px] text-amber-400 font-bold mt-1">
+                    Contact Staff
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => { 
+        toast.style.opacity = '0'; 
+        toast.style.transition = 'opacity 0.3s ease'; 
+        setTimeout(() => toast.remove(), 300); 
+    }, 8000);
+}
+
+function contactStaffAboutRequest(requestId) {
+    document.querySelectorAll('.toast-notification').forEach(t => t.remove());
+    
+    // Ouvrir le chat avec un message pré-rempli
+    openGuestChatModal();
+    
+    const input = document.getElementById('guestChatInput');
+    if (input) {
+        input.value = `I'm following up on my request #${String(requestId).slice(-6)}. Can you check the status?`;
+        input.focus();
+    }
+}
+
+function stopPendingReminders() {
+    if (pendingReminderInterval) {
+        clearInterval(pendingReminderInterval);
+        pendingReminderInterval = null;
+    }
 }
 
 // ==================== NOTIFICATIONS TEMPS RÉEL POUR DEMANDES ====================
@@ -193,8 +298,13 @@ function handleRequestStatusChange(newStatus, oldStatus, requestData) {
             requestNotificationChannel = null;
         }
         
+        // Supprimer le rappel local
+        localStorage.removeItem(`reminder_sent_${requestData.id}`);
+        
         setTimeout(() => {
-            showStaffRatingModal(requestData.id, requestData.service_type);
+            if (typeof showStaffRatingModal === 'function') {
+                showStaffRatingModal(requestData.id, requestData.service_type);
+            }
         }, 3000);
     }
 }
@@ -315,7 +425,6 @@ async function submitStaffRating(requestId) {
                 .insert([ratingData]);
                 
             if (error) {
-                console.warn('Error saving rating:', error);
                 showToast('Error saving rating', 'error');
                 return;
             }
@@ -326,7 +435,6 @@ async function submitStaffRating(requestId) {
         staffRatingValue = 0;
         
     } catch (err) {
-        console.warn('Error saving rating:', err);
         showToast('Error saving rating', 'error');
     }
 }
