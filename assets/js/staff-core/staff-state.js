@@ -18,9 +18,20 @@ let guestChatManager = null;
 // Initialize window.activeServiceRequests
 window.activeServiceRequests = window.activeServiceRequests || [];
 
-// Exposer globalement
+// Exposer globalement pour tous les fichiers
 window.supabaseClient = supabaseClient;
 window.pmsSupabaseClient = pmsSupabaseClient;
+window.menuCart = menuCart;
+window.cachedGuestData = cachedGuestData;
+window.isGuestVerified = isGuestVerified;
+window.currentOrderId = currentOrderId;
+window.favoritesList = favoritesList;
+window.currentService = currentService;
+window.currentTab = currentTab;
+window.currentOffers = currentOffers;
+window.currentLanguage = currentLanguage;
+window.trackingTimeout = trackingTimeout;
+window.guestChatManager = guestChatManager;
 
 console.log('✅ Guest Hub state initialized');
 console.log('🔌 supabaseClient:', supabaseClient ? 'OK - CONNECTED' : 'MISSING');
