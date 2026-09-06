@@ -3,18 +3,14 @@ function renderStaffOrders() {
     const container = document.getElementById('staffOrdersContainer');
     if (!container) return;
     
-    // Filtrer par onglet actif
     let filteredRequests = allRequests.filter(r => r.tabCategory === currentStaffTab);
     
-    // Filtrer par statut
     if (currentFilter !== 'all') {
         filteredRequests = filteredRequests.filter(r => r.status === currentFilter);
     }
     
-    // Filtrer par recherche
     filteredRequests = filterBySearch(filteredRequests);
     
-    // Mettre à jour les statistiques
     const tabRequests = allRequests.filter(r => r.tabCategory === currentStaffTab);
     updateStatsDisplay(tabRequests);
     
