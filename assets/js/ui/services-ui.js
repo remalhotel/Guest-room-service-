@@ -43,14 +43,16 @@ function renderServiceFields(fields) {
     }).join('');
 }
 
-// ==================== ONE-TAP SERVICES ====================
+// ==================== ONE-TAP SERVICES (CONNECTÉS AU STAFF) ====================
 const ONE_TAP_SERVICES = [
-    { id: 'one_tap_cleaning', icon: '🧹', label: 'Clean Room Now', serviceType: 'Housekeeping / Room Cleaning', details: 'Immediate room cleaning requested' },
-    { id: 'one_tap_towels', icon: '🧴', label: 'Fresh Towels', serviceType: 'Housekeeping / Room Cleaning', details: 'Fresh towels requested' },
-    { id: 'one_tap_water', icon: '💧', label: 'Water Bottles', serviceType: 'Front Desk Inquiry', details: 'Extra water bottles requested' },
-    { id: 'one_tap_ice', icon: '🧊', label: 'Ice Bucket', serviceType: 'Front Desk Inquiry', details: 'Ice bucket requested' },
-    { id: 'one_tap_wakeup', icon: '⏰', label: 'Wake-up 7AM', serviceType: 'Wake-up Call / Alarm Service', details: 'Wake-up call at 7:00 AM' },
-    { id: 'one_tap_taxi', icon: '🚕', label: 'Book Taxi', serviceType: 'Front Desk Inquiry', details: 'Taxi booking requested' }
+    { id: 'one_tap_cleaning', icon: '🧹', label: 'Clean Room Now', serviceType: 'Housekeeping / Room Cleaning', details: 'Immediate room cleaning requested', staffTab: 'housekeeping' },
+    { id: 'one_tap_towels', icon: '🧴', label: 'Fresh Towels', serviceType: 'Housekeeping / Room Cleaning', details: 'Fresh towels requested', staffTab: 'housekeeping' },
+    { id: 'one_tap_water', icon: '💧', label: 'Water Bottles', serviceType: 'Front Desk Inquiry', details: 'Extra water bottles requested', staffTab: 'front_desk' },
+    { id: 'one_tap_ice', icon: '🧊', label: 'Ice Bucket', serviceType: 'Front Desk Inquiry', details: 'Ice bucket requested', staffTab: 'front_desk' },
+    { id: 'one_tap_wakeup', icon: '⏰', label: 'Wake-up 7AM', serviceType: 'Wake-up Call / Alarm Service', details: 'Wake-up call at 7:00 AM', staffTab: 'front_desk' },
+    { id: 'one_tap_taxi', icon: '🚕', label: 'Book Taxi', serviceType: 'Front Desk Inquiry', details: 'Taxi booking requested', staffTab: 'front_desk' },
+    { id: 'one_tap_maintenance', icon: '🔧', label: 'Report Issue', serviceType: 'Maintenance / Technical Support', details: 'Technical issue reported', staffTab: 'maintenance' },
+    { id: 'one_tap_luggage', icon: '🧳', label: 'Luggage Help', serviceType: 'Luggage Assistance', details: 'Luggage assistance requested', staffTab: 'front_desk' }
 ];
 
 async function oneTapService(serviceId) {
@@ -79,6 +81,7 @@ async function oneTapService(serviceId) {
                 .insert([requestData]);
                 
             if (error) {
+                console.error('Error submitting one-tap:', error);
                 showToast('Error: ' + error.message, 'error');
                 return;
             }
@@ -90,9 +93,12 @@ async function oneTapService(serviceId) {
         trackServiceUsage(service.serviceType);
         
         // Rafraîchir les demandes
-        fetchServiceRequestsTracking();
+        if (typeof fetchServiceRequestsTracking === 'function') {
+            fetchServiceRequestsTracking();
+        }
         
     } catch (err) {
+        console.error('Error submitting one-tap:', err);
         showToast('Error: ' + err.message, 'error');
     }
 }
@@ -106,11 +112,11 @@ function renderOneTapServices() {
             <p class="text-[9px] font-bold text-[var(--text-gold,#DCA773)] uppercase tracking-wider mb-2">
                 <i class="fas fa-hand-pointer mr-1"></i> One-Tap Services
             </p>
-            <div class="grid grid-cols-3 gap-2">
+            <div class="grid grid-cols-4 gap-2">
                 ${ONE_TAP_SERVICES.map(service => `
                     <button onclick="oneTapService('${service.id}')" class="bg-stone-800 hover:bg-stone-700 text-stone-200 p-3 rounded-xl text-center transition hover:border-amber-500/50 border border-transparent">
                         <span class="text-2xl block mb-1">${service.icon}</span>
-                        <span class="text-[8px] font-bold">${service.label}</span>
+                        <span class="text-[7px] font-bold">${service.label}</span>
                     </button>
                 `).join('')}
             </div>
