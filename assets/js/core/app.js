@@ -40,6 +40,11 @@ function initializeApp() {
         initKeyboardShortcuts();
     }
     
+    // Initialiser le centre de notifications
+    if (typeof initNotificationCenter === 'function') {
+        initNotificationCenter();
+    }
+    
     // Initialiser les raccourcis et one-tap
     if (typeof initQuickAccess === 'function') {
         initQuickAccess();
@@ -258,3 +263,24 @@ window.showShortcutsModal = showShortcutsModal;
 window.closeShortcutsModal = closeShortcutsModal;
 window.toggleKeyboardShortcuts = toggleKeyboardShortcuts;
 window.cycleLanguage = cycleLanguage;
+
+// Fonctions pour le centre de notifications
+window.initNotificationCenter = initNotificationCenter;
+window.addNotification = addNotification;
+window.markNotificationAsRead = markNotificationAsRead;
+window.markAllNotificationsAsRead = markAllNotificationsAsRead;
+window.clearAllNotifications = clearAllNotifications;
+window.toggleNotificationPanel = toggleNotificationPanel;
+window.openNotificationPanel = openNotificationPanel;
+window.closeNotificationPanel = closeNotificationPanel;
+
+// Fonctions pour le suivi en temps réel
+window.startLiveTracking = startLiveTracking;
+window.showLiveTrackingModal = showLiveTrackingModal;
+window.updateLiveTracking = updateLiveTracking;
+window.closeLiveTracking = closeLiveTracking;
+
+// Fonctions pour le badge de messages non lus
+window.startUnreadBadgeCheck = startUnreadBadgeCheck;
+window.checkUnreadMessages = checkUnreadMessages;
+window.clearUnreadBadge = clearUnreadBadge;
