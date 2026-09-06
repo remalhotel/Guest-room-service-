@@ -78,6 +78,11 @@ function initializeApp() {
         showShareButton();
     }
     
+    // Afficher le bouton des sons d'ambiance
+    if (typeof showAmbientSoundsButton === 'function') {
+        showAmbientSoundsButton();
+    }
+    
     // Vérifier si le menu est disponible
     if (typeof isMenuAvailable === 'function' && isMenuAvailable()) {
         renderMenuItems();
@@ -191,6 +196,14 @@ window.closeFamilyOrder = closeFamilyOrder;
 window.adjustFamilyCount = adjustFamilyCount;
 window.submitFamilyOrder = submitFamilyOrder;
 window.updateFamilySelectedItems = updateFamilySelectedItems;
+
+// Fonctions pour les sons d'ambiance
+window.showAmbientSoundsModal = showAmbientSoundsModal;
+window.closeAmbientSounds = closeAmbientSounds;
+window.toggleAmbientSound = toggleAmbientSound;
+window.stopAmbientSound = stopAmbientSound;
+window.adjustAmbientVolume = adjustAmbientVolume;
+window.showAmbientSoundsButton = showAmbientSoundsButton;
 
 // Fonctions pour le mode hors-ligne
 window.initOfflineMode = initOfflineMode;
