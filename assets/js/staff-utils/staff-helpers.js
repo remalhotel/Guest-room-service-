@@ -1,12 +1,21 @@
 // ==================== STAFF UTILITY FUNCTIONS ====================
 function getTimeAgo(timestamp) {
+    if (!timestamp) return 'Just now';
+    
     const now = new Date();
     const then = new Date(timestamp);
-    const diffMins = Math.floor((now - then) / 60000);
+    
+    if (isNaN(then.getTime())) return 'Just now';
+    
+    const diffMs = now.getTime() - then.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    
     if (diffMins < 1) return 'Just now';
     if (diffMins < 60) return `${diffMins} min ago`;
+    
     const diffHours = Math.floor(diffMins / 60);
     if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+    
     const diffDays = Math.floor(diffHours / 24);
     return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
 }
@@ -60,27 +69,4 @@ function formatCurrency(amount) {
 function truncateString(str, maxLength = 20) {
     if (!str) return '';
     return str.length > maxLength ? str.substring(0, maxLength) + '...' : str;
-}
-
-function escapeHTML(str) {
-    if (!str) return '';
-    const div = document.createElement('div');
-    div.textContent = str;
-    return div.innerHTML;
-}
-
-function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
-}
-
-function generateUniqueId() {
-    return 'staff_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
 }
