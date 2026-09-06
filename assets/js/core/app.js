@@ -3,7 +3,10 @@ function initializeApp() {
     console.log('🚀 Initialisation de Guest Hub...');
     
     initTheme();
-    setLanguage(currentLanguage);
+    
+    // Détecter et appliquer la langue préférée
+    const detectedLang = typeof detectPreferredLanguage === 'function' ? detectPreferredLanguage() : currentLanguage;
+    setLanguage(detectedLang);
     
     // Initialiser le mode hors-ligne
     if (typeof initOfflineMode === 'function') {
@@ -284,3 +287,13 @@ window.closeLiveTracking = closeLiveTracking;
 window.startUnreadBadgeCheck = startUnreadBadgeCheck;
 window.checkUnreadMessages = checkUnreadMessages;
 window.clearUnreadBadge = clearUnreadBadge;
+
+// Fonctions pour le sélecteur de langue
+window.applyPreferredLanguage = applyPreferredLanguage;
+window.detectPreferredLanguage = detectPreferredLanguage;
+window.renderLanguageSelector = renderLanguageSelector;
+window.toggleLanguageDropdown = toggleLanguageDropdown;
+window.selectLanguage = selectLanguage;
+window.closeLanguageDropdown = closeLanguageDropdown;
+window.showLanguageSettings = showLanguageSettings;
+window.closeLanguageSettings = closeLanguageSettings;
