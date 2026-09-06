@@ -217,6 +217,14 @@ window.showDailySummaryModal = showDailySummaryModal;
 window.closeDailySummary = closeDailySummary;
 window.stopDailySummary = stopDailySummary;
 
+// Fonctions pour l'assistant de check-out
+window.showCheckoutWizard = showCheckoutWizard;
+window.closeCheckoutWizard = closeCheckoutWizard;
+window.nextCheckoutStep = nextCheckoutStep;
+window.prevCheckoutStep = prevCheckoutStep;
+window.completeCheckout = completeCheckout;
+window.quickRateStay = quickRateStay;
+
 // Fonctions pour le mode hors-ligne
 window.initOfflineMode = initOfflineMode;
 window.updateOnlineStatus = updateOnlineStatus;
