@@ -167,3 +167,10 @@ window.closeCheckoutOptions = closeCheckoutOptions;
 window.requestLateCheckout = requestLateCheckout;
 window.requestExpressCheckout = requestExpressCheckout;
 window.requestBillReview = requestBillReview;
+
+// Fonctions pour les pièces jointes
+window.triggerImageUpload = triggerImageUpload;
+window.showImagePreview = showImagePreview;
+window.clearImagePreview = clearImagePreview;
+window.sendImageMessage = sendImageMessage;
+window.compressImage = compressImage;
