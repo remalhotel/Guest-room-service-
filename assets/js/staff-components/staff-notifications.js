@@ -132,3 +132,15 @@ function updateTabBadges() {
     
     updateTabTitle(totalPending);
 }
+
+// ==================== EXPOSER GLOBALEMENT ====================
+window.requestNotificationPermission = requestNotificationPermission;
+window.sendBrowserNotification = sendBrowserNotification;
+window.updateTabTitle = updateTabTitle;
+window.enableSoundAlerts = enableSoundAlerts;
+window.toggleSoundAlerts = toggleSoundAlerts;
+window.playNotificationSound = playNotificationSound;
+window.showNotificationPopup = showNotificationPopup;
+window.updateTabBadges = updateTabBadges;
+
+console.log('✅ Staff notifications loaded');
