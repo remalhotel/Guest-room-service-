@@ -177,6 +177,11 @@ window.checkForCompletedRequests = checkForCompletedRequests;
 window.startRequestNotifications = startRequestNotifications;
 window.stopRequestNotifications = stopRequestNotifications;
 
+// Fonctions pour les rappels de demandes
+window.startPendingReminders = startPendingReminders;
+window.stopPendingReminders = stopPendingReminders;
+window.contactStaffAboutRequest = contactStaffAboutRequest;
+
 // Fonctions pour les raccourcis rapides
 window.trackServiceUsage = trackServiceUsage;
 window.getFrequentServices = getFrequentServices;
