@@ -194,6 +194,7 @@ window.initSmartSuggestions = initSmartSuggestions;
 window.renderSmartSuggestions = renderSmartSuggestions;
 window.handleSmartSuggestion = handleSmartSuggestion;
 window.stopSmartSuggestions = stopSmartSuggestions;
+window.submitSmartRequest = submitSmartRequest;
 
 // Fonctions pour la commande famille
 window.showFamilyOrderModal = showFamilyOrderModal;
