@@ -1,5 +1,4 @@
 // ==================== SERVICES UI ====================
-
 // Utiliser le supabaseClient global
 const supabaseClient = window.supabaseClient || null;
 
