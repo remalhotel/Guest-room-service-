@@ -20,6 +20,11 @@ function initializeApp() {
         initCheckoutReminder();
     }
     
+    // Initialiser la météo
+    if (typeof initWeather === 'function') {
+        initWeather();
+    }
+    
     // Initialiser les raccourcis et one-tap
     if (typeof initQuickAccess === 'function') {
         initQuickAccess();
@@ -195,3 +200,8 @@ window.showStaffRatingModal = showStaffRatingModal;
 window.selectStaffStar = selectStaffStar;
 window.closeStaffRating = closeStaffRating;
 window.submitStaffRating = submitStaffRating;
+
+// Fonctions pour la météo
+window.fetchWeather = fetchWeather;
+window.renderWeather = renderWeather;
+window.initWeather = initWeather;
