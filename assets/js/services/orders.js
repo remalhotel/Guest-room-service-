@@ -437,3 +437,192 @@ function showOrderHistory() {
     
     fetchOrderHistory();
 }
+// ==================== COMMANDE GROUPÉE FAMILLE ====================
+let familyGroupOrder = {
+    adults: 1,
+    children: 0,
+    infants: 0,
+    items: {},
+    notes: ''
+};
+
+function showFamilyOrderModal() {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black/90 z-[700] flex items-center justify-center p-4 backdrop-blur-sm';
+    modal.id = 'familyOrderModal';
+    
+    modal.innerHTML = `
+        <div class="bg-stone-900 border border-amber-500/30 w-full max-w-md rounded-3xl p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-stone-800 pb-3">
+                <h3 class="text-xs font-serif-luxury font-bold text-[var(--text-gold,#DCA773)] uppercase tracking-widest">
+                    👨‍👩‍👧‍👦 Family Order
+                </h3>
+                <button onclick="closeFamilyOrder()" class="text-stone-400 hover:text-stone-100 text-xl font-bold">✕</button>
+            </div>
+            
+            <!-- Composition de la famille -->
+            <div class="p-3 bg-stone-950/60 border border-stone-800 rounded-2xl space-y-3">
+                <p class="text-[10px] font-bold text-[var(--text-gold,#DCA773)] uppercase">Family Composition</p>
+                
+                <div class="flex justify-between items-center">
+                    <span class="text-[10px] text-stone-400">👨 Adults</span>
+                    <div class="flex items-center gap-2">
+                        <button onclick="adjustFamilyCount('adults', -1)" class="w-7 h-7 bg-stone-800 text-stone-200 rounded-lg font-bold hover:bg-stone-700">-</button>
+                        <span id="familyAdultsCount" class="font-bold text-stone-100 text-sm w-6 text-center">${familyGroupOrder.adults}</span>
+                        <button onclick="adjustFamilyCount('adults', 1)" class="w-7 h-7 bg-[var(--text-gold,#DCA773)] text-stone-950 rounded-lg font-bold hover:bg-[#ebd0b3]">+</button>
+                    </div>
+                </div>
+                
+                <div class="flex justify-between items-center">
+                    <span class="text-[10px] text-stone-400">🧒 Children (4-12)</span>
+                    <div class="flex items-center gap-2">
+                        <button onclick="adjustFamilyCount('children', -1)" class="w-7 h-7 bg-stone-800 text-stone-200 rounded-lg font-bold hover:bg-stone-700">-</button>
+                        <span id="familyChildrenCount" class="font-bold text-stone-100 text-sm w-6 text-center">${familyGroupOrder.children}</span>
+                        <button onclick="adjustFamilyCount('children', 1)" class="w-7 h-7 bg-[var(--text-gold,#DCA773)] text-stone-950 rounded-lg font-bold hover:bg-[#ebd0b3]">+</button>
+                    </div>
+                </div>
+                
+                <div class="flex justify-between items-center">
+                    <span class="text-[10px] text-stone-400">👶 Infants (0-3)</span>
+                    <div class="flex items-center gap-2">
+                        <button onclick="adjustFamilyCount('infants', -1)" class="w-7 h-7 bg-stone-800 text-stone-200 rounded-lg font-bold hover:bg-stone-700">-</button>
+                        <span id="familyInfantsCount" class="font-bold text-stone-100 text-sm w-6 text-center">${familyGroupOrder.infants}</span>
+                        <button onclick="adjustFamilyCount('infants', 1)" class="w-7 h-7 bg-[var(--text-gold,#DCA773)] text-stone-950 rounded-lg font-bold hover:bg-[#ebd0b3]">+</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sélection des repas -->
+            <div>
+                <p class="text-[10px] font-bold text-[var(--text-gold,#DCA773)] uppercase mb-2">Select Meals for the Family</p>
+                <button onclick="openMenuModal()" class="w-full bg-stone-950/60 border border-amber-500/30 text-[var(--text-gold,#DCA773)] font-bold py-3 px-4 rounded-2xl transition">
+                    <i class="fas fa-utensils mr-1"></i> Browse Menu
+                </button>
+                <div id="familySelectedItems" class="mt-2 space-y-2"></div>
+            </div>
+            
+            <!-- Notes -->
+            <div>
+                <label class="block font-bold text-[var(--text-gold,#DCA773)] mb-1.5 uppercase tracking-wider text-[10px]">Special Notes</label>
+                <textarea id="familyOrderNotes" placeholder="e.g., One child is allergic to nuts..." class="w-full h-16 bg-stone-950 border border-stone-800 rounded-2xl p-3 outline-none resize-none text-xs text-stone-200"></textarea>
+            </div>
+            
+            <button onclick="submitFamilyOrder()" class="w-full bg-[#DCA773] hover:bg-[#ebd0b3] text-stone-950 font-black py-4 rounded-2xl text-xs uppercase tracking-widest transition">
+                <i class="fas fa-users mr-1"></i> Submit Family Order
+            </button>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+}
+
+function closeFamilyOrder() {
+    const modal = document.getElementById('familyOrderModal');
+    if (modal) modal.remove();
+}
+
+function adjustFamilyCount(type, delta) {
+    familyGroupOrder[type] = Math.max(0, familyGroupOrder[type] + delta);
+    
+    const countMap = {
+        'adults': 'familyAdultsCount',
+        'children': 'familyChildrenCount',
+        'infants': 'familyInfantsCount'
+    };
+    
+    const countEl = document.getElementById(countMap[type]);
+    if (countEl) {
+        countEl.innerText = familyGroupOrder[type];
+    }
+}
+
+function updateFamilySelectedItems() {
+    const container = document.getElementById('familySelectedItems');
+    if (!container) return;
+    
+    const items = Object.entries(familyGroupOrder.items);
+    
+    if (items.length === 0) {
+        container.innerHTML = '<p class="text-[9px] text-stone-400 text-center py-2">No items selected yet</p>';
+        return;
+    }
+    
+    container.innerHTML = items.map(([itemId, qty]) => {
+        const item = typeof findMenuItem === 'function' ? findMenuItem(itemId) : null;
+        if (!item) return '';
+        return `
+            <div class="flex justify-between items-center p-2 bg-stone-950/60 border border-stone-800 rounded-xl">
+                <span class="text-[10px] font-bold text-stone-100">${item.name}</span>
+                <span class="text-[9px] text-[var(--text-gold,#DCA773)] font-bold">x${qty}</span>
+            </div>
+        `;
+    }).join('');
+}
+
+async function submitFamilyOrder() {
+    const room = cachedGuestData?.room || localStorage.getItem('remal_guest_room');
+    const totalGuests = familyGroupOrder.adults + familyGroupOrder.children;
+    
+    if (totalGuests === 0) {
+        showToast('Please add at least one adult', 'error');
+        return;
+    }
+    
+    if (Object.keys(familyGroupOrder.items).length === 0) {
+        showToast('Please select at least one meal', 'error');
+        return;
+    }
+    
+    const notes = document.getElementById('familyOrderNotes')?.value?.trim() || '';
+    
+    let itemsArray = [];
+    let totalAmount = 0;
+    
+    for (const [itemId, qty] of Object.entries(familyGroupOrder.items)) {
+        const item = typeof findMenuItem === 'function' ? findMenuItem(itemId) : null;
+        if (item) {
+            itemsArray.push({ name: item.name, quantity: qty, price: item.price, total: qty * item.price });
+            totalAmount += qty * item.price;
+        }
+    }
+    
+    const orderData = {
+        room_number: String(room),
+        guest_name: cachedGuestData?.guest_name || 'Guest',
+        items: itemsArray,
+        special_instructions: `👨‍👩‍👧‍👦 Family Order\nAdults: ${familyGroupOrder.adults}\nChildren: ${familyGroupOrder.children}\nInfants: ${familyGroupOrder.infants}\n${notes}`,
+        total_amount: totalAmount,
+        status: 'Pending',
+        created_at: new Date().toISOString()
+    };
+    
+    try {
+        if (supabaseClient) {
+            const { data, error } = await supabaseClient.from('food_orders').insert([orderData]).select();
+            if (error) {
+                showToast('Error: ' + error.message, 'error');
+                return;
+            }
+            
+            if (data && data.length > 0) {
+                currentOrderId = data[0].id;
+                localStorage.setItem('remal_current_order_id', currentOrderId);
+                updateOrderTracking('Pending');
+                
+                if (typeof startOrderNotifications === 'function') {
+                    startOrderNotifications(currentOrderId);
+                }
+            }
+        }
+        
+        closeFamilyOrder();
+        showToast(`✅ Family order for ${totalGuests} guests submitted!`, 'success');
+        
+        // Réinitialiser
+        familyGroupOrder = { adults: 1, children: 0, infants: 0, items: {}, notes: '' };
+        menuCart = {};
+        
+    } catch (err) {
+        showToast('Error: ' + err.message, 'error');
+    }
+}
