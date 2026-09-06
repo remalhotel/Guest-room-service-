@@ -189,3 +189,9 @@ window.startMenuNotifications = startMenuNotifications;
 window.stopMenuNotifications = stopMenuNotifications;
 window.filterMenuByCategory = filterMenuByCategory;
 window.sortMenuByPrice = sortMenuByPrice;
+
+// Fonctions pour la notation du personnel
+window.showStaffRatingModal = showStaffRatingModal;
+window.selectStaffStar = selectStaffStar;
+window.closeStaffRating = closeStaffRating;
+window.submitStaffRating = submitStaffRating;
