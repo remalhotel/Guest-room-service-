@@ -29,12 +29,13 @@ const FAQ_DATA = {
     ]
 };
 
-// ==================== SERVICES DATA ====================
+// ==================== SERVICES DATA (AVEC MAPPING STAFF) ====================
 const SERVICES_DATA = {
     table_reservation: {
         title: 'Table Reservation',
         subtitle: 'Book a table at our restaurants',
         icon: 'fa-calendar-check',
+        staffTab: 'food_beverage',
         fields: [
             { type: 'select', id: 'reservation_venue', label: 'Venue', options: ['Falaj Restaurant', 'Sarab Bar & Lounge', 'Al Waha Pool Cabana'] },
             { type: 'select', id: 'reservation_guests', label: 'Number of Guests', options: ['1 Person', '2 Persons', '3 Persons', '4 Persons', '5+ Persons'] },
@@ -46,18 +47,21 @@ const SERVICES_DATA = {
         title: 'Wake-up Call / Alarm Service',
         subtitle: 'Set your morning wake-up call',
         icon: 'fa-clock',
+        staffTab: 'front_desk',
         fields: [{ type: 'time', id: 'wakeup_time', label: 'Alarm Time' }]
     },
     late_checkout: {
         title: 'Late Check-out / Extension',
         subtitle: 'Request extended departure time',
         icon: 'fa-hourglass-half',
+        staffTab: 'front_desk',
         fields: [{ type: 'select', id: 'checkout_time', label: 'Requested Departure Time', options: ['13:00 PM', '14:00 PM', '15:00 PM', '16:00 PM (Max)'] }]
     },
     housekeeping: {
         title: 'Housekeeping / Room Cleaning',
         subtitle: 'Request room cleaning service',
         icon: 'fa-broom',
+        staffTab: 'housekeeping',
         fields: [
             { type: 'select', id: 'cleaning_type', label: 'Service Type', options: ['Full Cleaning', 'Towel Change Only', 'Bed Linen Change', 'Turndown Service'] },
             { type: 'select', id: 'cleaning_time', label: 'Preferred Time', options: ['Morning (8AM-12PM)', 'Afternoon (12PM-4PM)', 'Evening (4PM-8PM)'] }
@@ -67,12 +71,14 @@ const SERVICES_DATA = {
         title: 'Front Desk Inquiry',
         subtitle: 'General assistance & information',
         icon: 'fa-headset',
+        staffTab: 'front_desk',
         fields: [{ type: 'select', id: 'inquiry_type', label: 'Inquiry Type', options: ['General Information', 'Billing Question', 'Complaint', 'Suggestion', 'Other'] }]
     },
     luggage: {
         title: 'Luggage Assistance',
         subtitle: 'Baggage handling & storage',
         icon: 'fa-suitcase',
+        staffTab: 'front_desk',
         fields: [
             { type: 'select', id: 'luggage_type', label: 'Service Type', options: ['Collect from Room', 'Deliver to Room', 'Store Luggage', 'Transport to Lobby'] },
             { type: 'number', id: 'luggage_count', label: 'Number of Bags' }
@@ -82,9 +88,22 @@ const SERVICES_DATA = {
         title: 'Maintenance / Technical Support',
         subtitle: 'Repairs & technical assistance',
         icon: 'fa-tools',
+        staffTab: 'maintenance',
         fields: [
             { type: 'select', id: 'maintenance_type', label: 'Issue Type', options: ['Air Conditioning', 'Plumbing', 'Electrical', 'TV / Internet', 'Lighting', 'Other'] },
             { type: 'select', id: 'maintenance_urgency', label: 'Urgency', options: ['Low', 'Medium', 'High'] }
         ]
     }
+};
+
+// ==================== MAPPING SERVICE TYPE → STAFF TAB ====================
+const SERVICE_TYPE_TO_STAFF_TAB = {
+    'Table Reservation': 'food_beverage',
+    'Wake-up Call / Alarm Service': 'front_desk',
+    'Late Check-out / Extension': 'front_desk',
+    'Housekeeping / Room Cleaning': 'housekeeping',
+    'Front Desk Inquiry': 'front_desk',
+    'Luggage Assistance': 'front_desk',
+    'Maintenance / Technical Support': 'maintenance',
+    'Room Service / Order Food': 'food_beverage'
 };
