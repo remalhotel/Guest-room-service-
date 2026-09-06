@@ -48,7 +48,7 @@ class GuestChatManager {
         try {
             const { error } = await this.supabase
                 .from('chat_messages')
-                .update({ is_read: true })
+                .update({ is_read: true, read_at: new Date().toISOString() })
                 .eq('room_number', this.roomNumber)
                 .eq('sender', 'staff')
                 .eq('is_read', false);
@@ -87,6 +87,19 @@ class GuestChatManager {
                     if (newMessage.sender === 'staff') {
                         this.markMessagesAsRead();
                     }
+                }
+            })
+            .on('postgres_changes', {
+                event: 'UPDATE',
+                schema: 'public',
+                table: 'chat_messages',
+                filter: `room_number=eq.${this.roomNumber}`
+            }, (payload) => {
+                const updatedMessage = payload.new;
+                const index = this.messages.findIndex(m => m.id === updatedMessage.id);
+                if (index !== -1) {
+                    this.messages[index] = updatedMessage;
+                    this.render();
                 }
             })
             .on('broadcast', { event: 'typing' }, (payload) => {
@@ -171,11 +184,12 @@ class GuestChatManager {
             guest_name: this.guestName,
             message: messageText.trim(),
             is_read: false,
+            read_at: null,
             created_at: new Date().toISOString()
         };
         
         const tempId = `temp-${Date.now()}`;
-        const optimisticMessage = { ...message, id: tempId };
+        const optimisticMessage = { ...message, id: tempId, is_sent: true };
         this.messages.push(optimisticMessage);
         this.render();
         this.scrollToBottom();
@@ -191,7 +205,7 @@ class GuestChatManager {
             
             const index = this.messages.findIndex(m => m.id === tempId);
             if (index !== -1) {
-                this.messages[index] = data;
+                this.messages[index] = { ...data, is_sent: true };
                 this.render();
             }
             
@@ -296,14 +310,27 @@ class GuestChatManager {
             const lang = typeof currentLanguage !== 'undefined' ? currentLanguage : 'en';
             const readText = readTexts[lang] || readTexts.en;
             
+            // Statut du message
+            let statusHTML = '';
+            if (isGuest) {
+                if (msg.is_read) {
+                    statusHTML = `<span class="text-[8px] text-blue-400">✓✓ ${readText} ${msg.read_at ? new Date(msg.read_at).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'}) : ''}</span>`;
+                } else if (msg.is_sent) {
+                    statusHTML = `<span class="text-[8px] text-gray-400">✓ Sent</span>`;
+                } else {
+                    statusHTML = `<span class="text-[8px] text-gray-500">... Sending</span>`;
+                }
+            }
+            
             return `
                 <div class="chat-message ${isGuest ? 'guest' : 'staff'}">
                     <div class="flex items-start gap-2">
                         <div class="flex-1">
                             <p class="text-[10px]">${msg.message}</p>
+                            ${msg.image_url ? `<img src="${msg.image_url}" class="mt-2 rounded-xl max-w-full h-auto" />` : ''}
                             <div class="flex items-center gap-2 mt-1">
                                 <p class="text-[8px] opacity-60">${time}</p>
-                                ${isGuest && msg.is_read ? `<span class="text-[8px] text-blue-400">✓✓ ${readText}</span>` : ''}
+                                ${statusHTML}
                             </div>
                         </div>
                     </div>
