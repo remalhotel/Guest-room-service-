@@ -2,6 +2,7 @@
 function switchStaffTab(tab) {
     currentStaffTab = tab;
     
+    // Mettre à jour les boutons d'onglets
     const tabs = ['front_desk', 'food_beverage', 'housekeeping', 'maintenance', 'offers', 'analytics'];
     tabs.forEach(t => {
         const btn = document.getElementById(`staffTab${t.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('')}`);
@@ -14,6 +15,7 @@ function switchStaffTab(tab) {
         }
     });
     
+    // Masquer toutes les sections
     const offersSection = document.getElementById('offersManagementSection');
     const requestsSection = document.getElementById('requestsSection');
     const analyticsSection = document.getElementById('analyticsSection');
@@ -22,6 +24,7 @@ function switchStaffTab(tab) {
     if (requestsSection) requestsSection.classList.add('hidden');
     if (analyticsSection) analyticsSection.classList.add('hidden');
     
+    // Afficher la section appropriée
     if (tab === 'offers') {
         if (offersSection) offersSection.classList.remove('hidden');
         fetchOffers();
@@ -38,6 +41,7 @@ function switchStaffTab(tab) {
 function filterStaffOrders(filter) {
     currentFilter = filter;
     
+    // Mettre à jour les boutons de filtre
     const filterIds = ['all', 'Pending', 'Preparing', 'Ready', 'Delivered', 'Completed', 'In Progress'];
     filterIds.forEach(f => {
         const btn = document.getElementById(`filter${f.replace(' ', '')}`);
@@ -89,6 +93,7 @@ function updateFoodBeverageStats() {
     const totalRevenue = fbOrders.reduce((sum, o) => sum + (parseFloat(o.total_amount) || 0), 0);
     const avgOrder = totalOrders > 0 ? totalRevenue / totalOrders : 0;
     
+    // Trouver l'item le plus commandé
     const itemCounts = {};
     fbOrders.forEach(order => {
         const items = Array.isArray(order.items) ? order.items : [];
@@ -108,8 +113,9 @@ function updateFoodBeverageStats() {
         }
     }
     
+    // Mettre à jour l'interface
     document.getElementById('fbStatTotalOrders').innerText = totalOrders;
     document.getElementById('fbStatRevenue').innerText = 'AED ' + totalRevenue.toFixed(2);
     document.getElementById('fbStatAvgOrder').innerText = 'AED ' + avgOrder.toFixed(2);
     document.getElementById('fbStatTopItem').innerText = truncateString(topItem, 15);
-}
+}}
