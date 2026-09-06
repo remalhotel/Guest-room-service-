@@ -33,6 +33,8 @@ async function submitOtherService() {
         service_type: serviceData.title,
         details: fullDetails,
         status: 'Pending',
+        is_read: false,
+        read_at: null,
         created_at: new Date().toISOString()
     };
     
@@ -119,11 +121,20 @@ function renderServiceRequestsTracking() {
                 const stepIndex = request.status === 'Pending' ? 0 : request.status === 'In Progress' ? 1 : 2;
                 const waitTime = getWaitTime(request.created_at);
                 
+                // Indicateur de lecture par le staff
+                const readIndicator = request.is_read ? 
+                    `<span class="text-[8px] text-emerald-400"><i class="fas fa-check-double mr-1"></i>Seen by staff ${request.read_at ? new Date(request.read_at).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'}) : ''}</span>` :
+                    `<span class="text-[8px] text-gray-400"><i class="fas fa-check mr-1"></i>Not seen yet</span>`;
+                
                 return `
                     <div class="service-tracking-card">
                         <div class="flex justify-between items-center mb-2">
                             <p class="font-bold text-stone-100 text-xs">${request.service_type}</p>
                             <span class="text-[9px] font-bold px-2 py-0.5 rounded-full ${sc.bg} ${sc.text} border ${sc.border}">${sc.label}</span>
+                        </div>
+                        
+                        <div class="flex justify-between items-center mb-2">
+                            ${readIndicator}
                         </div>
                         
                         ${request.status === 'Pending' && waitTime.minutes > 15 ? `
@@ -174,7 +185,6 @@ function getWaitTime(createdAt) {
 function startPendingReminders() {
     if (pendingReminderInterval) clearInterval(pendingReminderInterval);
     
-    // Vérifier toutes les 5 minutes
     pendingReminderInterval = setInterval(() => {
         checkPendingRequests();
     }, 5 * 60 * 1000);
@@ -188,18 +198,13 @@ function checkPendingRequests() {
         const waitTime = getWaitTime(request.created_at);
         const reminderKey = `reminder_sent_${request.id}`;
         
-        // Rappel après 15 minutes
         if (waitTime.minutes >= 15 && waitTime.minutes < 20 && !localStorage.getItem(reminderKey)) {
             localStorage.setItem(reminderKey, '15min');
             showPendingReminder(request, '15 minutes');
-        }
-        // Rappel après 30 minutes
-        else if (waitTime.minutes >= 30 && waitTime.minutes < 35 && localStorage.getItem(reminderKey) !== '30min') {
+        } else if (waitTime.minutes >= 30 && waitTime.minutes < 35 && localStorage.getItem(reminderKey) !== '30min') {
             localStorage.setItem(reminderKey, '30min');
             showPendingReminder(request, '30 minutes');
-        }
-        // Rappel après 60 minutes
-        else if (waitTime.minutes >= 60 && waitTime.minutes < 65 && localStorage.getItem(reminderKey) !== '60min') {
+        } else if (waitTime.minutes >= 60 && waitTime.minutes < 65 && localStorage.getItem(reminderKey) !== '60min') {
             localStorage.setItem(reminderKey, '60min');
             showPendingReminder(request, '1 hour');
         }
@@ -235,8 +240,6 @@ function showPendingReminder(request, timeText) {
 
 function contactStaffAboutRequest(requestId) {
     document.querySelectorAll('.toast-notification').forEach(t => t.remove());
-    
-    // Ouvrir le chat avec un message pré-rempli
     openGuestChatModal();
     
     const input = document.getElementById('guestChatInput');
@@ -272,11 +275,21 @@ function startRequestNotifications(requestId) {
             const newStatus = payload.new.status;
             const oldStatus = payload.old.status;
             
+            // Vérifier si le staff a lu la demande
+            if (payload.new.is_read && !payload.old.is_read) {
+                showRequestReadConfirmation(payload.new);
+            }
+            
             if (newStatus !== oldStatus) {
                 handleRequestStatusChange(newStatus, oldStatus, payload.new);
             }
         })
         .subscribe();
+}
+
+function showRequestReadConfirmation(requestData) {
+    showRequestNotification('👀', 'Request Seen by Staff', `${requestData.service_type} has been seen`, 'info');
+    fetchServiceRequestsTracking();
 }
 
 function handleRequestStatusChange(newStatus, oldStatus, requestData) {
@@ -298,7 +311,6 @@ function handleRequestStatusChange(newStatus, oldStatus, requestData) {
             requestNotificationChannel = null;
         }
         
-        // Supprimer le rappel local
         localStorage.removeItem(`reminder_sent_${requestData.id}`);
         
         setTimeout(() => {
