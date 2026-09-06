@@ -288,6 +288,7 @@ window.toggleAllergy = toggleAllergy;
 window.toggleRoomPref = toggleRoomPref;
 window.toggleNotifications = toggleNotifications;
 window.saveProfile = saveProfile;
+window.renderPreferencesSummary = renderPreferencesSummary;
 
 // Fonctions pour les préférences de notification
 window.initNotificationSettings = initNotificationSettings;
