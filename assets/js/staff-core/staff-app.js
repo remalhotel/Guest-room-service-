@@ -19,50 +19,66 @@ function initStaffApp() {
 }
 
 function setupRealtime() {
-    if (realtimeChannel && supabaseClient) {
-        supabaseClient.removeChannel(realtimeChannel);
+    console.log('📡 Setting up realtime...');
+    
+    if (!supabaseClient) {
+        console.error('❌ No supabaseClient for realtime');
+        return;
     }
     
+    // Fermer l'ancien canal
+    if (realtimeChannel) {
+        supabaseClient.removeChannel(realtimeChannel);
+        realtimeChannel = null;
+    }
+    
+    // Créer le nouveau canal
     realtimeChannel = supabaseClient
         .channel('guest-hub-realtime-staff')
         .on('postgres_changes', { 
-            event: '*', 
+            event: 'INSERT', 
             schema: 'public', 
             table: 'food_orders' 
         }, (payload) => {
-            console.log('📩 Realtime food_orders:', payload.eventType);
-            if (payload.eventType === 'INSERT') {
-                playNotificationSound();
-                showNotificationPopup('🔔 New food order received!');
-                sendBrowserNotification('New Order!', 'A new food order has been placed');
-            }
+            console.log('🔔 NEW FOOD ORDER:', payload.new);
+            playNotificationSound();
+            showNotificationPopup('🔔 New food order received!');
+            sendBrowserNotification('New Order!', 'A new food order has been placed');
             fetchAllData();
         })
         .on('postgres_changes', { 
-            event: '*', 
+            event: 'INSERT', 
             schema: 'public', 
             table: 'guest_requests' 
         }, (payload) => {
-            console.log('📩 Realtime guest_requests:', payload.eventType);
-            if (payload.eventType === 'INSERT') {
-                playNotificationSound();
-                showNotificationPopup('🔔 New service request received!');
-                sendBrowserNotification('New Request!', 'A new service request has been placed');
-            }
+            console.log('🔔 NEW GUEST REQUEST:', payload.new);
+            playNotificationSound();
+            showNotificationPopup('🔔 New service request received!');
+            sendBrowserNotification('New Request!', 'A new service request has been placed');
             fetchAllData();
         })
         .on('postgres_changes', { 
-            event: '*', 
+            event: 'UPDATE', 
             schema: 'public', 
-            table: 'offers' 
-        }, () => {
-            fetchOffers();
+            table: 'food_orders' 
+        }, (payload) => {
+            console.log('📝 Food order updated:', payload.new.status);
+            fetchAllData();
+        })
+        .on('postgres_changes', { 
+            event: 'UPDATE', 
+            schema: 'public', 
+            table: 'guest_requests' 
+        }, (payload) => {
+            console.log('📝 Guest request updated:', payload.new.status);
+            fetchAllData();
         })
         .subscribe((status) => {
             console.log('📡 Realtime status:', status);
+            if (status === 'SUBSCRIBED') {
+                console.log('✅ Realtime subscribed successfully');
+            }
         });
-    
-    console.log('✅ Realtime configured');
 }
 
 // Vérification de session au chargement
@@ -77,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Aussi écouter load pour être sûr
+// Aussi écouter load
 window.addEventListener('load', () => {
     console.log('📄 Page fully loaded');
     const isAuthorized = sessionStorage.getItem('staff_authorized');
@@ -110,5 +126,6 @@ window.exportAnalyticsPDF = exportAnalyticsPDF;
 window.generateFoodOrderPDF = generateFoodOrderPDF;
 window.printFoodOrderPDF = printFoodOrderPDF;
 window.logoutStaff = logoutStaff;
+window.setupRealtime = setupRealtime;
 
-console.log('✅ All staff functions exposed globally');
+console.log('✅ All staff functions exposed');
