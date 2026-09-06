@@ -43,6 +43,11 @@ function initializeApp() {
         initNotificationSettings();
     }
     
+    // Initialiser le feedback avec émojis
+    if (typeof initEmojiFeedback === 'function') {
+        initEmojiFeedback();
+    }
+    
     // Initialiser les raccourcis clavier
     if (typeof initKeyboardShortcuts === 'function') {
         initKeyboardShortcuts();
@@ -291,6 +296,13 @@ window.closeNotificationSettings = closeNotificationSettings;
 window.toggleNotificationPref = toggleNotificationPref;
 window.saveNotificationSettingsAndClose = saveNotificationSettingsAndClose;
 window.shouldNotify = shouldNotify;
+
+// Fonctions pour le feedback avec émojis
+window.showEmojiFeedbackModal = showEmojiFeedbackModal;
+window.selectEmojiRating = selectEmojiRating;
+window.closeEmojiFeedback = closeEmojiFeedback;
+window.submitEmojiFeedback = submitEmojiFeedback;
+window.initEmojiFeedback = initEmojiFeedback;
 
 // Fonctions pour les raccourcis clavier
 window.initKeyboardShortcuts = initKeyboardShortcuts;
