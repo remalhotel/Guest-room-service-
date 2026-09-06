@@ -586,13 +586,16 @@ async function submitFamilyOrder() {
         }
     }
     
+    const familyDetails = `👨‍👩‍👧‍👦 FAMILY ORDER\nAdults: ${familyGroupOrder.adults}\nChildren: ${familyGroupOrder.children}\nInfants: ${familyGroupOrder.infants}${notes ? `\n📝 Notes: ${notes}` : ''}`;
+    
     const orderData = {
         room_number: String(room),
         guest_name: cachedGuestData?.guest_name || 'Guest',
         items: itemsArray,
-        special_instructions: `👨‍👩‍👧‍👦 Family Order\nAdults: ${familyGroupOrder.adults}\nChildren: ${familyGroupOrder.children}\nInfants: ${familyGroupOrder.infants}\n${notes}`,
+        special_instructions: familyDetails,
         total_amount: totalAmount,
         status: 'Pending',
+        service_type: 'Room Service / Order Food',
         created_at: new Date().toISOString()
     };
     
@@ -600,6 +603,7 @@ async function submitFamilyOrder() {
         if (supabaseClient) {
             const { data, error } = await supabaseClient.from('food_orders').insert([orderData]).select();
             if (error) {
+                console.error('Error submitting family order:', error);
                 showToast('Error: ' + error.message, 'error');
                 return;
             }
@@ -622,7 +626,13 @@ async function submitFamilyOrder() {
         familyGroupOrder = { adults: 1, children: 0, infants: 0, items: {}, notes: '' };
         menuCart = {};
         
+        // Rafraîchir l'historique
+        if (typeof fetchOrderHistory === 'function') {
+            fetchOrderHistory();
+        }
+        
     } catch (err) {
+        console.error('Error submitting family order:', err);
         showToast('Error: ' + err.message, 'error');
     }
 }
