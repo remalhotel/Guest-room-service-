@@ -16,17 +16,6 @@ let staffChatManager = null;
 let selectedOfferImage = null;
 let currentOffersList = [];
 
-// Statistiques
-let stats = {
-    totalOrders: 0,
-    pendingOrders: 0,
-    inProgressOrders: 0,
-    completedOrders: 0,
-    totalRevenue: 0,
-    avgOrderValue: 0,
-    topItem: '---'
-};
-
 // Mapping des services vers les onglets
 const SERVICE_TAB_MAPPING = {
     'Front Desk Inquiry': 'front_desk',
@@ -42,4 +31,5 @@ const SERVICE_TAB_MAPPING = {
 // Initialiser l'état
 function initStaffState() {
     console.log('📊 Staff state initialized');
+    console.log('🔌 Supabase client:', supabaseClient ? 'OK' : 'MISSING');
 }
