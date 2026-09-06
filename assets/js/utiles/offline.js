@@ -1,9 +1,14 @@
-// ==================== MODE HORS-LIGNE ====================
+// ==================== MODE HORS-LIGNE AVEC RECONNEXION AUTO ====================
 let offlineCache = {
     menu: null,
     offers: null,
     lastSync: null
 };
+
+let reconnectAttempts = 0;
+let maxReconnectAttempts = 5;
+let reconnectDelay = 3000; // 3 secondes
+let connectionMonitorInterval = null;
 
 // Initialiser le cache depuis localStorage
 function initOfflineCache() {
@@ -49,15 +54,14 @@ function isOnline() {
     return navigator.onLine;
 }
 
-// Vérifier si le menu est disponible (en ligne ou en cache)
+// Vérifier si le menu est disponible
 function isMenuAvailable() {
     return typeof MENU_DATA !== 'undefined' || (offlineCache.menu !== null);
 }
 
-// Récupérer le menu (en ligne ou depuis le cache)
+// Récupérer le menu
 function getMenuData() {
     if (typeof MENU_DATA !== 'undefined') {
-        // Mettre à jour le cache
         cacheMenuData();
         return MENU_DATA;
     } else if (offlineCache.menu) {
@@ -66,7 +70,7 @@ function getMenuData() {
     return null;
 }
 
-// Récupérer les offres (en ligne ou depuis le cache)
+// Récupérer les offres en cache
 function getOfflineOffers() {
     return offlineCache.offers || [];
 }
@@ -98,15 +102,23 @@ function showOfflineToast() {
     showToast('📴 Mode hors-ligne activé - Données en cache', 'info');
 }
 
+// Afficher un toast pour la reconnexion
+function showReconnectToast() {
+    showToast('🔄 Reconnexion...', 'info');
+}
+
+// Afficher un toast quand la connexion est rétablie
+function showReconnectedToast() {
+    showToast('✅ Connexion rétablie !', 'success');
+}
+
 // Écouter les changements de connexion
 function setupOfflineListeners() {
     window.addEventListener('online', () => {
+        reconnectAttempts = 0;
         updateOnlineStatus();
-        showToast('✅ Connexion rétablie', 'success');
-        // Rafraîchir les données
-        if (typeof fetchOffers === 'function') {
-            fetchOffers();
-        }
+        showReconnectedToast();
+        refreshDataAfterReconnect();
     });
     
     window.addEventListener('offline', () => {
@@ -115,11 +127,62 @@ function setupOfflineListeners() {
     });
 }
 
+// Rafraîchir les données après reconnexion
+function refreshDataAfterReconnect() {
+    // Rafraîchir les offres
+    if (typeof fetchOffers === 'function') {
+        fetchOffers();
+    }
+    
+    // Rafraîchir les demandes
+    if (typeof fetchServiceRequestsTracking === 'function') {
+        fetchServiceRequestsTracking();
+    }
+    
+    // Rafraîchir l'historique
+    if (typeof fetchOrderHistory === 'function') {
+        fetchOrderHistory();
+    }
+    
+    // Rafraîchir la facturation si disponible
+    if (typeof fetchBillingData === 'function') {
+        fetchBillingData();
+    }
+    
+    // Rafraîchir la météo
+    if (typeof fetchWeather === 'function') {
+        fetchWeather();
+    }
+}
+
+// Surveiller la connexion en continu
+function startConnectionMonitor() {
+    if (connectionMonitorInterval) clearInterval(connectionMonitorInterval);
+    
+    connectionMonitorInterval = setInterval(() => {
+        if (!isOnline() && reconnectAttempts < maxReconnectAttempts) {
+            reconnectAttempts++;
+            showReconnectToast();
+            
+            // Essayer de se reconnecter après un délai
+            setTimeout(() => {
+                if (isOnline()) {
+                    reconnectAttempts = 0;
+                    updateOnlineStatus();
+                    showReconnectedToast();
+                    refreshDataAfterReconnect();
+                }
+            }, reconnectDelay);
+        }
+    }, 10 * 1000); // Vérifier toutes les 10 secondes
+}
+
 // Initialiser le mode hors-ligne
 function initOfflineMode() {
     initOfflineCache();
     updateOnlineStatus();
     setupOfflineListeners();
+    startConnectionMonitor();
     
     // Mettre en cache le menu au chargement
     if (typeof MENU_DATA !== 'undefined') {
@@ -143,4 +206,24 @@ function clearOfflineCache() {
     };
     localStorage.removeItem('remal_offline_cache');
     showToast('Cache cleared', 'info');
+}
+
+// Vérifier la qualité de la connexion
+function checkConnectionQuality() {
+    if ('connection' in navigator) {
+        const connection = navigator.connection;
+        const types = ['slow-2g', '2g', '3g', '4g'];
+        const type = connection.effectiveType || 'unknown';
+        
+        if (type === 'slow-2g' || type === '2g') {
+            showToast('⚠️ Connexion lente détectée', 'info');
+        }
+        
+        return {
+            type: type,
+            downlink: connection.downlink || 0,
+            rtt: connection.rtt || 0
+        };
+    }
+    return null;
 }
