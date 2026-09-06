@@ -110,6 +110,9 @@ window.addEventListener('load', function() {
 window.setLanguage = setLanguage;
 window.toggleTheme = toggleTheme;
 window.toggleAutoTheme = toggleAutoTheme;
+window.toggleNightMode = toggleNightMode;
+window.renderThemeIndicator = renderThemeIndicator;
+window.getThemeStatus = getThemeStatus;
 window.verifierIdentiteClient = verifierIdentiteClient;
 window.changerDeChambre = changerDeChambre;
 window.switchTab = switchTab;
@@ -158,6 +161,7 @@ window.fetchOrderHistory = fetchOrderHistory;
 window.renderOrderHistory = renderOrderHistory;
 window.trackOrder = trackOrder;
 window.showOrderHistory = showOrderHistory;
+window.reorderFromHistory = reorderFromHistory;
 
 // Fonctions pour les suggestions
 window.fetchPersonalizedSuggestions = fetchPersonalizedSuggestions;
