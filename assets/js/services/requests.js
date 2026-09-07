@@ -1,13 +1,16 @@
 // ==================== SERVICE REQUESTS ====================
 const supabaseClient = window.supabaseClient || (typeof initSupabaseClient === 'function' ? initSupabaseClient() : null);
 
-let requestNotificationChannel = null;
-let pendingReminderInterval = null;
-
 async function submitOtherService() {
+    console.log('🔍 submitOtherService called');
+    
     const room = cachedGuestData?.room || localStorage.getItem('remal_guest_room');
     const notes = document.getElementById('otherServiceNotes')?.value?.trim() || '';
     const serviceData = SERVICES_DATA[currentService];
+    
+    console.log('📦 Room:', room);
+    console.log('📦 Service:', currentService);
+    console.log('📦 ServiceData:', serviceData);
     
     if (!serviceData) {
         showToast('Error: Service not found', 'error');
@@ -19,11 +22,18 @@ async function submitOtherService() {
         return;
     }
     
+    if (!supabaseClient) {
+        console.error('❌ supabaseClient is NULL');
+        showToast('Error: Supabase not initialized', 'error');
+        return;
+    }
+    
     let details = [];
     serviceData.fields.forEach(field => {
         const element = document.getElementById(field.id);
         if (element) {
             details.push(`${field.label}: ${element.value}`);
+            console.log(`📝 ${field.label}: ${element.value}`);
         }
     });
     
@@ -38,32 +48,29 @@ async function submitOtherService() {
         created_at: new Date().toISOString()
     };
     
+    console.log('📤 Sending to Supabase:', JSON.stringify(requestData));
+    
     try {
-        if (supabaseClient) {
-            const { data, error } = await supabaseClient
-                .from('guest_requests')
-                .insert([requestData])
-                .select();
-                
-            if (error) {
-                console.error('Supabase error:', error.message);
-                showToast('Error: ' + error.message, 'error');
-                return;
-            }
+        const { data, error } = await supabaseClient
+            .from('guest_requests')
+            .insert([requestData])
+            .select();
             
-            if (data && data.length > 0) {
-                startRequestNotifications(data[0].id);
-            }
+        if (error) {
+            console.error('❌ Supabase error:', error.message);
+            showToast('Error: ' + error.message, 'error');
+            return;
         }
+        
+        console.log('✅ Request inserted:', data);
         
         showToast('✅ Request submitted!', 'success');
         document.getElementById('otherServiceNotes').value = '';
         backToServices();
         await fetchServiceRequestsTracking();
-        startPendingReminders();
         
     } catch (err) {
-        console.error('Error:', err);
+        console.error('❌ Exception:', err);
         showToast('Error: ' + err.message, 'error');
     }
 }
@@ -119,11 +126,6 @@ function renderServiceRequestsTracking() {
                 const sc = statusColors[request.status] || statusColors['Pending'];
                 const timeAgo = getTimeAgo(request.created_at);
                 const stepIndex = request.status === 'Pending' ? 0 : request.status === 'In Progress' ? 1 : 2;
-                const waitTime = getWaitTime(request.created_at);
-                
-                const readIndicator = request.is_read ? 
-                    `<span class="text-[8px] text-emerald-400"><i class="fas fa-check-double mr-1"></i>Seen by staff</span>` :
-                    `<span class="text-[8px] text-gray-400"><i class="fas fa-check mr-1"></i>Not seen yet</span>`;
                 
                 return `
                     <div class="service-tracking-card">
@@ -131,19 +133,6 @@ function renderServiceRequestsTracking() {
                             <p class="font-bold text-stone-100 text-xs">${request.service_type}</p>
                             <span class="text-[9px] font-bold px-2 py-0.5 rounded-full ${sc.bg} ${sc.text} border ${sc.border}">${sc.label}</span>
                         </div>
-                        
-                        <div class="flex justify-between items-center mb-2">
-                            ${readIndicator}
-                        </div>
-                        
-                        ${request.status === 'Pending' && waitTime.minutes > 15 ? `
-                            <div class="bg-amber-500/10 border border-amber-500/20 rounded-lg p-2 mb-2">
-                                <p class="text-[8px] text-amber-400 font-bold">
-                                    <i class="fas fa-hourglass-half mr-1"></i> Waiting for ${waitTime.display}
-                                </p>
-                            </div>
-                        ` : ''}
-                        
                         <div class="order-progress">
                             <div class="order-progress-step">
                                 <div class="service-tracking-dot ${stepIndex >= 0 ? 'active completed' : ''}"><i class="fas fa-check"></i></div>
@@ -168,244 +157,9 @@ function renderServiceRequestsTracking() {
     `;
 }
 
-function getWaitTime(createdAt) {
-    const now = new Date();
-    const then = new Date(createdAt);
-    const diffMinutes = Math.floor((now - then) / 60000);
-    
-    if (diffMinutes < 1) return { minutes: diffMinutes, display: 'just now' };
-    if (diffMinutes < 60) return { minutes: diffMinutes, display: `${diffMinutes} min` };
-    const hours = Math.floor(diffMinutes / 60);
-    const mins = diffMinutes % 60;
-    return { minutes: diffMinutes, display: `${hours}h ${mins}m` };
-}
-
-function startPendingReminders() {
-    if (pendingReminderInterval) clearInterval(pendingReminderInterval);
-    pendingReminderInterval = setInterval(() => checkPendingRequests(), 5 * 60 * 1000);
-}
-
-function checkPendingRequests() {
-    const requests = window.activeServiceRequests || [];
-    const pendingRequests = requests.filter(r => r.status === 'Pending');
-    
-    pendingRequests.forEach(request => {
-        const waitTime = getWaitTime(request.created_at);
-        const reminderKey = `reminder_sent_${request.id}`;
-        
-        if (waitTime.minutes >= 15 && waitTime.minutes < 20 && !localStorage.getItem(reminderKey)) {
-            localStorage.setItem(reminderKey, '15min');
-            showPendingReminder(request, '15 minutes');
-        } else if (waitTime.minutes >= 30 && waitTime.minutes < 35 && localStorage.getItem(reminderKey) !== '30min') {
-            localStorage.setItem(reminderKey, '30min');
-            showPendingReminder(request, '30 minutes');
-        }
-    });
-}
-
-function showPendingReminder(request, timeText) {
-    const toast = document.createElement('div');
-    toast.className = 'toast-notification toast-in';
-    toast.style.borderColor = '#f59e0b';
-    
-    toast.innerHTML = `
-        <div class="flex items-center gap-3">
-            <span class="text-2xl">⏳</span>
-            <div>
-                <p class="text-xs font-bold text-stone-100">Request Still Pending</p>
-                <p class="text-[10px] text-stone-300">${request.service_type} - Waiting for ${timeText}</p>
-                <button onclick="contactStaffAboutRequest('${request.id}')" class="text-[9px] text-amber-400 font-bold mt-1">Contact Staff</button>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(toast);
-    setTimeout(() => { 
-        toast.style.opacity = '0'; 
-        toast.style.transition = 'opacity 0.3s ease'; 
-        setTimeout(() => toast.remove(), 300); 
-    }, 8000);
-}
-
-function contactStaffAboutRequest(requestId) {
-    document.querySelectorAll('.toast-notification').forEach(t => t.remove());
-    openGuestChatModal();
-    const input = document.getElementById('guestChatInput');
-    if (input) {
-        input.value = `I'm following up on my request #${String(requestId).slice(-6)}. Can you check the status?`;
-        input.focus();
-    }
-}
-
-function stopPendingReminders() {
-    if (pendingReminderInterval) {
-        clearInterval(pendingReminderInterval);
-        pendingReminderInterval = null;
-    }
-}
-
-function startRequestNotifications(requestId) {
-    if (!supabaseClient || !requestId) return;
-    
-    if (requestNotificationChannel) supabaseClient.removeChannel(requestNotificationChannel);
-    
-    requestNotificationChannel = supabaseClient
-        .channel(`request-updates-${requestId}`)
-        .on('postgres_changes', {
-            event: 'UPDATE',
-            schema: 'public',
-            table: 'guest_requests',
-            filter: `id=eq.${requestId}`
-        }, (payload) => {
-            const newStatus = payload.new.status;
-            if (payload.new.is_read && !payload.old.is_read) {
-                showRequestReadConfirmation(payload.new);
-            }
-            if (newStatus !== payload.old.status) {
-                handleRequestStatusChange(newStatus, payload.new);
-            }
-        })
-        .subscribe();
-}
-
-function showRequestReadConfirmation(requestData) {
-    showRequestNotification('👀', 'Request Seen by Staff', `${requestData.service_type} has been seen`, 'info');
-    fetchServiceRequestsTracking();
-}
-
-function handleRequestStatusChange(newStatus, requestData) {
-    fetchServiceRequestsTracking();
-    
-    const statusMessages = {
-        'Pending': { icon: '📝', title: 'Request Received', message: 'Your request has been registered', type: 'info' },
-        'In Progress': { icon: '🔄', title: 'Request In Progress', message: 'Our team is working on your request', type: 'info' },
-        'Completed': { icon: '✅', title: 'Request Completed', message: 'Your request has been completed!', type: 'success' }
-    };
-    
-    const config = statusMessages[newStatus] || statusMessages['Pending'];
-    showRequestNotification(config.icon, config.title, config.message, config.type);
-    
-    if (newStatus === 'Completed') {
-        if (requestNotificationChannel) {
-            supabaseClient.removeChannel(requestNotificationChannel);
-            requestNotificationChannel = null;
-        }
-        localStorage.removeItem(`reminder_sent_${requestData.id}`);
-    }
-}
-
-function showRequestNotification(icon, title, message, type = 'info') {
-    const toast = document.createElement('div');
-    toast.className = 'toast-notification toast-in';
-    toast.style.borderColor = type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#DCA773';
-    
-    toast.innerHTML = `
-        <div class="flex items-center gap-3">
-            <span class="text-2xl">${icon}</span>
-            <div>
-                <p class="text-xs font-bold text-stone-100">${title}</p>
-                <p class="text-[10px] text-stone-300">${message}</p>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(toast);
-    setTimeout(() => { 
-        toast.style.opacity = '0'; 
-        toast.style.transition = 'opacity 0.3s ease'; 
-        setTimeout(() => toast.remove(), 300); 
-    }, 4000);
-}
-
-function stopRequestNotifications() {
-    if (requestNotificationChannel && supabaseClient) {
-        supabaseClient.removeChannel(requestNotificationChannel);
-        requestNotificationChannel = null;
-    }
-}
-
-// ==================== NOTATION DU PERSONNEL ====================
-let staffRatingValue = 0;
-
-function showStaffRatingModal(requestId, serviceType) {
-    const modal = document.createElement('div');
-    modal.className = 'fixed inset-0 bg-black/90 z-[800] flex items-center justify-center p-4 backdrop-blur-sm';
-    modal.id = 'staffRatingModal';
-    
-    modal.innerHTML = `
-        <div class="bg-stone-900 border border-amber-500/30 w-full max-w-sm rounded-3xl p-6 space-y-4 shadow-2xl">
-            <div class="flex justify-between items-center border-b border-stone-800 pb-3">
-                <h3 class="text-xs font-serif-luxury font-bold text-[var(--text-gold,#DCA773)] uppercase tracking-widest">⭐ Rate Our Staff</h3>
-                <button onclick="closeStaffRating()" class="text-stone-400 hover:text-stone-100 text-xl font-bold">✕</button>
-            </div>
-            <div class="text-center space-y-3">
-                <p class="text-[10px] text-stone-400">How was the service for:</p>
-                <p class="text-sm font-bold text-stone-100">${serviceType}</p>
-                <div class="flex justify-center gap-2" id="staffStars">
-                    ${[1, 2, 3, 4, 5].map(star => `
-                        <button onclick="selectStaffStar(${star})" class="staff-star-btn text-4xl hover:scale-125 transition text-stone-600" data-star="${star}">★</button>
-                    `).join('')}
-                </div>
-                <button onclick="submitStaffRating('${requestId}')" class="w-full bg-[#DCA773] hover:bg-[#ebd0b3] text-stone-950 font-black py-3.5 rounded-2xl text-xs uppercase tracking-widest transition">Submit Rating</button>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(modal);
-}
-
-function selectStaffStar(star) {
-    staffRatingValue = star;
-    document.querySelectorAll('.staff-star-btn').forEach(btn => {
-        const btnStar = parseInt(btn.getAttribute('data-star'));
-        btn.className = btnStar <= star 
-            ? 'staff-star-btn text-4xl hover:scale-125 transition text-amber-400' 
-            : 'staff-star-btn text-4xl hover:scale-125 transition text-stone-600';
-    });
-}
-
-function closeStaffRating() {
-    const modal = document.getElementById('staffRatingModal');
-    if (modal) modal.remove();
-    staffRatingValue = 0;
-}
-
-async function submitStaffRating(requestId) {
-    if (!staffRatingValue) { showToast('Please select a rating', 'error'); return; }
-    
-    const room = cachedGuestData?.room || localStorage.getItem('remal_guest_room');
-    
-    const ratingData = {
-        request_id: requestId,
-        room_number: String(room),
-        rating: staffRatingValue,
-        feedback_text: '',
-        created_at: new Date().toISOString()
-    };
-    
-    try {
-        if (supabaseClient) {
-            const { error } = await supabaseClient.from('staff_ratings').insert([ratingData]);
-            if (error) { showToast('Error saving rating', 'error'); return; }
-        }
-        closeStaffRating();
-        showToast(`Thank you for rating ${staffRatingValue} stars! 🌟`, 'success');
-        staffRatingValue = 0;
-    } catch (err) {
-        showToast('Error saving rating', 'error');
-    }
-}
-
 // ==================== EXPOSER GLOBALEMENT ====================
 window.submitOtherService = submitOtherService;
 window.fetchServiceRequestsTracking = fetchServiceRequestsTracking;
 window.renderServiceRequestsTracking = renderServiceRequestsTracking;
-window.startPendingReminders = startPendingReminders;
-window.stopPendingReminders = stopPendingReminders;
-window.contactStaffAboutRequest = contactStaffAboutRequest;
-window.startRequestNotifications = startRequestNotifications;
-window.stopRequestNotifications = stopRequestNotifications;
-window.showStaffRatingModal = showStaffRatingModal;
-window.selectStaffStar = selectStaffStar;
-window.closeStaffRating = closeStaffRating;
-window.submitStaffRating = submitStaffRating;
+
+console.log('✅ requests.js loaded');
