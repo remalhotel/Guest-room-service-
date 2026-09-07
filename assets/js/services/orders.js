@@ -1,22 +1,14 @@
 // ==================== ORDER MANAGEMENT ====================
 const supabaseClient = window.supabaseClient || initSupabaseClient();
 async function submitRoomServiceOrder(method) {
-    console.log('🔍 submitRoomServiceOrder called, method:', method);
-    
     const room = cachedGuestData?.room || localStorage.getItem('remal_guest_room');
     const instructions = document.getElementById('guestSpecialInstructions')?.value?.trim() || '';
     
-    if (!isGuestVerified) { 
-        showToast('Please verify first', 'error'); 
-        return; 
-    }
-    if (Object.keys(menuCart).length === 0) { 
-        showToast('Select at least one item', 'error'); 
-        return; 
-    }
+    if (!isGuestVerified) { showToast('Please verify first', 'error'); return; }
+    if (Object.keys(menuCart).length === 0) { showToast('Select at least one item', 'error'); return; }
+    
     if (!supabaseClient) {
-        console.error('❌ supabaseClient is NULL');
-        showToast('Error: Supabase not initialized', 'error');
+        alert('❌ supabaseClient NULL');
         return;
     }
     
@@ -28,27 +20,19 @@ async function submitRoomServiceOrder(method) {
         if (item) {
             itemsArray.push({ name: item.name, quantity: qty, price: item.price, total: qty * item.price });
             totalAmount += qty * item.price;
-        } else {
-            itemsArray.push({ name: itemId, quantity: qty, price: 0, total: 0 });
         }
     }
-    
-    console.log('📦 Room:', room);
-    console.log('🛒 Items:', JSON.stringify(itemsArray));
-    console.log('💰 Total:', totalAmount);
     
     const orderData = {
         room_number: String(room),
         guest_name: cachedGuestData?.guest_name || 'Guest',
-        items: itemsArray,
+        items: JSON.stringify(itemsArray),  // ← Convertir en STRING JSON
         special_instructions: instructions,
         total_amount: totalAmount,
         status: 'Pending',
         service_type: 'Room Service / Order Food',
         created_at: new Date().toISOString()
     };
-    
-    console.log('📤 Sending to Supabase...');
     
     try {
         const { data, error } = await supabaseClient
@@ -57,37 +41,20 @@ async function submitRoomServiceOrder(method) {
             .select();
             
         if (error) {
-            console.error('❌ Supabase error:', error.message);
+            alert('❌ Erreur: ' + error.message);
             showToast('Error: ' + error.message, 'error');
             return;
         }
         
-        console.log('✅ Order inserted successfully:', data);
-        
-        if (data && data.length > 0) {
-            currentOrderId = data[0].id;
-            localStorage.setItem('remal_current_order_id', currentOrderId);
-            updateOrderTracking('Pending');
-        }
-        
-        if (method === 'whatsapp') {
-            const itemsList = itemsArray.map(i => `${i.quantity}x ${i.name} (AED ${i.total})`).join('\n');
-            const message = `🛎️ ORDER\n\nRoom: ${room}\nGuest: ${cachedGuestData?.guest_name || 'Guest'}\n\n${itemsList}\n\nTotal: AED ${totalAmount.toFixed(2)}`;
-            const waNum = (typeof SUPABASE_CONFIG !== 'undefined' && SUPABASE_CONFIG.whatsappNumber) ? SUPABASE_CONFIG.whatsappNumber : '971526966865';
-            window.open(`https://wa.me/${waNum}?text=${encodeURIComponent(message)}`, '_blank');
-        }
-        
+        alert('✅ Commande insérée! ID: ' + (data?.[0]?.id || 'unknown'));
         showToast('✅ Order submitted!', 'success');
+        
         menuCart = {};
         document.getElementById('guestSpecialInstructions').value = '';
         renderMenuItems();
         
-        if (typeof fetchOrderHistory === 'function') {
-            fetchOrderHistory();
-        }
-        
     } catch (err) {
-        console.error('❌ Exception:', err);
+        alert('❌ Exception: ' + err.message);
         showToast('Error: ' + err.message, 'error');
     }
 }
