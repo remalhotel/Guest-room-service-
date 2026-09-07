@@ -1,43 +1,17 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Staff Login - Remal Hotel</title>
-    
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="assets/css/style.css">
-    
-    <style>
-        body {
-            background: linear-gradient(135deg, #0c0a09 0%, #1c1917 50%, #0c0a09 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
-        
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in { animation: fadeInUp 0.6s ease forwards; }
-        
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-            20%, 40%, 60%, 80% { transform: translateX(5px); }
-        }
-        .shake-error { animation: shake 0.5s ease; }
-    </style>
 </head>
-<body>
+<body class="min-h-screen flex items-center justify-center bg-stone-950 p-4">
     <div class="w-full max-w-md p-6">
-        <div class="bg-stone-900/90 border border-amber-500/30 rounded-3xl p-8 space-y-6 shadow-2xl backdrop-blur-xl animate-fade-in">
-            
+        <div class="bg-stone-900/90 border border-amber-500/30 rounded-3xl p-8 space-y-6 shadow-2xl">
             <div class="text-center space-y-3">
                 <div class="w-20 h-20 mx-auto rounded-full bg-[#DCA773] flex items-center justify-center shadow-2xl">
                     <i class="fas fa-concierge-bell text-2xl text-stone-950"></i>
@@ -51,70 +25,47 @@
                     <label class="block font-bold text-[#DCA773] uppercase tracking-wider text-[10px] mb-1.5">
                         <i class="fas fa-user mr-1"></i> Username
                     </label>
-                    <input type="text" id="loginUsername" placeholder="Enter username..." 
-                           class="w-full bg-stone-950 border border-stone-800 rounded-2xl p-4 font-semibold text-sm text-stone-100 outline-none focus:border-amber-500"
-                           onkeypress="if(event.key==='Enter') handleStaffLogin()">
+                    <input type="text" id="loginUsername" placeholder="admin" class="w-full bg-stone-950 border border-stone-800 rounded-2xl p-4 font-semibold text-sm text-stone-100 outline-none focus:border-amber-500">
                 </div>
                 
                 <div>
                     <label class="block font-bold text-[#DCA773] uppercase tracking-wider text-[10px] mb-1.5">
                         <i class="fas fa-lock mr-1"></i> Password
                     </label>
-                    <input type="password" id="loginPassword" placeholder="Enter password..." 
-                           class="w-full bg-stone-950 border border-stone-800 rounded-2xl p-4 font-semibold text-sm text-stone-100 outline-none focus:border-amber-500"
-                           onkeypress="if(event.key==='Enter') handleStaffLogin()">
+                    <input type="password" id="loginPassword" placeholder="remal2024" class="w-full bg-stone-950 border border-stone-800 rounded-2xl p-4 font-semibold text-sm text-stone-100 outline-none focus:border-amber-500" onkeypress="if(event.key==='Enter') handleLogin()">
                 </div>
                 
-                <div id="loginError" class="hidden text-center text-[10px] text-red-400 font-bold py-2">
-                    ❌ Invalid username or password
-                </div>
-                
-                <button onclick="handleStaffLogin()" 
-                        class="w-full bg-[#DCA773] hover:bg-[#ebd0b3] text-stone-950 font-black py-4 rounded-2xl text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2.5 shadow-lg hover:scale-[1.02] active:scale-[0.98]">
-                    <i class="fas fa-sign-in-alt"></i> Login
+                <button onclick="handleLogin()" class="w-full bg-[#DCA773] hover:bg-[#ebd0b3] text-stone-950 font-black py-4 rounded-2xl text-xs uppercase tracking-widest transition-all">
+                    <i class="fas fa-sign-in-alt mr-1"></i> Login
                 </button>
             </div>
             
-            <div class="text-center">
-                <p class="text-[8px] text-stone-500">Authorized personnel only</p>
-            </div>
+            <p class="text-center text-[8px] text-stone-500">Authorized personnel only</p>
         </div>
     </div>
 
-    <script src="assets/js/config.js"></script>
-    <script src="assets/js/staff-core/staff-state.js"></script>
-    <script src="assets/js/staff-services/staff-auth.js"></script>
     <script>
-        function handleStaffLogin() {
-            const username = document.getElementById('loginUsername').value;
-            const password = document.getElementById('loginPassword').value;
-            const errorEl = document.getElementById('loginError');
+        function handleLogin() {
+            const username = document.getElementById('loginUsername').value.trim().toLowerCase();
+            const password = document.getElementById('loginPassword').value.trim();
             
-            errorEl.classList.add('hidden');
+            const credentials = {
+                'admin': 'remal2024',
+                'frontdesk': 'front2024',
+                'fnb': 'fnb2024',
+                'housekeeping': 'house2024',
+                'maintenance': 'maint2024'
+            };
             
-            if (!username || !password) {
-                errorEl.innerText = '⚠️ Please enter username and password';
-                errorEl.classList.remove('hidden');
-                return;
-            }
-            
-            const result = staffLogin(username, password);
-            
-            if (result.success) {
+            if (credentials[username] === password) {
+                sessionStorage.setItem('staff_authorized', 'true');
+                sessionStorage.setItem('staff_login_time', new Date().toISOString());
                 window.location.href = 'staff-dashboard.html';
             } else {
-                errorEl.innerText = '❌ ' + result.message;
-                errorEl.classList.remove('hidden');
-                
-                const card = document.querySelector('.animate-fade-in');
-                if (card) {
-                    card.classList.add('shake-error');
-                    setTimeout(() => card.classList.remove('shake-error'), 500);
-                }
+                alert('Invalid username or password');
             }
         }
         
-        // Vérifier si déjà connecté
         document.addEventListener('DOMContentLoaded', () => {
             if (sessionStorage.getItem('staff_authorized')) {
                 window.location.href = 'staff-dashboard.html';
