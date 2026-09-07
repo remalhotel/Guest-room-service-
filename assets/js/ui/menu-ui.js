@@ -26,36 +26,39 @@ function renderMenuItems() {
     }
 
     for (const [category, items] of Object.entries(MENU_DATA)) {
-        const filteredItems = items.filter(item => 
-            item.name.toLowerCase().includes(searchQuery) || 
-            (item.desc && item.desc.toLowerCase().includes(searchQuery))
-        );
+        const filteredItems = items.filter(item => item.name.toLowerCase().includes(searchQuery) || (item.desc && item.desc.toLowerCase().includes(searchQuery)));
         if (filteredItems.length === 0) continue;
-        
         html += `<div class="menu-category-header px-3 py-2 rounded-xl font-bold text-[10px] uppercase tracking-widest text-[var(--text-gold,#DCA773)] bg-stone-950/80 mb-2">${category}</div>`;
-        
         filteredItems.forEach(item => {
             const qty = menuCart[item.id] || 0;
             totalPcs += qty;
             totalPrice += qty * item.price;
-            
+            const badgesHTML = getBadgeHTML(item.badges);
+            const isFavorite = favoritesList[item.id] ? 'active' : '';
             html += `
                 <div class="flex justify-between items-center py-2.5 border-b border-stone-800">
                     <div class="flex-1 pr-2">
-                        <p class="font-bold text-stone-100 text-xs">${item.name}</p>
+                        <div class="flex items-center gap-2 mb-1">
+                            <button onclick="toggleFavorite('${item.id}')" class="favorite-heart ${isFavorite} text-xs"><i class="fas fa-heart"></i></button>
+                            <p class="font-bold text-stone-100 text-xs">${item.name}</p>
+                        </div>
+                        ${badgesHTML}
                         <p class="text-[10px] text-stone-400 mt-1">${item.desc || ''}</p>
-                        <p class="text-[var(--text-gold,#DCA773)] font-bold text-xs mt-1">AED ${item.price.toFixed(2)}</p>
+                        <div class="flex items-center gap-2 mt-1">
+                            <p class="text-[var(--text-gold,#DCA773)] font-bold text-xs">AED ${item.price.toFixed(2)}</p>
+                            <span class="text-[8px] text-stone-500">•</span>
+                            <span class="text-[8px] text-stone-400">⏱️ ${item.prepTime || '20m'}</span>
+                        </div>
                     </div>
                     <div class="flex items-center gap-2 bg-stone-950 p-1 rounded-xl border border-stone-800">
-                        <button onclick="updateCart('${item.id}', -1)" class="w-6 h-6 bg-stone-800 text-stone-200 rounded-lg font-bold">-</button>
+                        <button onclick="updateCart('${item.id}', -1)" class="w-6 h-6 bg-stone-800 text-stone-200 rounded-lg font-bold hover:bg-stone-700">-</button>
                         <span class="font-bold px-1 w-6 text-center text-xs text-stone-100">${qty}</span>
-                        <button onclick="updateCart('${item.id}', 1)" class="w-6 h-6 bg-[var(--text-gold,#DCA773)] text-stone-950 rounded-lg font-bold">+</button>
+                        <button onclick="updateCart('${item.id}', 1)" class="w-6 h-6 bg-[var(--text-gold,#DCA773)] text-stone-950 rounded-lg font-bold hover:bg-[#ebd0b3]">+</button>
                     </div>
                 </div>
             `;
         });
     }
-    
     container.innerHTML = html || '<p class="text-center text-stone-400 py-8">No items found</p>';
     
     const summaryEl = document.getElementById('modalMenuTotalSummary');
@@ -72,8 +75,16 @@ function updateCart(itemId, delta) {
     renderMenuItems();
 }
 
+function toggleFavorite(itemId) {
+    if (favoritesList[itemId]) { delete favoritesList[itemId]; } else { favoritesList[itemId] = true; }
+    localStorage.setItem('remal_favorites', JSON.stringify(favoritesList));
+    renderMenuItems();
+}
+
+// Exposer
 window.openMenuModal = openMenuModal;
 window.closeMenuModal = closeMenuModal;
 window.confirmMenuSelection = confirmMenuSelection;
 window.renderMenuItems = renderMenuItems;
 window.updateCart = updateCart;
+window.toggleFavorite = toggleFavorite;
