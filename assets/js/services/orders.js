@@ -1,6 +1,5 @@
 // ==================== ORDER MANAGEMENT ====================
-const supabaseClient = window.supabaseClient || (typeof initSupabaseClient === 'function' ? initSupabaseClient() : null);
-
+const supabaseClient = window.supabaseClient || initSupabaseClient();
 async function submitRoomServiceOrder(method) {
     console.log('🔍 submitRoomServiceOrder called, method:', method);
     
