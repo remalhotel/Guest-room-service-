@@ -877,5 +877,33 @@ body.light-mode span.text-stone-300 {
 <script src="assets/js/services/requests.js"></script>
 <script src="assets/js/services/orders.js"></script>
 <script src="assets/js/core/app.js"></script>
+<script>
+    // Tester si les fonctions importantes existent
+    window.onload = function() {
+        setTimeout(() => {
+            const tests = [
+                ['submitRoomServiceOrder', typeof window.submitRoomServiceOrder],
+                ['submitOtherService', typeof window.submitOtherService],
+                ['openMenuModal', typeof window.openMenuModal],
+                ['updateCart', typeof window.updateCart],
+                ['showService', typeof window.showService],
+                ['supabaseClient', window.supabaseClient ? 'OK' : 'NULL']
+            ];
+            
+            let html = '';
+            tests.forEach(([name, status]) => {
+                const isOK = status === 'function' || status === 'OK';
+                html += `<p style="color:${isOK ? 'green' : 'red'}">${name}: ${status}</p>`;
+            });
+            
+            const testDiv = document.createElement('div');
+            testDiv.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:black;color:white;padding:15px;font-size:12px;z-index:99999;';
+            testDiv.innerHTML = html;
+            document.body.appendChild(testDiv);
+            
+            setTimeout(() => testDiv.remove(), 10000);
+        }, 3000);
+    };
+</script>
 </body>
 </html> 
