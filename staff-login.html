@@ -46,25 +46,28 @@
 
     <script>
         function handleLogin() {
-            const username = document.getElementById('loginUsername').value.trim().toLowerCase();
-            const password = document.getElementById('loginPassword').value.trim();
-            
-            const credentials = {
-                'admin': 'remal2024',
-                'frontdesk': 'front2024',
-                'fnb': 'fnb2024',
-                'housekeeping': 'house2024',
-                'maintenance': 'maint2024'
-            };
-            
-            if (credentials[username] === password) {
-                sessionStorage.setItem('staff_authorized', 'true');
-                sessionStorage.setItem('staff_login_time', new Date().toISOString());
-                window.location.href = 'staff-dashboard.html';
-            } else {
-                alert('Invalid username or password');
-            }
-        }
+    const username = document.getElementById('loginUsername').value.trim().toLowerCase();
+    const password = document.getElementById('loginPassword').value.trim();
+    
+    const credentials = {
+        'admin': { password: 'remal2024', role: 'admin', name: 'Administrator' },
+        'frontdesk': { password: 'front2024', role: 'front_desk', name: 'Front Desk' },
+        'fnb': { password: 'fnb2024', role: 'food_beverage', name: 'F&B Staff' },
+        'housekeeping': { password: 'house2024', role: 'housekeeping', name: 'Housekeeping' },
+        'maintenance': { password: 'maint2024', role: 'maintenance', name: 'Maintenance' }
+    };
+    
+    const staff = credentials[username];
+    
+    if (staff && staff.password === password) {
+        sessionStorage.setItem('staff_authorized', 'true');
+        sessionStorage.setItem('staff_login_time', new Date().toISOString());
+        sessionStorage.setItem('staff_user', JSON.stringify({ username, name: staff.name, role: staff.role }));
+        window.location.href = 'staff-dashboard.html';
+    } else {
+        alert('Invalid username or password');
+    }
+}
         
         document.addEventListener('DOMContentLoaded', () => {
             if (sessionStorage.getItem('staff_authorized')) {
