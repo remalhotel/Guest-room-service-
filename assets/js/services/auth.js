@@ -55,6 +55,8 @@ async function verifierIdentiteClient() {
         localStorage.setItem('remal_departure', pmsData.departure || '');
         
         afficherPagePersonnalisee(pmsData, pmsData.room);
+
+        showWelcomeMessage();
         
         const lockScreen = document.getElementById('lockScreen');
         const mainScreen = document.getElementById('mainScreen');
