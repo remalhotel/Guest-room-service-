@@ -538,6 +538,21 @@
             }
         }, 500);
     });
+  <script>
+    // Ajouter la météo
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(() => {
+            // Créer le conteneur météo
+            if (!document.getElementById('weatherContainer')) {
+                const mainCard = document.querySelector('.remal-card');
+                const container = document.createElement('div');
+                container.id = 'weatherContainer';
+                mainCard.insertBefore(container, mainCard.children[2]);
+            }
+            fetchWeather();
+        }, 500);
+    });
+</script>
   </script>     
 </body>
 </html>
