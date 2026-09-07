@@ -1,4 +1,17 @@
 // ==================== UTILITY FUNCTIONS ====================
+function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = 'toast-notification toast-in';
+    const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
+    toast.innerHTML = `<span>${icon}</span><span class="text-xs font-bold text-stone-100">${message}</span>`;
+    document.body.appendChild(toast);
+    setTimeout(() => { 
+        toast.style.opacity = '0'; 
+        toast.style.transition = 'opacity 0.3s ease'; 
+        setTimeout(() => toast.remove(), 300); 
+    }, 3000);
+}
+
 function getGreeting() {
     const hour = new Date().getHours();
     if (hour < 12) return { text: 'Good Morning', emoji: '🌅' };
@@ -8,27 +21,15 @@ function getGreeting() {
 
 function getTimeAgo(timestamp) {
     if (!timestamp) return 'Just now';
-    
     const now = new Date();
     const then = new Date(timestamp);
-    
-    // Vérifier si la date est valide
-    if (isNaN(then.getTime())) return 'Just now';
-    
-    const diffMs = now.getTime() - then.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    
+    const diffMins = Math.floor((now - then) / 60000);
     if (diffMins < 1) return 'Just now';
     if (diffMins < 60) return `${diffMins} min ago`;
-    
     const diffHours = Math.floor(diffMins / 60);
     if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
-    
     const diffDays = Math.floor(diffHours / 24);
-    if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
-    
-    const diffWeeks = Math.floor(diffDays / 7);
-    return `${diffWeeks} week${diffWeeks > 1 ? 's' : ''} ago`;
+    return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
 }
 
 function getBadgeHTML(badges) {
