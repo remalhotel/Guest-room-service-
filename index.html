@@ -892,27 +892,6 @@ body.light-mode span.text-stone-300 {
 <script src="assets/js/services/requests.js"></script>
 <script src="assets/js/services/orders.js"></script>
 <script src="assets/js/core/app.js" defer></script>
- <script>
-    <script>
-    // Test visible à l'écran
-    window.onload = function() {
-        setTimeout(() => {
-            const testDiv = document.createElement('div');
-            testDiv.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:black;color:white;padding:15px;font-size:14px;z-index:99999;text-align:center;';
-            
-            const hasFunction = typeof submitRoomServiceOrder === 'function';
-            const hasWindowFunction = typeof window.submitRoomServiceOrder === 'function';
-            
-            testDiv.innerHTML = `
-                <p>submitRoomServiceOrder: ${hasFunction ? '✅ EXISTE' : '❌ MANQUANT'}</p>
-                <p>window.submitRoomServiceOrder: ${hasWindowFunction ? '✅ EXISTE' : '❌ MANQUANT'}</p>
-            `;
-            
-            document.body.appendChild(testDiv);
-            
-            setTimeout(() => testDiv.remove(), 5000);
-        }, 2000);
-    };
-</script>
+
 </body>
 </html>
