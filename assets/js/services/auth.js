@@ -19,9 +19,8 @@ async function verifierIdentiteClient() {
     
     loadingIndicator.classList.remove('hidden');
     try {
-        if (!pmsSupabaseClient) {
-            throw new Error("PMS Client uninitialized");
-        }
+        if (!pmsSupabaseClient) throw new Error("PMS Client uninitialized");
+        
         const { data: pmsData, error: pmsError } = await pmsSupabaseClient
             .from('pms_guests')
             .select('*')
@@ -68,7 +67,6 @@ async function verifierIdentiteClient() {
         }, 400);
 
     } catch (error) { 
-        console.error('Erreur vérification:', error);
         errorMsg.innerText = '❌ ' + TRANSLATIONS[currentLanguage].notFound; 
         errorMsg.classList.remove('hidden'); 
     } finally { 
@@ -78,26 +76,16 @@ async function verifierIdentiteClient() {
 
 function afficherPagePersonnalisee(pmsData, roomNum) {
     updateGreeting();
-    const welcomeEl = document.getElementById('welcomeGuestName');
-    const roomEl = document.getElementById('displayRoomNumber');
-    const roomTypeEl = document.getElementById('displayRoomType');
-    const departureEl = document.getElementById('displayDeparture');
-    
-    if (welcomeEl) welcomeEl.innerText = pmsData.guest_name || 'Guest';
-    if (roomEl) roomEl.innerText = roomNum;
-    if (roomTypeEl) roomTypeEl.innerText = pmsData.room_typ || 'Standard';
-    if (departureEl) departureEl.innerText = pmsData.departure || '---';
+    document.getElementById('welcomeGuestName').innerText = pmsData.guest_name || 'Guest';
+    document.getElementById('displayRoomNumber').innerText = roomNum;
+    document.getElementById('displayRoomType').innerText = pmsData.room_typ || 'Standard';
+    document.getElementById('displayDeparture').innerText = pmsData.departure || '---';
 }
 
 function changerDeChambre() {
     isGuestVerified = false;
     cachedGuestData = null;
     currentOrderId = null;
-    
-    if (typeof stopOrderNotifications === 'function') {
-        stopOrderNotifications();
-    }
-    
     if (trackingTimeout) clearTimeout(trackingTimeout);
     if (serviceRequestsTimeout) clearTimeout(serviceRequestsTimeout);
     if (guestChatManager) {
@@ -116,55 +104,30 @@ function changerDeChambre() {
     
     const lockScreen = document.getElementById('lockScreen');
     const mainScreen = document.getElementById('mainScreen');
-    
     mainScreen.classList.add('hidden');
-    mainScreen.classList.remove('screen-enter');
     lockScreen.classList.remove('hidden');
-    lockScreen.classList.remove('screen-exit');
     lockScreen.classList.add('screen-enter');
 }
 
 function restaurerSession() {
-    console.log('🔄 Tentative de restauration de session...');
-    
     const savedRoom = localStorage.getItem('remal_guest_room');
     const savedData = localStorage.getItem('remal_guest_data');
-    
-    console.log('📦 Données trouvées:', { savedRoom, savedData: savedData ? 'OUI' : 'NON' });
-    
     if (savedRoom && savedData) {
         try {
             const parsedData = JSON.parse(savedData);
             cachedGuestData = parsedData;
             isGuestVerified = true;
-            
-            const lockScreen = document.getElementById('lockScreen');
-            const mainScreen = document.getElementById('mainScreen');
-            
-            if (lockScreen && mainScreen) {
-                lockScreen.classList.add('hidden');
-                lockScreen.classList.remove('screen-exit');
-                mainScreen.classList.remove('hidden');
-                mainScreen.classList.remove('screen-enter');
-                
-                afficherPagePersonnalisee(parsedData, savedRoom);
-                
-                setTimeout(() => {
-                    verifierEtRestaurerCommandeEnCours();
-                    fetchServiceRequestsTracking();
-                }, 300);
-                
-                console.log('✅ Session restaurée avec succès');
-            } else {
-                console.error('❌ Éléments DOM non trouvés');
-            }
-            
-        } catch (e) {
-            console.error('❌ Erreur restauration:', e);
-            localStorage.removeItem('remal_guest_room');
-            localStorage.removeItem('remal_guest_data');
-        }
-    } else {
-        console.log('ℹ️ Aucune session à restaurer');
+            afficherPagePersonnalisee(parsedData, savedRoom);
+            document.getElementById('lockScreen').classList.add('hidden');
+            document.getElementById('mainScreen').classList.remove('hidden');
+            verifierEtRestaurerCommandeEnCours();
+            fetchServiceRequestsTracking();
+        } catch (e) {}
     }
 }
+
+// Exposer
+window.verifierIdentiteClient = verifierIdentiteClient;
+window.afficherPagePersonnalisee = afficherPagePersonnalisee;
+window.changerDeChambre = changerDeChambre;
+window.restaurerSession = restaurerSession;
