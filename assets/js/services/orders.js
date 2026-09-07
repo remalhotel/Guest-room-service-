@@ -115,7 +115,51 @@ async function verifierEtRestaurerCommandeEnCours() {
         updateOrderTracking(data.status || 'Pending');
     } catch (err) {}
 }
+// ==================== ORDER HISTORY ====================
+async function fetchOrderHistory() {
+    const room = cachedGuestData?.room || localStorage.getItem('remal_guest_room');
+    const container = document.getElementById('orderHistoryContainer');
+    if (!room || !supabaseClient || !container) return;
+    
+    const { data } = await supabaseClient.from('food_orders').select('*').eq('room_number', String(room)).order('created_at', { ascending: false }).limit(20);
+    
+    if (!data || data.length === 0) {
+        container.innerHTML = '<p class="text-center text-stone-400 py-6">No orders yet</p>';
+        return;
+    }
+    
+    container.innerHTML = data.map(order => {
+        let itemsList = '';
+        try { itemsList = (typeof order.items === 'string' ? JSON.parse(order.items) : order.items).map(i => `${i.quantity}x ${i.name}`).join(', '); } catch(e) {}
+        return `
+            <div class="p-3 bg-stone-950/60 border border-stone-800 rounded-xl">
+                <div class="flex justify-between">
+                    <p class="font-bold text-stone-100 text-xs">🛎️ #${String(order.id).slice(-6)}</p>
+                    <span class="text-[9px] text-stone-400">${order.status}</span>
+                </div>
+                <p class="text-[9px] text-stone-400 mt-1">${itemsList}</p>
+                <p class="text-[10px] font-bold text-[var(--text-gold,#DCA773)] mt-2">AED ${(order.total_amount || 0).toFixed(2)}</p>
+            </div>
+        `;
+    }).join('');
+}
 
+function showOrderHistory() {
+    document.getElementById('servicesSection').classList.add('hidden');
+    document.getElementById('offersSection').classList.add('hidden');
+    document.getElementById('faqSection').classList.add('hidden');
+    document.getElementById('orderHistorySection').classList.remove('hidden');
+    
+    document.getElementById('tabServices').classList.remove('active');
+    document.getElementById('tabOffers').classList.remove('active');
+    document.getElementById('tabFaq').classList.remove('active');
+    document.getElementById('tabHistory').classList.add('active');
+    
+    fetchOrderHistory();
+}
+
+window.fetchOrderHistory = fetchOrderHistory;
+window.showOrderHistory = showOrderHistory;
 // Exposer
 window.submitRoomServiceOrder = submitRoomServiceOrder;
 window.updateOrderTracking = updateOrderTracking;
