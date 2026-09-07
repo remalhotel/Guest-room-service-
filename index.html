@@ -203,6 +203,9 @@
             </div>
 
             <div id="servicesTrackingContainer" class="hidden space-y-3"></div>
+            
+            <div id="weatherContainer"></div>
+            <div id="smartSuggestionsContainer"></div>
 
             <div class="flex gap-2 flex-wrap">
                 <button onclick="switchTab('services')" id="tabServices" class="tab-btn active flex-1 min-w-[70px] py-3 rounded-xl text-xs font-bold transition">
@@ -306,12 +309,8 @@
                         <option value="In 45 minutes">🕒 45 min</option>
                         <option value="In 1 hour">🕒 1 hour</option>
                     </select>
-                    <button onclick="submitRoomServiceOrder('direct')" class="w-full bg-[#DCA773] text-stone-950 font-black py-4 rounded-2xl">
-                        🛎️ Direct Order to Kitchen
-                    </button>
-                    <button onclick="submitRoomServiceOrder('whatsapp')" class="w-full bg-[#10b981] text-stone-950 font-black py-3.5 rounded-2xl">
-                        📱 Send via WhatsApp
-                    </button>
+                    <button onclick="submitRoomServiceOrder('direct')" class="w-full bg-[#DCA773] text-stone-950 font-black py-4 rounded-2xl">🛎️ Direct Order to Kitchen</button>
+                    <button onclick="submitRoomServiceOrder('whatsapp')" class="w-full bg-[#10b981] text-stone-950 font-black py-3.5 rounded-2xl">📱 Send via WhatsApp</button>
                 </div>
 
                 <div id="otherServiceSection" class="hidden space-y-4">
@@ -394,23 +393,23 @@
     <script src="assets/js/ui/menu-ui.js"></script>
     <script src="assets/js/ui/chat-ui.js"></script>
     <script src="assets/js/components/chat-manager.js"></script>
+    <script src="assets/js/components/weather.js"></script>
+    <script src="assets/js/components/smart-suggestions.js"></script>
     <script src="assets/js/services/auth.js"></script>
     <script src="assets/js/services/offers.js"></script>
     <script src="assets/js/services/requests.js"></script>
     <script src="assets/js/services/orders.js"></script>
-    <script src="assets/js/components/weather.js"></script>
-    <script src="assets/js/components/smart-suggestions.js"></script>
    
-<script>
-    initTheme();
-    setLanguage(currentLanguage);
-    renderMenuItems();
-    renderFaqList();
-    renderOneTapServices();
-    renderSmartSuggestions();
-    fetchWeather();
-    restaurerSession();
-    fetchOffers();
-</script>
+    <script>
+        initTheme();
+        setLanguage(currentLanguage);
+        renderMenuItems();
+        renderFaqList();
+        renderOneTapServices();
+        initSmartSuggestions();
+        fetchWeather();
+        restaurerSession();
+        fetchOffers();
+    </script>
 </body>
 </html>
