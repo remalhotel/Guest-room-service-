@@ -1,52 +1,42 @@
-// ==================== MESSAGE DE BIENVENUE PERSONNALISÉ ====================
-let welcomeShown = false;
-
+// ==================== WELCOME ANIMATION ====================
 function showWelcomeMessage() {
-    if (welcomeShown) return;
-    
     const guestName = cachedGuestData?.guest_name || 'Guest';
-    const room = cachedGuestData?.room || localStorage.getItem('remal_guest_room');
+    const room = localStorage.getItem('remal_guest_room');
     
-    const welcomeKey = `welcome_shown_${room}_${new Date().toDateString()}`;
-    if (localStorage.getItem(welcomeKey)) return;
-    
-    welcomeShown = true;
-    
-    const overlay = document.createElement('div');
-    overlay.className = 'fixed inset-0 z-[1200] flex items-center justify-center bg-black/95';
-    overlay.id = 'welcomeOverlay';
+    // Ne montrer qu'une fois par jour
+    const today = new Date().toDateString();
+    const lastShown = localStorage.getItem('remal_welcome_date');
+    if (lastShown === today) return;
     
     const hour = new Date().getHours();
-    let greetingText = 'Welcome';
+    let greeting = 'Welcome';
     let emoji = '👋';
     
-    if (hour < 12) {
-        greetingText = 'Good Morning';
-        emoji = '🌅';
-    } else if (hour < 18) {
-        greetingText = 'Good Afternoon';
-        emoji = '☀️';
-    } else {
-        greetingText = 'Good Evening';
-        emoji = '🌙';
-    }
+    if (hour < 12) { greeting = 'Good Morning'; emoji = '🌅'; }
+    else if (hour < 18) { greeting = 'Good Afternoon'; emoji = '☀️'; }
+    else { greeting = 'Good Evening'; emoji = '🌙'; }
+    
+    const overlay = document.createElement('div');
+    overlay.className = 'fixed inset-0 z-[600] flex items-center justify-center bg-black/95';
+    overlay.id = 'welcomeOverlay';
+    overlay.style.animation = 'fadeInUp 0.5s ease forwards';
     
     overlay.innerHTML = `
         <div class="text-center space-y-6 p-8">
-            <div class="text-6xl animate-bounce">${emoji}</div>
+            <div class="text-6xl" style="animation: fadeInUp 0.8s ease forwards;">${emoji}</div>
             
-            <div class="space-y-2">
-                <p class="text-sm text-stone-400 uppercase tracking-[0.3em] font-bold">${greetingText}</p>
+            <div class="space-y-2" style="animation: fadeInUp 1s ease forwards;">
+                <p class="text-sm text-stone-400 uppercase tracking-[0.3em] font-bold">${greeting}</p>
                 <h1 class="text-3xl font-serif-luxury font-bold text-[var(--text-gold,#DCA773)] tracking-wide uppercase">
                     ${guestName}
                 </h1>
                 <p class="text-[10px] text-stone-400">Room ${room}</p>
             </div>
             
-            <div class="flex justify-center gap-1">
-                ${[1, 2, 3].map(i => `
-                    <span class="w-2 h-2 bg-amber-400 rounded-full animate-pulse" style="animation-delay: ${i * 0.2}s"></span>
-                `).join('')}
+            <div class="flex justify-center gap-1" style="animation: fadeInUp 1.2s ease forwards;">
+                <span class="w-2 h-2 bg-amber-400 rounded-full" style="animation: pulse 0.5s ease infinite;"></span>
+                <span class="w-2 h-2 bg-amber-400 rounded-full" style="animation: pulse 0.5s ease 0.2s infinite;"></span>
+                <span class="w-2 h-2 bg-amber-400 rounded-full" style="animation: pulse 0.5s ease 0.4s infinite;"></span>
             </div>
             
             <p class="text-[9px] text-stone-500 uppercase tracking-wider">Welcome to Guest Hub</p>
@@ -55,57 +45,48 @@ function showWelcomeMessage() {
     
     document.body.appendChild(overlay);
     
-    // Animer la sortie
+    // Fermer après 3 secondes
     setTimeout(() => {
         overlay.style.transition = 'opacity 0.5s ease';
         overlay.style.opacity = '0';
-        setTimeout(() => {
-            overlay.remove();
-            localStorage.setItem(welcomeKey, 'true');
-        }, 500);
-    }, 2500);
+        setTimeout(() => overlay.remove(), 500);
+    }, 3000);
     
-    // Jouer un son de bienvenue
+    // Marquer comme montré
+    localStorage.setItem('remal_welcome_date', today);
+    
+    // Jouer un son
     playWelcomeSound();
 }
 
 function playWelcomeSound() {
     try {
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const notes = [523.25, 659.25, 783.99, 1046.50]; // Do, Mi, Sol, Do
+        const notes = [523.25, 659.25, 783.99];
         
         notes.forEach((frequency, index) => {
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            
-            oscillator.type = 'sine';
-            oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime + index * 0.15);
-            
-            gainNode.gain.setValueAtTime(0.15, audioContext.currentTime + index * 0.15);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + index * 0.15 + 0.5);
-            
-            oscillator.start(audioContext.currentTime + index * 0.15);
-            oscillator.stop(audioContext.currentTime + index * 0.15 + 0.5);
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(frequency, audioContext.currentTime + index * 0.15);
+            gain.gain.setValueAtTime(0.15, audioContext.currentTime + index * 0.15);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + index * 0.15 + 0.5);
+            osc.start(audioContext.currentTime + index * 0.15);
+            osc.stop(audioContext.currentTime + index * 0.15 + 0.5);
         });
-    } catch (error) {
-        console.warn('Sound not available:', error);
-    }
+    } catch(e) {}
 }
 
-function initWelcomeSystem() {
-    // Écouter quand le client se connecte
-    const observer = new MutationObserver(() => {
-        const mainScreen = document.getElementById('mainScreen');
-        if (mainScreen && !mainScreen.classList.contains('hidden')) {
-            showWelcomeMessage();
-        }
-    });
-    
-    const mainScreen = document.getElementById('mainScreen');
-    if (mainScreen) {
-        observer.observe(mainScreen, { attributes: true, attributeFilter: ['class'] });
+// Ajouter l'animation pulse au CSS
+const styleSheet = document.createElement('style');
+styleSheet.textContent = `
+    @keyframes pulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.5; transform: scale(1.5); }
     }
-}
+`;
+document.head.appendChild(styleSheet);
+
+window.showWelcomeMessage = showWelcomeMessage;
