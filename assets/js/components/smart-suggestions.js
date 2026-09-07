@@ -3,7 +3,6 @@ let smartSuggestionsInterval = null;
 
 function initSmartSuggestions() {
     renderSmartSuggestions();
-    
     smartSuggestionsInterval = setInterval(() => {
         renderSmartSuggestions();
     }, 30 * 60 * 1000);
@@ -79,7 +78,6 @@ function renderSmartSuggestions() {
                 <span class="text-xl">${context.icon}</span>
                 <p class="text-[10px] font-bold text-[var(--text-gold,#DCA773)] uppercase tracking-wider">${context.title}</p>
             </div>
-            
             <div class="grid grid-cols-2 gap-2">
                 ${context.suggestions.map(suggestion => `
                     <button onclick="handleSmartSuggestion('${suggestion.action}')" class="bg-stone-950/60 border border-stone-800 hover:border-amber-500/50 rounded-xl p-2.5 text-center transition">
@@ -94,7 +92,6 @@ function renderSmartSuggestions() {
 
 async function handleSmartSuggestion(action) {
     const room = cachedGuestData?.room || localStorage.getItem('remal_guest_room');
-    const guestName = cachedGuestData?.guest_name || 'Guest';
     
     if (!room) {
         showToast('Please verify your room first', 'error');
@@ -106,87 +103,52 @@ async function handleSmartSuggestion(action) {
         case 'lunch':
         case 'late_dining':
         case 'room_service':
-            // Rediriger vers Room Service
             showService('room_service');
-            showToast('🍽️ Select your items from the menu', 'info');
             break;
-            
         case 'wakeup':
-            // Demande de wake-up call
-            await submitSmartRequest('Wake-up Call / Alarm Service', 'Wake-up call requested via Quick Suggestion');
+            await submitSmartRequest('Wake-up Call / Alarm Service', 'Wake-up call requested');
             break;
-            
         case 'cleaning':
         case 'turndown':
-            // Demande de housekeeping
-            await submitSmartRequest('Housekeeping / Room Cleaning', `${action === 'turndown' ? 'Turndown service' : 'Room cleaning'} requested via Quick Suggestion`);
+            await submitSmartRequest('Housekeeping / Room Cleaning', action === 'turndown' ? 'Turndown service' : 'Cleaning requested');
             break;
-            
         case 'taxi':
-            // Demande de taxi
-            await submitSmartRequest('Front Desk Inquiry', 'Taxi booking requested via Quick Suggestion');
+            await submitSmartRequest('Front Desk Inquiry', 'Taxi booking requested');
             break;
-            
         case 'ice':
-            // Demande de glace
-            await submitSmartRequest('Front Desk Inquiry', 'Ice bucket requested via Quick Suggestion');
+            await submitSmartRequest('Front Desk Inquiry', 'Ice bucket requested');
             break;
-            
         case 'water':
-            // Demande d'eau
-            await submitSmartRequest('Front Desk Inquiry', 'Water bottles requested via Quick Suggestion');
+            await submitSmartRequest('Front Desk Inquiry', 'Water bottles requested');
             break;
-            
         case 'blanket':
-            // Demande de couverture
-            await submitSmartRequest('Housekeeping / Room Cleaning', 'Extra blanket requested via Quick Suggestion');
+            await submitSmartRequest('Housekeeping / Room Cleaning', 'Extra blanket requested');
             break;
-            
         case 'toiletries':
-            // Demande de toiletries
-            await submitSmartRequest('Housekeeping / Room Cleaning', 'Extra toiletries requested via Quick Suggestion');
+            await submitSmartRequest('Housekeeping / Room Cleaning', 'Extra toiletries requested');
             break;
-            
         case 'quiet_room':
-            // Demande de chambre calme
-            await submitSmartRequest('Front Desk Inquiry', 'Quiet room requested via Quick Suggestion');
+            await submitSmartRequest('Front Desk Inquiry', 'Quiet room requested');
             break;
-            
         case 'tea_service':
-            // Demande de thé
-            await submitSmartRequest('Room Service / Order Food', 'Hot tea service requested via Quick Suggestion');
-            break;
-            
-        case 'newspaper':
-            // Demande de journal
-            await submitSmartRequest('Front Desk Inquiry', 'Newspaper requested via Quick Suggestion');
-            break;
-            
-        case 'wellness':
-            showToast('🧘 Wellness services available at the spa', 'info');
-            await submitSmartRequest('Front Desk Inquiry', 'Wellness/spa information requested via Quick Suggestion');
-            break;
-            
-        case 'pool':
-            showToast('🏊 Pool is open from 7AM to 8PM', 'info');
-            await submitSmartRequest('Front Desk Inquiry', 'Pool information requested via Quick Suggestion');
-            break;
-            
         case 'tea':
-            showToast('🍵 Afternoon tea served in the lounge', 'info');
-            await submitSmartRequest('Room Service / Order Food', 'Afternoon tea service requested via Quick Suggestion');
+            await submitSmartRequest('Room Service / Order Food', 'Tea service requested');
             break;
-            
+        case 'newspaper':
+            await submitSmartRequest('Front Desk Inquiry', 'Newspaper requested');
+            break;
+        case 'wellness':
+            await submitSmartRequest('Front Desk Inquiry', 'Wellness information requested');
+            break;
+        case 'pool':
+            await submitSmartRequest('Front Desk Inquiry', 'Pool information requested');
+            break;
         case 'entertainment':
-            showToast('🎮 Check the in-room entertainment system', 'info');
-            await submitSmartRequest('Front Desk Inquiry', 'Entertainment information requested via Quick Suggestion');
+            await submitSmartRequest('Front Desk Inquiry', 'Entertainment information requested');
             break;
-            
         case 'lounge':
-            showToast('🍹 Lounge is open until 11PM', 'info');
-            await submitSmartRequest('Front Desk Inquiry', 'Lounge access information requested via Quick Suggestion');
+            await submitSmartRequest('Front Desk Inquiry', 'Lounge access information requested');
             break;
-            
         default:
             showService('room_service');
     }
@@ -194,11 +156,10 @@ async function handleSmartSuggestion(action) {
 
 async function submitSmartRequest(serviceType, details) {
     const room = cachedGuestData?.room || localStorage.getItem('remal_guest_room');
-    const guestName = cachedGuestData?.guest_name || 'Guest';
     
     const requestData = {
         room_number: String(room),
-        guest_name: guestName,
+        guest_name: cachedGuestData?.guest_name || 'Guest',
         service_type: serviceType,
         details: details,
         status: 'Pending',
@@ -207,26 +168,12 @@ async function submitSmartRequest(serviceType, details) {
     
     try {
         if (supabaseClient) {
-            const { error } = await supabaseClient
-                .from('guest_requests')
-                .insert([requestData]);
-                
-            if (error) {
-                console.error('Error submitting smart request:', error);
-                showToast('Error: ' + error.message, 'error');
-                return;
-            }
+            const { error } = await supabaseClient.from('guest_requests').insert([requestData]);
+            if (error) { showToast('Error: ' + error.message, 'error'); return; }
         }
-        
-        showToast('✅ Request sent to staff!', 'success');
-        
-        // Rafraîchir les demandes
-        if (typeof fetchServiceRequestsTracking === 'function') {
-            fetchServiceRequestsTracking();
-        }
-        
+        showToast('✅ Request sent!', 'success');
+        if (typeof fetchServiceRequestsTracking === 'function') fetchServiceRequestsTracking();
     } catch (err) {
-        console.error('Error submitting smart request:', err);
         showToast('Error: ' + err.message, 'error');
     }
 }
@@ -237,3 +184,9 @@ function stopSmartSuggestions() {
         smartSuggestionsInterval = null;
     }
 }
+
+// Exposer
+window.initSmartSuggestions = initSmartSuggestions;
+window.renderSmartSuggestions = renderSmartSuggestions;
+window.handleSmartSuggestion = handleSmartSuggestion;
+window.submitSmartRequest = submitSmartRequest;
