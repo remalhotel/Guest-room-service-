@@ -22,126 +22,78 @@
         .toast-in { animation: toastIn 0.4s ease forwards; }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-in-up { animation: fadeInUp 0.5s ease forwards; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.3); } }
         
         .tab-btn { transition: all 0.3s ease; }
         .tab-btn.active { background: var(--text-gold, #DCA773); color: #1c1917; font-weight: 900; box-shadow: 0 5px 15px rgba(220, 167, 115, 0.3); }
         .tab-btn:not(.active) { background: var(--bg-card-hover, rgba(255,255,255,0.05)); color: var(--text-muted, #a8a29e); border: 1px solid var(--border-gold, rgba(220, 167, 115, 0.2)); }
-        .tab-btn:not(.active):hover { color: var(--text-gold, #DCA773); border-color: var(--text-gold, #DCA773); }
         
         .service-card { transition: all 0.3s ease; cursor: pointer; }
-        .service-card:hover { transform: translateY(-3px); border-color: var(--text-gold, #DCA773); box-shadow: 0 10px 30px rgba(220, 167, 115, 0.2); }
-        
-        .offer-card { transition: all 0.3s ease; overflow: hidden; }
-        .offer-card:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(220, 167, 115, 0.3); border-color: var(--text-gold, #DCA773); }
-        .offer-card img { transition: all 0.5s ease; }
-        .offer-card:hover img { transform: scale(1.05); }
-        
-        .featured-offer { position: relative; overflow: hidden; border-radius: 1rem; border: 1px solid var(--border-gold-strong, #DCA773); cursor: pointer; transition: all 0.3s ease; }
-        .featured-offer img { width: 100%; height: 180px; object-fit: cover; }
-        .featured-offer-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 50%, transparent 100%); padding: 20px 15px 15px; }
+        .service-card:hover { transform: translateY(-3px); border-color: var(--text-gold, #DCA773); }
         
         .lang-btn { transition: all 0.3s ease; cursor: pointer; }
         .lang-btn.active { background: var(--text-gold, #DCA773); color: #1c1917; font-weight: 900; }
         .lang-btn:not(.active) { background: var(--bg-card-hover, rgba(255,255,255,0.05)); color: var(--text-muted, #a8a29e); border: 1px solid var(--border-gold, rgba(220, 167, 115, 0.2)); }
 
-        .order-progress { display: flex; align-items: center; justify-content: space-between; margin-top: 1rem; position: relative; }
-        .order-progress-step { display: flex; flex-direction: column; align-items: center; z-index: 2; }
-        .order-progress-dot { width: 28px; height: 28px; border-radius: 50%; background: #262626; border: 2px solid #525252; color: #a8a29e; display: flex; align-items: center; justify-content: center; font-size: 10px; transition: all 0.3s; }
-        .order-progress-dot.active { background: #DCA773; border-color: #DCA773; color: #0c0a09; }
-        .order-progress-dot.completed { background: #10b981; border-color: #10b981; color: #ffffff; }
-        .order-progress-label { font-size: 9px; margin-top: 4px; color: #a8a29e; font-weight: 600; text-transform: uppercase; }
-        .order-progress-line { flex: 1; height: 2px; background: #525252; margin: 0 -4px; position: relative; top: -10px; z-index: 1; }
-
-        .toast-notification { position: fixed; top: 20px; right: 20px; z-index: 9999; background: #1c1917; border: 1px solid #DCA773; padding: 12px 20px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 10px; }
+        .toast-notification { position: fixed; top: 20px; right: 20px; z-index: 9999; background: #1c1917; border: 1px solid #DCA773; padding: 12px 20px; border-radius: 12px; display: flex; align-items: center; gap: 10px; }
         
         .favorite-heart { color: #525252; transition: color 0.2s ease; }
         .favorite-heart.active { color: #ef4444; }
 
-        .chat-message { padding: 8px 12px; border-radius: 12px; margin-bottom: 6px; max-width: 80%; font-size: 11px; word-wrap: break-word; }
+        .chat-message { padding: 8px 12px; border-radius: 12px; margin-bottom: 6px; max-width: 80%; font-size: 11px; }
         .chat-message.guest { background: #DCA773; color: #1c1917; margin-left: auto; }
         .chat-message.staff { background: rgba(255,255,255,0.1); color: #f5f5f4; margin-right: auto; }
-        .chat-typing-indicator { font-size: 9px; color: #a8a29e; font-style: italic; margin-left: 12px; }
-        .chat-presence-status { font-size: 10px; margin-bottom: 8px; }
 
         body.light-mode { background-color: #f8fafc !important; color: #0f172a !important; }
-        body.light-mode .lock-card, body.light-mode .remal-card, body.light-mode #menuModal > div, body.light-mode #guestChatModal > div {
-            background-color: #ffffff !important; border-color: rgba(217, 119, 6, 0.2) !important;
-        }
-        body.light-mode .remal-banner { background-color: #f1f5f9 !important; }
+        body.light-mode .lock-card, body.light-mode .remal-card { background-color: #ffffff !important; border-color: rgba(217, 119, 6, 0.2) !important; }
         body.light-mode .text-stone-100, body.light-mode .text-stone-200, body.light-mode .text-stone-300 { color: #1e293b !important; }
-        body.light-mode .text-stone-400, body.light-mode .text-stone-500 { color: #64748b !important; }
-        body.light-mode input, body.light-mode select, body.light-mode textarea { background-color: #ffffff !important; border-color: #cbd5e1 !important; color: #0f172a !important; }
-        body.light-mode .chat-message.staff { background-color: #e2e8f0 !important; color: #0f172a !important; }
-        body.light-mode .toast-notification { background-color: #ffffff !important; border-color: #d97706 !important; color: #0f172a !important; }
-        body.light-mode #oneTapContainer button { background-color: #e2e8f0 !important; border-color: #cbd5e1 !important; }
-        body.light-mode #oneTapContainer span { color: #0f172a !important; }
-        body.light-mode #orderHistoryContainer .text-stone-100 { color: #1e293b !important; }
-        body.light-mode #orderHistoryContainer .text-stone-400 { color: #64748b !important; }
-
-        .service-tracking-card { background-color: rgba(28, 25, 23, 0.8); border: 1px solid rgba(220, 167, 115, 0.3); border-radius: 1rem; padding: 1rem; margin-bottom: 0.75rem; }
-        .service-tracking-dot { width: 24px; height: 24px; border-radius: 50%; background: #262626; border: 2px solid #525252; color: #a8a29e; display: flex; align-items: center; justify-content: center; font-size: 9px; }
-        .service-tracking-dot.active { background: #DCA773; border-color: #DCA773; color: #0c0a09; }
-        .service-tracking-dot.completed { background: #10b981; border-color: #10b981; color: #ffffff; }
-        .service-tracking-line { flex: 1; height: 2px; background: #525252; margin: 0 -2px; position: relative; top: -10px; z-index: 1; }
+        body.light-mode .text-stone-400 { color: #64748b !important; }
+        body.light-mode input, body.light-mode select, body.light-mode textarea { background-color: #ffffff !important; color: #0f172a !important; }
     </style>
 </head>
 <body class="min-h-screen lock-screen bg-stone-950 text-stone-100 font-sans">
 
     <!-- SCREEN 1: IDENTIFICATION -->
     <div id="lockScreen" class="min-h-screen flex items-center justify-center p-4 relative">
-        <div class="fixed top-4 left-4 z-50 flex gap-1.5 p-1 bg-stone-900/80 border border-stone-800 rounded-full backdrop-blur-md shadow-xl">
-            <button onclick="setLanguage('en')" id="langEn" class="lang-btn active text-[10px] px-2.5 py-1 rounded-full font-bold transition">EN</button>
-            <button onclick="setLanguage('fr')" id="langFr" class="lang-btn text-[10px] px-2.5 py-1 rounded-full font-bold transition">FR</button>
-            <button onclick="setLanguage('ar')" id="langAr" class="lang-btn text-[10px] px-2.5 py-1 rounded-full font-bold transition">عربي</button>
-            <button onclick="setLanguage('hi')" id="langHi" class="lang-btn text-[10px] px-2.5 py-1 rounded-full font-bold transition">हिन्दी</button>
+        <div class="fixed top-4 left-4 z-50 flex gap-1.5 p-1 bg-stone-900/80 border border-stone-800 rounded-full">
+            <button onclick="setLanguage('en')" id="langEn" class="lang-btn active text-[10px] px-2.5 py-1 rounded-full font-bold">EN</button>
+            <button onclick="setLanguage('fr')" id="langFr" class="lang-btn text-[10px] px-2.5 py-1 rounded-full font-bold">FR</button>
+            <button onclick="setLanguage('ar')" id="langAr" class="lang-btn text-[10px] px-2.5 py-1 rounded-full font-bold">عربي</button>
+            <button onclick="setLanguage('hi')" id="langHi" class="lang-btn text-[10px] px-2.5 py-1 rounded-full font-bold">हिन्दी</button>
         </div>
 
-        <button onclick="toggleTheme()" id="themeToggleLock" class="theme-toggle-btn fixed top-4 right-4 z-50 p-3 rounded-full bg-stone-900 border border-stone-800 text-amber-400 shadow-xl">
+        <button onclick="toggleTheme()" id="themeToggleLock" class="fixed top-4 right-4 z-50 p-3 rounded-full bg-stone-900 border border-stone-800 text-amber-400">
             <i class="fas fa-sun text-sm" id="themeIconLock"></i>
         </button>
         
         <div class="w-full max-w-md lock-card p-8 rounded-[2rem] space-y-6 bg-stone-900/80 border border-amber-500/20 backdrop-blur-xl shadow-2xl">
-            <div class="remal-banner text-center space-y-2 rounded-2xl p-6 border border-[var(--border-gold-strong,#DCA773)] bg-stone-950/40">
-                <div class="w-20 h-20 mx-auto rounded-full bg-[var(--text-gold,#DCA773)] flex items-center justify-center shadow-2xl">
+            <div class="text-center space-y-2">
+                <div class="w-20 h-20 mx-auto rounded-full bg-[var(--text-gold,#DCA773)] flex items-center justify-center">
                     <i class="fas fa-concierge-bell text-2xl text-stone-950"></i>
                 </div>
                 <h1 class="text-2xl font-serif-luxury font-bold text-gold-gradient tracking-[0.2em]">GUEST HUB</h1>
-                <p class="text-[10px] text-stone-400 uppercase tracking-[0.3em] font-bold" data-i18n="hotelName">Remal Hotel & Villas</p>
-                <div class="pt-2">
-                    <span class="inline-block text-[9px] bg-stone-900 text-[var(--text-gold,#DCA773)] border border-[var(--border-gold-strong,#DCA773)] font-extrabold px-4 py-1.5 rounded-full uppercase tracking-[0.15em]" data-i18n="guestId">🔒 Guest Identification</span>
-                </div>
-            </div>
-
-            <div class="text-center space-y-1">
-                <h2 class="text-sm font-bold text-stone-100" id="greetingText" data-i18n="welcomeTitle">Welcome to Guest Hub</h2>
-                <p class="text-[10px] text-stone-400" data-i18n="verifyPrompt">Please verify your identity to access all services</p>
+                <p class="text-[10px] text-stone-400 uppercase" data-i18n="hotelName">Remal Hotel & Villas</p>
             </div>
 
             <div class="space-y-4">
                 <div>
-                    <label class="block font-bold text-[var(--text-gold,#DCA773)] uppercase tracking-wider text-[10px] mb-1.5">
+                    <label class="block font-bold text-[var(--text-gold,#DCA773)] text-[10px] mb-1.5">
                         <i class="fas fa-door-open mr-1"></i> <span data-i18n="roomNumber">Room Number</span>
                     </label>
-                    <input type="text" id="lockRoomInput" placeholder="e.g., 103" class="w-full remal-input rounded-2xl p-4 font-bold text-xl text-[var(--text-gold,#DCA773)] tracking-wide text-center bg-stone-950/60 border border-stone-800 focus:border-amber-500 outline-none" onkeypress="if(event.key==='Enter') verifierIdentiteClient()">
+                    <input type="text" id="lockRoomInput" placeholder="e.g., 103" class="w-full remal-input rounded-2xl p-4 font-bold text-xl text-[var(--text-gold,#DCA773)] text-center bg-stone-950/60 border border-stone-800 outline-none" onkeypress="if(event.key==='Enter') verifierIdentiteClient()">
                 </div>
 
                 <div>
-                    <label class="block font-bold text-[var(--text-gold,#DCA773)] uppercase tracking-wider text-[10px] mb-1.5">
+                    <label class="block font-bold text-[var(--text-gold,#DCA773)] text-[10px] mb-1.5">
                         <i class="fas fa-user mr-1"></i> <span data-i18n="yourName">Your Name</span>
                     </label>
-                    <input type="text" id="lockNameInput" placeholder="e.g., SANGARE or ZIDANE" class="w-full remal-input rounded-2xl p-4 font-semibold text-sm text-center bg-stone-950/60 border border-stone-800 focus:border-amber-500 outline-none" onkeypress="if(event.key==='Enter') verifierIdentiteClient()">
-                    <p class="text-[9px] text-stone-400 text-center mt-1" data-i18n="nameHint">Enter any name on your reservation</p>
+                    <input type="text" id="lockNameInput" placeholder="e.g., SANGARE" class="w-full remal-input rounded-2xl p-4 text-sm text-center bg-stone-950/60 border border-stone-800 outline-none" onkeypress="if(event.key==='Enter') verifierIdentiteClient()">
                 </div>
 
-                <div id="lockLoadingIndicator" class="hidden text-center text-[10px] text-[var(--text-gold,#DCA773)] py-2">
-                    <i class="fas fa-spinner fa-spin mr-1"></i> <span data-i18n="verifying">Verifying with hotel records...</span>
-                </div>
+                <div id="lockErrorMsg" class="hidden text-center text-[10px] text-red-400 font-bold"></div>
 
-                <div id="lockErrorMsg" class="hidden text-center text-[10px] text-red-400 font-bold py-2">
-                    ❌ <span data-i18n="notFound">Room number or name not found. Please try again.</span>
-                </div>
-
-                <button onclick="verifierIdentiteClient()" class="w-full bg-[#DCA773] hover:bg-[#ebd0b3] text-stone-950 font-black py-4 rounded-2xl text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2.5 shadow-lg">
+                <button onclick="verifierIdentiteClient()" class="w-full bg-[#DCA773] text-stone-950 font-black py-4 rounded-2xl text-xs uppercase tracking-widest">
                     <i class="fas fa-unlock"></i> <span data-i18n="verifyAccess">Verify & Access</span>
                 </button>
             </div>
@@ -150,73 +102,40 @@
 
     <!-- SCREEN 2: MAIN GUEST HUB -->
     <div id="mainScreen" class="hidden min-h-screen p-3 sm:p-6 pb-24 relative">
-        <div class="fixed top-4 left-4 z-50 flex gap-1.5 p-1 bg-stone-900/80 border border-stone-800 rounded-full backdrop-blur-md shadow-xl">
-            <button onclick="setLanguage('en')" id="langEnMain" class="lang-btn active text-[10px] px-2.5 py-1 rounded-full font-bold transition">EN</button>
-            <button onclick="setLanguage('fr')" id="langFrMain" class="lang-btn text-[10px] px-2.5 py-1 rounded-full font-bold transition">FR</button>
-            <button onclick="setLanguage('ar')" id="langArMain" class="lang-btn text-[10px] px-2.5 py-1 rounded-full font-bold transition">عربي</button>
-            <button onclick="setLanguage('hi')" id="langHiMain" class="lang-btn text-[10px] px-2.5 py-1 rounded-full font-bold transition">हिन्दी</button>
+        <div class="fixed top-4 left-4 z-50 flex gap-1.5 p-1 bg-stone-900/80 border border-stone-800 rounded-full">
+            <button onclick="setLanguage('en')" id="langEnMain" class="lang-btn active text-[10px] px-2.5 py-1 rounded-full font-bold">EN</button>
+            <button onclick="setLanguage('fr')" id="langFrMain" class="lang-btn text-[10px] px-2.5 py-1 rounded-full font-bold">FR</button>
+            <button onclick="setLanguage('ar')" id="langArMain" class="lang-btn text-[10px] px-2.5 py-1 rounded-full font-bold">عربي</button>
+            <button onclick="setLanguage('hi')" id="langHiMain" class="lang-btn text-[10px] px-2.5 py-1 rounded-full font-bold">हिन्दी</button>
         </div>
 
-<div class="fixed top-4 right-4 z-50 flex gap-2">
-    <button onclick="toggleAutoTheme()" class="p-3 rounded-full bg-stone-900 border border-stone-800 text-amber-400 shadow-xl" title="Auto Theme">
-        <i class="fas fa-magic text-sm"></i>
-    </button>
-    <button onclick="toggleTheme()" id="themeToggleMain" class="theme-toggle-btn p-3 rounded-full bg-stone-900 border border-stone-800 text-amber-400 shadow-xl">
-        <i class="fas fa-sun text-sm" id="themeIconMain"></i>
-    </button>
-</div>
+        <button onclick="toggleTheme()" id="themeToggleMain" class="fixed top-4 right-4 z-50 p-3 rounded-full bg-stone-900 border border-stone-800 text-amber-400">
+            <i class="fas fa-sun text-sm" id="themeIconMain"></i>
+        </button>
 
         <button onclick="openGuestChatModal()" class="fixed bottom-4 left-4 z-50 bg-[#DCA773] text-stone-950 w-14 h-14 rounded-full flex items-center justify-center shadow-2xl">
             <i class="fas fa-comments text-lg"></i>
         </button>
-
-        <button onclick="showRemindersModal()" class="fixed bottom-4 left-20 z-50 bg-stone-800 text-amber-400 w-12 h-12 rounded-full flex items-center justify-center shadow-2xl">
-    <i class="fas fa-bell"></i>
-</button>
-
-<button onclick="showAmbientSoundsModal()" class="fixed bottom-4 left-32 z-50 bg-stone-800 text-amber-400 w-10 h-10 rounded-full flex items-center justify-center shadow-2xl">
-    <i class="fas fa-music"></i>
-</button>
- <button onclick="showEmojiFeedback()" class="fixed bottom-20 right-4 z-50 bg-stone-800 text-amber-400 w-10 h-10 rounded-full flex items-center justify-center shadow-2xl">
-    <i class="fas fa-smile"></i>
- </button>       
-        <a href="tel:+971526966865" class="fixed bottom-4 right-4 z-50 bg-emerald-600 hover:bg-emerald-700 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-2xl">
+        
+        <a href="tel:+971526966865" class="fixed bottom-4 right-4 z-50 bg-emerald-600 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-2xl">
             <i class="fas fa-phone-alt text-lg"></i>
         </a>
         
-        <div class="w-full max-w-md mx-auto remal-card p-6 sm:p-8 rounded-[2rem] space-y-6 bg-stone-900/90 border border-amber-500/20 backdrop-blur-xl shadow-2xl mt-12 sm:mt-8">
-            <div class="remal-banner text-center border border-[var(--border-gold-strong,#DCA773)] pb-6 pt-7 rounded-2xl overflow-hidden bg-stone-950/50">
-                <div class="space-y-2">
-                    <h1 class="text-2xl font-serif-luxury font-bold text-gold-gradient tracking-[0.15em]">GUEST HUB</h1>
-                    <p class="text-[9px] text-stone-400 uppercase tracking-[0.2em] font-bold" data-i18n="hotelLocation">Remal Hotel & Villas • Al Dhannah City</p>
-                    <div class="pt-3">
-                        <p class="text-[10px] text-stone-400 uppercase tracking-wider" id="greetingTime">Welcome</p>
-                        <div id="onlineStatusIndicator"></div>
-                        <div id="themeIndicatorContainer"></div>
-                        <h2 id="welcomeGuestName" class="text-lg font-serif-luxury font-bold text-[var(--text-gold,#DCA773)] tracking-wide uppercase">---</h2>
-                    </div>
-                    <div class="pt-2">
-                        <span id="roomTypeBadge" class="inline-block text-[9px] bg-stone-900 text-[var(--text-gold,#DCA773)] border border-[var(--border-gold-strong,#DCA773)] font-extrabold px-4 py-1.5 rounded-full uppercase tracking-[0.15em]">🏨 Guest Hub Services</span>
-                    </div>
+        <div class="w-full max-w-md mx-auto remal-card p-6 sm:p-8 rounded-[2rem] space-y-6 bg-stone-900/90 border border-amber-500/20 shadow-2xl mt-12">
+            <div class="text-center space-y-2">
+                <h1 class="text-2xl font-serif-luxury font-bold text-gold-gradient tracking-[0.15em]">GUEST HUB</h1>
+                <div class="pt-3">
+                    <p class="text-[10px] text-stone-400" id="greetingTime">Welcome</p>
+                    <div id="onlineStatusIndicator"></div>
+                    <h2 id="welcomeGuestName" class="text-lg font-serif-luxury font-bold text-[var(--text-gold,#DCA773)] uppercase">---</h2>
                 </div>
             </div>
 
-            <div class="p-4 bg-stone-950/60 border border-amber-500/20 rounded-2xl space-y-2 animate-fade-in">
-                <div class="flex justify-between font-semibold">
-                    <span class="text-stone-400 text-[11px]" data-i18n="room">Room:</span> 
-                    <span id="displayRoomNumber" class="text-[var(--text-gold,#DCA773)] font-bold">---</span>
-                </div>
-                <div class="flex justify-between font-semibold border-t border-stone-800 pt-2">
-                    <span class="text-stone-400 text-[11px]" data-i18n="roomType">Room Type:</span> 
-                    <span id="displayRoomType" class="text-[var(--text-gold,#DCA773)] font-bold">---</span>
-                </div>
-                <div class="flex justify-between font-semibold border-t border-stone-800 pt-2">
-                    <span class="text-stone-400 text-[11px]" data-i18n="departure">Departure:</span> 
-                    <span id="displayDeparture" class="text-[var(--text-gold,#DCA773)] font-bold">---</span>
-                </div>
-                <button onclick="changerDeChambre()" class="w-full text-center text-[10px] text-stone-400 hover:text-[var(--text-gold,#DCA773)] font-bold uppercase tracking-wider transition pt-1">
-                    <i class="fas fa-sign-out-alt mr-1"></i> <span data-i18n="logout">Change Room / Logout</span>
-                </button>
+            <div class="p-4 bg-stone-950/60 border border-amber-500/20 rounded-2xl space-y-2">
+                <div class="flex justify-between"><span class="text-stone-400 text-[11px]">Room:</span><span id="displayRoomNumber" class="text-[var(--text-gold,#DCA773)] font-bold">---</span></div>
+                <div class="flex justify-between"><span class="text-stone-400 text-[11px]">Room Type:</span><span id="displayRoomType" class="text-[var(--text-gold,#DCA773)] font-bold">---</span></div>
+                <div class="flex justify-between"><span class="text-stone-400 text-[11px]">Departure:</span><span id="displayDeparture" class="text-[var(--text-gold,#DCA773)] font-bold">---</span></div>
+                <button onclick="changerDeChambre()" class="w-full text-center text-[10px] text-stone-400">Change Room / Logout</button>
             </div>
 
             <div id="servicesTrackingContainer" class="hidden space-y-3"></div>
@@ -225,153 +144,128 @@
             <div id="smartSuggestionsContainer"></div>
 
             <div class="flex gap-2 flex-wrap">
-                <button onclick="switchTab('services')" id="tabServices" class="tab-btn active flex-1 min-w-[70px] py-3 rounded-xl text-xs font-bold transition">
-                    <i class="fas fa-concierge-bell mr-1"></i> <span data-i18n="services">Services</span>
-                </button>
-                <button onclick="switchTab('offers')" id="tabOffers" class="tab-btn flex-1 min-w-[70px] py-3 rounded-xl text-xs font-bold transition">
-                    <i class="fas fa-tags mr-1"></i> <span data-i18n="offers">Offers</span>
-                </button>
-                <button onclick="showOrderHistory()" id="tabHistory" class="tab-btn flex-1 min-w-[70px] py-3 rounded-xl text-xs font-bold transition">
-                    <i class="fas fa-receipt mr-1"></i> History
-                </button>
-                <button onclick="switchTab('faq')" id="tabFaq" class="tab-btn flex-1 min-w-[70px] py-3 rounded-xl text-xs font-bold transition">
-                    <i class="fas fa-question-circle mr-1"></i> <span data-i18n="faq">FAQ</span>
-                </button>
+                <button onclick="switchTab('services')" id="tabServices" class="tab-btn active flex-1 min-w-[70px] py-3 rounded-xl text-xs font-bold">Services</button>
+                <button onclick="switchTab('offers')" id="tabOffers" class="tab-btn flex-1 min-w-[70px] py-3 rounded-xl text-xs font-bold">Offers</button>
+                <button onclick="showOrderHistory()" id="tabHistory" class="tab-btn flex-1 min-w-[70px] py-3 rounded-xl text-xs font-bold">History</button>
+                <button onclick="switchTab('faq')" id="tabFaq" class="tab-btn flex-1 min-w-[70px] py-3 rounded-xl text-xs font-bold">FAQ</button>
             </div>
 
             <div id="servicesSection" class="space-y-4">
                 <div id="oneTapContainer"></div>
                 <div id="servicesList" class="space-y-3">
-                    <p class="text-center text-[10px] text-stone-400 font-bold uppercase tracking-wider">Select a Service</p>
+                    <p class="text-center text-[10px] text-stone-400">Select a Service</p>
                     
                     <div class="service-card p-4 bg-stone-950/60 border border-stone-800 rounded-2xl" onclick="showService('room_service')">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center font-bold"><i class="fas fa-utensils"></i></div>
+                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center"><i class="fas fa-utensils"></i></div>
                             <div><p class="font-bold text-stone-100 text-xs">Room Service / Order Food</p></div>
                         </div>
                     </div>
+                    
+                    <div class="service-card p-4 bg-stone-950/60 border border-stone-800 rounded-2xl" onclick="openLaundryApp()">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center"><i class="fas fa-tshirt"></i></div>
+                            <div>
+                                <p class="font-bold text-stone-100 text-xs">🧺 Laundry Service</p>
+                                <p class="text-[9px] text-stone-400">Wash, dry clean & ironing</p>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <div class="service-card p-4 bg-stone-950/60 border border-stone-800 rounded-2xl" onclick="showService('table_reservation')">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center font-bold"><i class="fas fa-calendar-check"></i></div>
+                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center"><i class="fas fa-calendar-check"></i></div>
                             <div><p class="font-bold text-stone-100 text-xs">Table Reservation</p></div>
                         </div>
                     </div>
+                    
                     <div class="service-card p-4 bg-stone-950/60 border border-stone-800 rounded-2xl" onclick="showService('wakeup_call')">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center font-bold"><i class="fas fa-clock"></i></div>
-                            <div><p class="font-bold text-stone-100 text-xs">Wake-up Call / Alarm</p></div>
+                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center"><i class="fas fa-clock"></i></div>
+                            <div><p class="font-bold text-stone-100 text-xs">Wake-up Call</p></div>
                         </div>
                     </div>
+                    
                     <div class="service-card p-4 bg-stone-950/60 border border-stone-800 rounded-2xl" onclick="showService('late_checkout')">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center font-bold"><i class="fas fa-hourglass-half"></i></div>
-                            <div><p class="font-bold text-stone-100 text-xs">Late Check-out / Extension</p></div>
+                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center"><i class="fas fa-hourglass-half"></i></div>
+                            <div><p class="font-bold text-stone-100 text-xs">Late Check-out</p></div>
                         </div>
                     </div>
+                    
                     <div class="service-card p-4 bg-stone-950/60 border border-stone-800 rounded-2xl" onclick="showService('housekeeping')">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center font-bold"><i class="fas fa-broom"></i></div>
-                            <div><p class="font-bold text-stone-100 text-xs">Housekeeping / Room Cleaning</p></div>
+                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center"><i class="fas fa-broom"></i></div>
+                            <div><p class="font-bold text-stone-100 text-xs">Housekeeping</p></div>
                         </div>
                     </div>
+                    
                     <div class="service-card p-4 bg-stone-950/60 border border-stone-800 rounded-2xl" onclick="showService('front_desk')">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center font-bold"><i class="fas fa-headset"></i></div>
+                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center"><i class="fas fa-headset"></i></div>
                             <div><p class="font-bold text-stone-100 text-xs">Front Desk Inquiry</p></div>
                         </div>
                     </div>
+                    
                     <div class="service-card p-4 bg-stone-950/60 border border-stone-800 rounded-2xl" onclick="showService('luggage')">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center font-bold"><i class="fas fa-suitcase"></i></div>
+                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center"><i class="fas fa-suitcase"></i></div>
                             <div><p class="font-bold text-stone-100 text-xs">Luggage Assistance</p></div>
                         </div>
                     </div>
+                    
                     <div class="service-card p-4 bg-stone-950/60 border border-stone-800 rounded-2xl" onclick="showService('maintenance')">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center font-bold"><i class="fas fa-tools"></i></div>
-                            <div><p class="font-bold text-stone-100 text-xs">Maintenance / Technical Support</p></div>
+                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center"><i class="fas fa-tools"></i></div>
+                            <div><p class="font-bold text-stone-100 text-xs">Maintenance</p></div>
                         </div>
                     </div>
                 </div>
 
                 <div id="roomServiceSection" class="hidden space-y-4">
-                    <button onclick="backToServices()" class="text-[10px] text-stone-400 font-bold">← Back to Services</button>
-                    <div id="orderTrackingSection" class="hidden p-4 bg-stone-950/80 border border-amber-500/30 rounded-2xl space-y-3">
-                        <div class="flex justify-between">
-                            <span class="text-[10px] font-bold text-[var(--text-gold,#DCA773)]">Order Tracking</span>
-                            <span id="orderStatusText" class="text-[10px] font-bold text-amber-400">---</span>
-                        </div>
-                        <div class="order-progress">
-                            <div class="order-progress-step"><div class="order-progress-dot active" id="stepReceived"><i class="fas fa-check"></i></div><span class="order-progress-label active">Received</span></div>
-                            <div class="order-progress-line" id="lineReceived"></div>
-                            <div class="order-progress-step"><div class="order-progress-dot" id="stepPreparing"><i class="fas fa-fire"></i></div><span class="order-progress-label">Preparing</span></div>
-                            <div class="order-progress-line" id="linePreparing"></div>
-                            <div class="order-progress-step"><div class="order-progress-dot" id="stepReady"><i class="fas fa-bell"></i></div><span class="order-progress-label">Ready</span></div>
-                            <div class="order-progress-line" id="lineReady"></div>
-                            <div class="order-progress-step"><div class="order-progress-dot" id="stepDelivered"><i class="fas fa-home"></i></div><span class="order-progress-label">Delivered</span></div>
-                        </div>
-                    </div>
-                    <select id="guestMealType" class="w-full remal-input bg-stone-950 border border-stone-800 rounded-2xl p-3.5 text-xs text-stone-200">
+                    <button onclick="backToServices()" class="text-[10px] text-stone-400">← Back</button>
+                    <select id="guestMealType" class="w-full bg-stone-950 border border-stone-800 rounded-2xl p-3.5 text-xs text-stone-200">
                         <option value="Breakfast">🌅 Breakfast</option>
                         <option value="Lunch">☀️ Lunch</option>
                         <option value="Dinner">🌙 Dinner</option>
-                        <option value="All Day">🕐 All Day</option>
                     </select>
                     <button onclick="openMenuModal()" class="w-full bg-stone-950/80 text-[var(--text-gold,#DCA773)] border border-amber-500/30 font-bold py-4 rounded-2xl">
                         🍽️ Browse Menu <span id="selectedBadgeCount" class="bg-[var(--text-gold,#DCA773)] text-stone-950 px-3 py-1 rounded-full text-[11px] font-black">0</span>
                     </button>
-                    <textarea id="guestSpecialInstructions" placeholder="Special Instructions / Allergies..." class="w-full h-20 bg-stone-950 border border-stone-800 rounded-2xl p-3.5 text-xs text-stone-200"></textarea>
-                    <select id="deliveryTime" class="w-full bg-stone-950 border border-stone-800 rounded-2xl p-3.5 text-xs text-stone-200">
-                        <option value="As soon as possible">⚡ ASAP (~30 min)</option>
-                        <option value="In 45 minutes">🕒 45 min</option>
-                        <option value="In 1 hour">🕒 1 hour</option>
-                    </select>
-                    <button onclick="submitRoomServiceOrder('direct')" class="w-full bg-[#DCA773] text-stone-950 font-black py-4 rounded-2xl">🛎️ Direct Order to Kitchen</button>
-                    <button onclick="submitRoomServiceOrder('whatsapp')" class="w-full bg-[#10b981] text-stone-950 font-black py-3.5 rounded-2xl">📱 Send via WhatsApp</button>
+                    <textarea id="guestSpecialInstructions" placeholder="Special Instructions..." class="w-full h-20 bg-stone-950 border border-stone-800 rounded-2xl p-3.5 text-xs text-stone-200"></textarea>
+                    <button onclick="submitRoomServiceOrder('direct')" class="w-full bg-[#DCA773] text-stone-950 font-black py-4 rounded-2xl">🛎️ Direct Order</button>
+                    <button onclick="submitRoomServiceOrder('whatsapp')" class="w-full bg-[#10b981] text-stone-950 font-black py-3.5 rounded-2xl">📱 WhatsApp Order</button>
                 </div>
 
                 <div id="otherServiceSection" class="hidden space-y-4">
-                    <button onclick="backToServices()" class="text-[10px] text-stone-400 font-bold">← Back to Services</button>
-                    <div class="p-4 bg-stone-950/60 border border-amber-500/20 rounded-2xl space-y-3">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center" id="otherServiceIcon"><i class="fas fa-concierge-bell"></i></div>
-                            <div><p class="font-bold text-stone-100 text-xs" id="otherServiceTitle">Service</p><p class="text-[9px] text-stone-400" id="otherServiceSubtitle">Description</p></div>
-                        </div>
-                        <div id="otherServiceFields" class="space-y-3"></div>
-                        <textarea id="otherServiceNotes" placeholder="Additional Notes..." class="w-full h-20 bg-stone-950 border border-stone-800 rounded-2xl p-3.5 text-xs text-stone-200"></textarea>
-                        <button onclick="submitOtherService()" class="w-full bg-[#DCA773] text-stone-950 font-black py-4 rounded-2xl">📋 Submit Request</button>
-                    </div>
+                    <button onclick="backToServices()" class="text-[10px] text-stone-400">← Back</button>
+                    <div id="otherServiceFields" class="space-y-3"></div>
+                    <textarea id="otherServiceNotes" placeholder="Additional Notes..." class="w-full h-20 bg-stone-950 border border-stone-800 rounded-2xl p-3.5 text-xs text-stone-200"></textarea>
+                    <button onclick="submitOtherService()" class="w-full bg-[#DCA773] text-stone-950 font-black py-4 rounded-2xl">📋 Submit Request</button>
                 </div>
             </div>
 
             <div id="offersSection" class="hidden space-y-4">
-                <p class="text-center text-[10px] text-stone-400 font-bold">⭐ Exclusive Offers</p>
                 <div id="offersContainer" class="space-y-4"></div>
             </div>
 
             <div id="faqSection" class="hidden space-y-4">
-                <p class="text-center text-[10px] text-stone-400 font-bold">❓ Frequently Asked Questions</p>
-                <div class="space-y-3" id="faqContainer"></div>
+                <div id="faqContainer" class="space-y-3"></div>
             </div>
 
             <div id="orderHistorySection" class="hidden space-y-4">
-                <p class="text-center text-[10px] text-stone-400 font-bold">📜 Order History</p>
                 <div id="orderHistoryContainer" class="space-y-3"></div>
             </div>
         </div>
     </div>
 
-    <!-- MODALE CHAT -->
+    <!-- MODALES -->
     <div id="guestChatModal" class="hidden fixed inset-0 bg-black/80 z-[300] flex items-center justify-center p-4">
         <div class="bg-stone-900 border border-amber-500/30 w-full max-w-md rounded-3xl p-6 space-y-4 max-h-[80vh] flex flex-col">
             <div class="flex justify-between border-b border-stone-800 pb-3">
                 <h3 class="text-xs font-bold text-[var(--text-gold,#DCA773)]">💬 Front Desk Chat</h3>
-                <div class="flex gap-2">
-                    <button onclick="toggleChatSound()" id="chatSoundToggle" class="text-stone-400">🔊</button>
-                    <button onclick="closeGuestChatModal()" class="text-stone-400">✕</button>
-                </div>
+                <button onclick="closeGuestChatModal()" class="text-stone-400">✕</button>
             </div>
-            <div id="staffPresenceStatus" class="text-gray-400 text-[10px]">● Staff offline</div>
             <div id="guestChatContainer" class="flex-1 overflow-y-auto space-y-2"></div>
             <div class="flex gap-2 border-t border-stone-800 pt-2">
                 <input type="text" id="guestChatInput" placeholder="Write a message..." class="flex-1 bg-stone-950 border border-stone-800 rounded-xl px-3 py-2 text-xs text-stone-100" onkeypress="if(event.key==='Enter') sendGuestChatMessage()">
@@ -380,7 +274,6 @@
         </div>
     </div>
 
-    <!-- MENU MODAL -->
     <div id="menuModal" class="hidden fixed inset-0 bg-black/90 z-[100] flex items-center justify-center p-4">
         <div class="bg-stone-900 border border-amber-500/30 w-full max-w-lg rounded-3xl p-6 space-y-4 max-h-[90vh] flex flex-col">
             <div class="flex justify-between border-b border-stone-800 pb-3">
@@ -389,10 +282,6 @@
             </div>
             <input type="text" id="menuSearchInput" oninput="renderMenuItems()" placeholder="Search dish..." class="w-full bg-stone-950 border border-stone-800 rounded-xl px-3 py-2 text-xs text-stone-100">
             <div id="menuItemsContainer" class="flex-1 overflow-y-auto space-y-3"></div>
-            <div class="flex justify-between text-xs font-bold border-t border-stone-800 pt-2">
-                <span class="text-stone-400">Total:</span>
-                <span id="modalMenuTotalSummary" class="text-[var(--text-gold,#DCA773)]">0 items · 0.00 AED</span>
-            </div>
             <button onclick="confirmMenuSelection()" class="w-full bg-[#DCA773] text-stone-950 font-bold py-3.5 rounded-2xl">Confirm Selection</button>
         </div>
     </div>
@@ -410,17 +299,8 @@
     <script src="assets/js/ui/navigation.js"></script>
     <script src="assets/js/ui/menu-ui.js"></script>
     <script src="assets/js/ui/chat-ui.js"></script>
-    <script src="assets/js/ui/auto-theme.js"></script>
     <script src="assets/js/components/chat-manager.js"></script>
-    <script src="assets/js/components/weather.js"></script>
-    <script src="assets/js/components/smart-suggestions.js"></script>
-    <script src="assets/js/components/reminders.js"></script>
-    <script src="assets/js/components/ambient-sounds.js"></script>
-    <script src="assets/js/components/checkout.js"></script>
-    <script src="assets/js/components/daily-summary.js"></script>
-    <script src="assets/js/components/emoji-feedback.js"></script>
-    <script src="assets/js/components/welcome.js"></script>
-    <script src="assets/js/components/offer-notifications.js"></script>
+    <script src="assets/js/components/laundry-link.js"></script>
     <script src="assets/js/services/auth.js"></script>
     <script src="assets/js/services/offers.js"></script>
     <script src="assets/js/services/requests.js"></script>
@@ -428,17 +308,11 @@
    
     <script>
         initTheme();
-        initAutoTheme();
         initOfflineMode();
-        initOfferNotifications();
         setLanguage(currentLanguage);
         renderMenuItems();
         renderFaqList();
         renderOneTapServices();
-        initSmartSuggestions();
-        fetchWeather();
-        initCheckoutCountdown();
-        initDailySummary();
         restaurerSession();
         fetchOffers();
     </script>
