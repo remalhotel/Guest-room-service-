@@ -157,9 +157,14 @@
             <button onclick="setLanguage('hi')" id="langHiMain" class="lang-btn text-[10px] px-2.5 py-1 rounded-full font-bold transition">हिन्दी</button>
         </div>
 
-        <button onclick="toggleTheme()" id="themeToggleMain" class="theme-toggle-btn fixed top-4 right-4 z-50 p-3 rounded-full bg-stone-900 border border-stone-800 text-amber-400 shadow-xl">
-            <i class="fas fa-sun text-sm" id="themeIconMain"></i>
-        </button>
+<div class="fixed top-4 right-4 z-50 flex gap-2">
+    <button onclick="toggleAutoTheme()" class="p-3 rounded-full bg-stone-900 border border-stone-800 text-amber-400 shadow-xl" title="Auto Theme">
+        <i class="fas fa-magic text-sm"></i>
+    </button>
+    <button onclick="toggleTheme()" id="themeToggleMain" class="theme-toggle-btn p-3 rounded-full bg-stone-900 border border-stone-800 text-amber-400 shadow-xl">
+        <i class="fas fa-sun text-sm" id="themeIconMain"></i>
+    </button>
+</div>
 
         <button onclick="openGuestChatModal()" class="fixed bottom-4 left-4 z-50 bg-[#DCA773] text-stone-950 w-14 h-14 rounded-full flex items-center justify-center shadow-2xl">
             <i class="fas fa-comments text-lg"></i>
@@ -402,6 +407,7 @@
     <script src="assets/js/ui/navigation.js"></script>
     <script src="assets/js/ui/menu-ui.js"></script>
     <script src="assets/js/ui/chat-ui.js"></script>
+    <script src="assets/js/ui/auto-theme.js"></script>
     <script src="assets/js/components/chat-manager.js"></script>
     <script src="assets/js/components/weather.js"></script>
     <script src="assets/js/components/smart-suggestions.js"></script>
@@ -416,6 +422,7 @@
    
     <script>
         initTheme();
+        initAutoTheme();
         initOfflineMode();
         setLanguage(currentLanguage);
         renderMenuItems();
