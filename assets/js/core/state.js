@@ -1,6 +1,6 @@
 // ==================== STATE MANAGEMENT ====================
-const supabaseClient = typeof initSupabaseClient === 'function' ? initSupabaseClient() : null;
-const pmsSupabaseClient = typeof initPmsSupabaseClient === 'function' ? initPmsSupabaseClient() : null;
+const supabaseClient = initSupabaseClient();
+const pmsSupabaseClient = initPmsSupabaseClient();
 
 let menuCart = {};
 let cachedGuestData = null;
@@ -15,5 +15,12 @@ let trackingTimeout = null;
 let serviceRequestsTimeout = null;
 let guestChatManager = null;
 
-// Initialize window.activeServiceRequests
 window.activeServiceRequests = window.activeServiceRequests || [];
+
+// ==================== EXPOSER GLOBALEMENT ====================
+window.supabaseClient = supabaseClient;
+window.pmsSupabaseClient = pmsSupabaseClient;
+
+console.log('✅ Guest Hub state initialized');
+console.log('🔌 supabaseClient:', supabaseClient ? 'OK - CONNECTED' : 'MISSING');
+console.log('🔌 pmsSupabaseClient:', pmsSupabaseClient ? 'OK - CONNECTED' : 'MISSING');
