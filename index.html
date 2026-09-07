@@ -207,7 +207,7 @@
             </div>
 
             <div id="servicesTrackingContainer" class="hidden space-y-3"></div>
-            
+            <div id="checkoutCountdown"></div>
             <div id="weatherContainer"></div>
             <div id="smartSuggestionsContainer"></div>
 
@@ -229,7 +229,7 @@
             <div id="servicesSection" class="space-y-4">
                 <div id="oneTapContainer"></div>
                 <div id="servicesList" class="space-y-3">
-                    <p class="text-center text-[10px] text-stone-400 font-bold uppercase tracking-wider" data-i18n="selectService">Select a Service</p>
+                    <p class="text-center text-[10px] text-stone-400 font-bold uppercase tracking-wider">Select a Service</p>
                     
                     <div class="service-card p-4 bg-stone-950/60 border border-stone-800 rounded-2xl" onclick="showService('room_service')">
                         <div class="flex items-center gap-3">
@@ -414,6 +414,7 @@
         renderOneTapServices();
         initSmartSuggestions();
         fetchWeather();
+        initCheckoutCountdown();
         restaurerSession();
         fetchOffers();
     </script>
