@@ -1,8 +1,6 @@
 // ==================== SERVICE REQUESTS ====================
-const supabaseClient = window.supabaseClient || (typeof initSupabaseClient === 'function' ? initSupabaseClient() : null);
-
 async function submitOtherService() {
-    console.log('🔍 submitOtherService called');
+    console.log('📤 submitOtherService called');
     
     const room = cachedGuestData?.room || localStorage.getItem('remal_guest_room');
     const notes = document.getElementById('otherServiceNotes')?.value?.trim() || '';
@@ -10,7 +8,7 @@ async function submitOtherService() {
     
     console.log('📦 Room:', room);
     console.log('📦 Service:', currentService);
-    console.log('📦 ServiceData:', serviceData);
+    console.log('📦 Service Data:', serviceData);
     
     if (!serviceData) {
         showToast('Error: Service not found', 'error');
@@ -19,12 +17,6 @@ async function submitOtherService() {
     
     if (!room) {
         showToast('Error: Room not found', 'error');
-        return;
-    }
-    
-    if (!supabaseClient) {
-        console.error('❌ supabaseClient is NULL');
-        showToast('Error: Supabase not initialized', 'error');
         return;
     }
     
@@ -48,25 +40,32 @@ async function submitOtherService() {
         created_at: new Date().toISOString()
     };
     
-    console.log('📤 Sending to Supabase:', JSON.stringify(requestData));
+    console.log('📤 Sending to Supabase:', requestData);
     
     try {
-        const { data, error } = await supabaseClient
-            .from('guest_requests')
-            .insert([requestData])
-            .select();
+        if (supabaseClient) {
+            const { data, error } = await supabaseClient
+                .from('guest_requests')
+                .insert([requestData])
+                .select();
+                
+            if (error) {
+                console.error('❌ Supabase error:', error.message);
+                console.error('❌ Full error:', error);
+                showToast('Error: ' + error.message, 'error');
+                return;
+            }
             
-        if (error) {
-            console.error('❌ Supabase error:', error.message);
-            showToast('Error: ' + error.message, 'error');
-            return;
+            console.log('✅ Request inserted:', data);
+        } else {
+            console.warn('⚠️ No Supabase client');
         }
-        
-        console.log('✅ Request inserted:', data);
         
         showToast('✅ Request submitted!', 'success');
         document.getElementById('otherServiceNotes').value = '';
         backToServices();
+        
+        // Rafraîchir la liste des demandes
         await fetchServiceRequestsTracking();
         
     } catch (err) {
@@ -88,11 +87,13 @@ async function fetchServiceRequestsTracking() {
             .limit(10);
         
         if (error) {
+            console.warn('Error loading requests:', error);
             window.activeServiceRequests = [];
         } else {
             window.activeServiceRequests = data.filter(r => r.status === 'Pending' || r.status === 'In Progress');
         }
     } catch (err) {
+        console.warn('Error loading requests:', err);
         window.activeServiceRequests = [];
     }
     renderServiceRequestsTracking();
@@ -115,16 +116,17 @@ function renderServiceRequestsTracking() {
     container.innerHTML = `
         <div class="p-4 bg-stone-950/60 border border-amber-500/20 rounded-2xl space-y-3">
             <span class="text-[10px] font-bold text-[var(--text-gold,#DCA773)] uppercase tracking-wider">
-                <i class="fas fa-clipboard-list mr-1"></i> Service Requests Tracking
+                <i class="fas fa-clipboard-list mr-1"></i> ${TRANSLATIONS[currentLanguage]?.serviceRequestsTracking || TRANSLATIONS.en.serviceRequestsTracking}
             </span>
             ${requests.map(request => {
                 const statusColors = {
-                    'Pending': { bg: 'bg-amber-500/20', text: 'text-amber-400', border: 'border-amber-500/30', label: 'Pending' },
-                    'In Progress': { bg: 'bg-blue-500/20', text: 'text-blue-400', border: 'border-blue-500/30', label: 'In Progress' },
-                    'Completed': { bg: 'bg-emerald-500/20', text: 'text-emerald-400', border: 'border-emerald-500/30', label: 'Completed' }
+                    'Pending': { bg: 'bg-amber-500/20', text: 'text-amber-400', border: 'border-amber-500/30', label: TRANSLATIONS[currentLanguage]?.pendingStatus || TRANSLATIONS.en.pendingStatus },
+                    'In Progress': { bg: 'bg-blue-500/20', text: 'text-blue-400', border: 'border-blue-500/30', label: TRANSLATIONS[currentLanguage]?.inProgressStatus || TRANSLATIONS.en.inProgressStatus },
+                    'Completed': { bg: 'bg-emerald-500/20', text: 'text-emerald-400', border: 'border-emerald-500/30', label: TRANSLATIONS[currentLanguage]?.completedStatus || TRANSLATIONS.en.completedStatus }
                 };
                 const sc = statusColors[request.status] || statusColors['Pending'];
                 const timeAgo = getTimeAgo(request.created_at);
+                
                 const stepIndex = request.status === 'Pending' ? 0 : request.status === 'In Progress' ? 1 : 2;
                 
                 return `
@@ -136,27 +138,26 @@ function renderServiceRequestsTracking() {
                         <div class="order-progress">
                             <div class="order-progress-step">
                                 <div class="service-tracking-dot ${stepIndex >= 0 ? 'active completed' : ''}"><i class="fas fa-check"></i></div>
-                                <span class="order-progress-label ${stepIndex >= 0 ? 'active' : ''}">Pending</span>
+                                <span class="order-progress-label ${stepIndex >= 0 ? 'active' : ''}">${TRANSLATIONS[currentLanguage]?.pendingStatus || TRANSLATIONS.en.pendingStatus}</span>
                             </div>
                             <div class="service-tracking-line ${stepIndex >= 1 ? 'completed' : ''}"></div>
                             <div class="order-progress-step">
                                 <div class="service-tracking-dot ${stepIndex >= 1 ? 'active completed' : ''}"><i class="fas fa-cog"></i></div>
-                                <span class="order-progress-label ${stepIndex >= 1 ? 'active' : ''}">In Progress</span>
+                                <span class="order-progress-label ${stepIndex >= 1 ? 'active' : ''}">${TRANSLATIONS[currentLanguage]?.inProgressStatus || TRANSLATIONS.en.inProgressStatus}</span>
                             </div>
                             <div class="service-tracking-line ${stepIndex >= 2 ? 'completed' : ''}"></div>
                             <div class="order-progress-step">
                                 <div class="service-tracking-dot ${stepIndex >= 2 ? 'active completed' : ''}"><i class="fas fa-check-double"></i></div>
-                                <span class="order-progress-label ${stepIndex >= 2 ? 'active' : ''}">Completed</span>
+                                <span class="order-progress-label ${stepIndex >= 2 ? 'active' : ''}">${TRANSLATIONS[currentLanguage]?.completedStatus || TRANSLATIONS.en.completedStatus}</span>
                             </div>
                         </div>
-                        <p class="text-[9px] text-stone-400 mt-2">Submitted: ${timeAgo}</p>
+                        <p class="text-[9px] text-stone-400 mt-2">${TRANSLATIONS[currentLanguage]?.submittedAt || TRANSLATIONS.en.submittedAt}: ${timeAgo}</p>
                     </div>
                 `;
             }).join('')}
         </div>
     `;
 }
-
 // ==================== EXPOSER GLOBALEMENT ====================
 window.submitOtherService = submitOtherService;
 window.fetchServiceRequestsTracking = fetchServiceRequestsTracking;
