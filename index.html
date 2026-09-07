@@ -5,13 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Remal Hotel & Villas - Guest Hub</title>
     
-    <!-- CDNs -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Local Stylesheet -->
     <link rel="stylesheet" href="assets/css/style.css">
     
     <style>
@@ -40,14 +37,12 @@
         .offer-card:hover img { transform: scale(1.05); }
         
         .featured-offer { position: relative; overflow: hidden; border-radius: 1rem; border: 1px solid var(--border-gold-strong, #DCA773); cursor: pointer; transition: all 0.3s ease; }
-        .featured-offer:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(220, 167, 115, 0.3); }
         .featured-offer img { width: 100%; height: 180px; object-fit: cover; }
         .featured-offer-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 50%, transparent 100%); padding: 20px 15px 15px; }
         
         .lang-btn { transition: all 0.3s ease; cursor: pointer; }
         .lang-btn.active { background: var(--text-gold, #DCA773); color: #1c1917; font-weight: 900; }
         .lang-btn:not(.active) { background: var(--bg-card-hover, rgba(255,255,255,0.05)); color: var(--text-muted, #a8a29e); border: 1px solid var(--border-gold, rgba(220, 167, 115, 0.2)); }
-        .lang-btn:not(.active):hover { color: var(--text-gold, #DCA773); }
 
         .order-progress { display: flex; align-items: center; justify-content: space-between; margin-top: 1rem; position: relative; }
         .order-progress-step { display: flex; flex-direction: column; align-items: center; z-index: 2; }
@@ -55,9 +50,7 @@
         .order-progress-dot.active { background: #DCA773; border-color: #DCA773; color: #0c0a09; }
         .order-progress-dot.completed { background: #10b981; border-color: #10b981; color: #ffffff; }
         .order-progress-label { font-size: 9px; margin-top: 4px; color: #a8a29e; font-weight: 600; text-transform: uppercase; }
-        .order-progress-label.active { color: #DCA773; }
-        .order-progress-line { flex: 1; height: 2px; background: #525252; margin: 0 -4px; position: relative; top: -10px; z-index: 1; transition: background 0.3s; }
-        .order-progress-line.completed { background: #10b981; }
+        .order-progress-line { flex: 1; height: 2px; background: #525252; margin: 0 -4px; position: relative; top: -10px; z-index: 1; }
 
         .toast-notification { position: fixed; top: 20px; right: 20px; z-index: 9999; background: #1c1917; border: 1px solid #DCA773; padding: 12px 20px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 10px; }
         
@@ -67,98 +60,29 @@
         .chat-message { padding: 8px 12px; border-radius: 12px; margin-bottom: 6px; max-width: 80%; font-size: 11px; word-wrap: break-word; }
         .chat-message.guest { background: #DCA773; color: #1c1917; margin-left: auto; }
         .chat-message.staff { background: rgba(255,255,255,0.1); color: #f5f5f4; margin-right: auto; }
-        
         .chat-typing-indicator { font-size: 9px; color: #a8a29e; font-style: italic; margin-left: 12px; }
         .chat-presence-status { font-size: 10px; margin-bottom: 8px; }
 
         body.light-mode { background-color: #f8fafc !important; color: #0f172a !important; }
         body.light-mode .lock-card, body.light-mode .remal-card, body.light-mode #menuModal > div, body.light-mode #guestChatModal > div {
-            background-color: #ffffff !important; border-color: rgba(217, 119, 6, 0.2) !important; box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.08) !important;
+            background-color: #ffffff !important; border-color: rgba(217, 119, 6, 0.2) !important;
         }
-        body.light-mode .remal-banner { background-color: #f1f5f9 !important; border-color: rgba(217, 119, 6, 0.3) !important; }
-        body.light-mode .service-card, body.light-mode .offer-card, body.light-mode #orderTrackingSection {
-            background-color: #f1f5f9 !important; border-color: #e2e8f0 !important;
-        }
+        body.light-mode .remal-banner { background-color: #f1f5f9 !important; }
         body.light-mode .text-stone-100, body.light-mode .text-stone-200, body.light-mode .text-stone-300 { color: #1e293b !important; }
         body.light-mode .text-stone-400, body.light-mode .text-stone-500 { color: #64748b !important; }
-        body.light-mode input, body.light-mode select, body.light-mode textarea {
-            background-color: #ffffff !important; border-color: #cbd5e1 !important; color: #0f172a !important;
-        }
+        body.light-mode input, body.light-mode select, body.light-mode textarea { background-color: #ffffff !important; border-color: #cbd5e1 !important; color: #0f172a !important; }
         body.light-mode .chat-message.staff { background-color: #e2e8f0 !important; color: #0f172a !important; }
-        body.light-mode .order-progress-dot { background-color: #e2e8f0; border-color: #cbd5e1; color: #64748b; }
-        body.light-mode .order-progress-line { background-color: #cbd5e1; }
         body.light-mode .toast-notification { background-color: #ffffff !important; border-color: #d97706 !important; color: #0f172a !important; }
-        body.light-mode .lang-btn:not(.active), body.light-mode .theme-toggle-btn {
-            background-color: #ffffff !important; border-color: #cbd5e1 !important; color: #334155 !important;
-        }
+        body.light-mode #oneTapContainer button { background-color: #e2e8f0 !important; border-color: #cbd5e1 !important; }
+        body.light-mode #oneTapContainer span { color: #0f172a !important; }
+        body.light-mode #orderHistoryContainer .text-stone-100 { color: #1e293b !important; }
+        body.light-mode #orderHistoryContainer .text-stone-400 { color: #64748b !important; }
 
         .service-tracking-card { background-color: rgba(28, 25, 23, 0.8); border: 1px solid rgba(220, 167, 115, 0.3); border-radius: 1rem; padding: 1rem; margin-bottom: 0.75rem; }
-        body.light-mode .service-tracking-card { background-color: #f1f5f9; border-color: #e2e8f0; }
-        .service-tracking-dot { width: 24px; height: 24px; border-radius: 50%; background: #262626; border: 2px solid #525252; color: #a8a29e; display: flex; align-items: center; justify-content: center; font-size: 9px; transition: all 0.3s; }
+        .service-tracking-dot { width: 24px; height: 24px; border-radius: 50%; background: #262626; border: 2px solid #525252; color: #a8a29e; display: flex; align-items: center; justify-content: center; font-size: 9px; }
         .service-tracking-dot.active { background: #DCA773; border-color: #DCA773; color: #0c0a09; }
         .service-tracking-dot.completed { background: #10b981; border-color: #10b981; color: #ffffff; }
-        .service-tracking-line { flex: 1; height: 2px; background: #525252; margin: 0 -2px; position: relative; top: -10px; z-index: 1; transition: background 0.3s; }
-        .service-tracking-line.completed { background: #10b981; }
-   /* ==================== CORRECTIONS MODE CLAIR ==================== */
-body.light-mode .text-stone-100,
-body.light-mode .text-stone-200,
-body.light-mode .text-stone-300,
-body.light-mode #guestChatContainer .chat-message p,
-body.light-mode #orderHistoryContainer p,
-body.light-mode #oneTapContainer span,
-body.light-mode #oneTapContainer button,
-body.light-mode #weatherContainer p,
-body.light-mode #weatherContainer span,
-body.light-mode #orderHistoryContainer .text-stone-100,
-body.light-mode #orderHistoryContainer .text-stone-400 {
-    color: #1e293b !important;
-}
-
-body.light-mode .chat-message.guest {
-    background-color: #DCA773 !important;
-    color: #1c1917 !important;
-}
-
-body.light-mode .chat-message.staff {
-    background-color: #e2e8f0 !important;
-    color: #0f172a !important;
-}
-
-body.light-mode #oneTapContainer button {
-    background-color: #e2e8f0 !important;
-    border-color: #cbd5e1 !important;
-}
-
-body.light-mode #oneTapContainer button span {
-    color: #0f172a !important;
-}
-
-body.light-mode #weatherContainer {
-    background-color: #f1f5f9 !important;
-    border-color: #e2e8f0 !important;
-}
-
-body.light-mode #weatherContainer p,
-body.light-mode #weatherContainer span {
-    color: #1e293b !important;
-}
-
-body.light-mode #orderHistoryContainer .bg-stone-950\/60 {
-    background-color: #f1f5f9 !important;
-    border-color: #e2e8f0 !important;
-}
-
-body.light-mode #staffPresenceStatus span {
-    color: inherit !important;
-}
-
-body.light-mode #chatTypingIndicator {
-    color: #64748b !important;
-}
-
-body.light-mode .toast-notification .text-stone-100 {
-    color: #0f172a !important;
-}
+        .service-tracking-line { flex: 1; height: 2px; background: #525252; margin: 0 -2px; position: relative; top: -10px; z-index: 1; }
     </style>
 </head>
 <body class="min-h-screen lock-screen bg-stone-950 text-stone-100 font-sans">
@@ -280,264 +204,180 @@ body.light-mode .toast-notification .text-stone-100 {
 
             <div id="servicesTrackingContainer" class="hidden space-y-3"></div>
 
-            <div class="flex gap-2">
-                <button onclick="switchTab('services')" id="tabServices" class="tab-btn active flex-1 py-3 rounded-xl text-xs font-bold transition">
+            <div class="flex gap-2 flex-wrap">
+                <button onclick="switchTab('services')" id="tabServices" class="tab-btn active flex-1 min-w-[70px] py-3 rounded-xl text-xs font-bold transition">
                     <i class="fas fa-concierge-bell mr-1"></i> <span data-i18n="services">Services</span>
                 </button>
-                <button onclick="switchTab('offers')" id="tabOffers" class="tab-btn flex-1 py-3 rounded-xl text-xs font-bold transition">
+                <button onclick="switchTab('offers')" id="tabOffers" class="tab-btn flex-1 min-w-[70px] py-3 rounded-xl text-xs font-bold transition">
                     <i class="fas fa-tags mr-1"></i> <span data-i18n="offers">Offers</span>
                 </button>
-                <button onclick="switchTab('faq')" id="tabFaq" class="tab-btn flex-1 py-3 rounded-xl text-xs font-bold transition">
+                <button onclick="showOrderHistory()" id="tabHistory" class="tab-btn flex-1 min-w-[70px] py-3 rounded-xl text-xs font-bold transition">
+                    <i class="fas fa-receipt mr-1"></i> History
+                </button>
+                <button onclick="switchTab('faq')" id="tabFaq" class="tab-btn flex-1 min-w-[70px] py-3 rounded-xl text-xs font-bold transition">
                     <i class="fas fa-question-circle mr-1"></i> <span data-i18n="faq">FAQ</span>
                 </button>
             </div>
 
             <div id="servicesSection" class="space-y-4">
                 <div id="oneTapContainer"></div>
-                  <div id="servicesList" class="space-y-3">
+                <div id="servicesList" class="space-y-3">
                     <p class="text-center text-[10px] text-stone-400 font-bold uppercase tracking-wider" data-i18n="selectService">Select a Service</p>
                     
-                    <div class="service-card p-4 bg-stone-950/60 border border-stone-800 hover:border-amber-500/50 rounded-2xl" onclick="showService('room_service')">
+                    <div class="service-card p-4 bg-stone-950/60 border border-stone-800 rounded-2xl" onclick="showService('room_service')">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center font-bold"><i class="fas fa-utensils"></i></div>
-                            <div>
-                                <p class="font-bold text-stone-100 text-xs" data-i18n="roomService">Room Service / Order Food</p>
-                                <p class="text-[9px] text-stone-400" data-i18n="roomServiceDesc">In-room dining & beverages</p>
-                            </div>
+                            <div><p class="font-bold text-stone-100 text-xs">Room Service / Order Food</p></div>
                         </div>
                     </div>
-
-                    <div class="service-card p-4 bg-stone-950/60 border border-stone-800 hover:border-amber-500/50 rounded-2xl" onclick="showService('table_reservation')">
+                    <div class="service-card p-4 bg-stone-950/60 border border-stone-800 rounded-2xl" onclick="showService('table_reservation')">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center font-bold"><i class="fas fa-calendar-check"></i></div>
-                            <div>
-                                <p class="font-bold text-stone-100 text-xs" data-i18n="tableReservation">Table Reservation</p>
-                                <p class="text-[9px] text-stone-400" data-i18n="tableReservationDesc">Restaurant & lounge booking</p>
-                            </div>
+                            <div><p class="font-bold text-stone-100 text-xs">Table Reservation</p></div>
                         </div>
                     </div>
-
-                    <div class="service-card p-4 bg-stone-950/60 border border-stone-800 hover:border-amber-500/50 rounded-2xl" onclick="showService('wakeup_call')">
+                    <div class="service-card p-4 bg-stone-950/60 border border-stone-800 rounded-2xl" onclick="showService('wakeup_call')">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center font-bold"><i class="fas fa-clock"></i></div>
-                            <div>
-                                <p class="font-bold text-stone-100 text-xs" data-i18n="wakeupCall">Wake-up Call / Alarm</p>
-                                <p class="text-[9px] text-stone-400" data-i18n="wakeupCallDesc">Morning wake-up service</p>
-                            </div>
+                            <div><p class="font-bold text-stone-100 text-xs">Wake-up Call / Alarm</p></div>
                         </div>
                     </div>
-
-                    <div class="service-card p-4 bg-stone-950/60 border border-stone-800 hover:border-amber-500/50 rounded-2xl" onclick="showService('late_checkout')">
+                    <div class="service-card p-4 bg-stone-950/60 border border-stone-800 rounded-2xl" onclick="showService('late_checkout')">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center font-bold"><i class="fas fa-hourglass-half"></i></div>
-                            <div>
-                                <p class="font-bold text-stone-100 text-xs" data-i18n="lateCheckout">Late Check-out / Extension</p>
-                                <p class="text-[9px] text-stone-400" data-i18n="lateCheckoutDesc">Extend your stay</p>
-                            </div>
+                            <div><p class="font-bold text-stone-100 text-xs">Late Check-out / Extension</p></div>
                         </div>
                     </div>
-
-                    <div class="service-card p-4 bg-stone-950/60 border border-stone-800 hover:border-amber-500/50 rounded-2xl" onclick="showService('housekeeping')">
+                    <div class="service-card p-4 bg-stone-950/60 border border-stone-800 rounded-2xl" onclick="showService('housekeeping')">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center font-bold"><i class="fas fa-broom"></i></div>
-                            <div>
-                                <p class="font-bold text-stone-100 text-xs" data-i18n="housekeeping">Housekeeping / Room Cleaning</p>
-                                <p class="text-[9px] text-stone-400" data-i18n="housekeepingDesc">Room cleaning service</p>
-                            </div>
+                            <div><p class="font-bold text-stone-100 text-xs">Housekeeping / Room Cleaning</p></div>
                         </div>
                     </div>
-
-                    <div class="service-card p-4 bg-stone-950/60 border border-stone-800 hover:border-amber-500/50 rounded-2xl" onclick="showService('front_desk')">
+                    <div class="service-card p-4 bg-stone-950/60 border border-stone-800 rounded-2xl" onclick="showService('front_desk')">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center font-bold"><i class="fas fa-headset"></i></div>
-                            <div>
-                                <p class="font-bold text-stone-100 text-xs" data-i18n="frontDesk">Front Desk Inquiry</p>
-                                <p class="text-[9px] text-stone-400" data-i18n="frontDeskDesc">General assistance</p>
-                            </div>
+                            <div><p class="font-bold text-stone-100 text-xs">Front Desk Inquiry</p></div>
                         </div>
                     </div>
-
-                    <div class="service-card p-4 bg-stone-950/60 border border-stone-800 hover:border-amber-500/50 rounded-2xl" onclick="showService('luggage')">
+                    <div class="service-card p-4 bg-stone-950/60 border border-stone-800 rounded-2xl" onclick="showService('luggage')">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center font-bold"><i class="fas fa-suitcase"></i></div>
-                            <div>
-                                <p class="font-bold text-stone-100 text-xs" data-i18n="luggage">Luggage Assistance</p>
-                                <p class="text-[9px] text-stone-400" data-i18n="luggageDesc">Baggage handling</p>
-                            </div>
+                            <div><p class="font-bold text-stone-100 text-xs">Luggage Assistance</p></div>
                         </div>
                     </div>
-
-                    <div class="service-card p-4 bg-stone-950/60 border border-stone-800 hover:border-amber-500/50 rounded-2xl" onclick="showService('maintenance')">
+                    <div class="service-card p-4 bg-stone-950/60 border border-stone-800 rounded-2xl" onclick="showService('maintenance')">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center font-bold"><i class="fas fa-tools"></i></div>
-                            <div>
-                                <p class="font-bold text-stone-100 text-xs" data-i18n="maintenance">Maintenance / Technical Support</p>
-                                <p class="text-[9px] text-stone-400" data-i18n="maintenanceDesc">Repairs & technical help</p>
-                            </div>
+                            <div><p class="font-bold text-stone-100 text-xs">Maintenance / Technical Support</p></div>
                         </div>
                     </div>
                 </div>
 
-                <div id="roomServiceSection" class="hidden space-y-4 animate-fade-in-up">
-                    <button onclick="backToServices()" class="text-[10px] text-stone-400 hover:text-[var(--text-gold,#DCA773)] font-bold transition">
-                        <i class="fas fa-arrow-left mr-1"></i> <span data-i18n="backToServices">Back to Services</span>
-                    </button>
-
+                <div id="roomServiceSection" class="hidden space-y-4">
+                    <button onclick="backToServices()" class="text-[10px] text-stone-400 font-bold">← Back to Services</button>
                     <div id="orderTrackingSection" class="hidden p-4 bg-stone-950/80 border border-amber-500/30 rounded-2xl space-y-3">
-                        <div class="flex justify-between items-center">
-                            <span class="text-[10px] font-bold text-[var(--text-gold,#DCA773)] uppercase tracking-wider">
-                                <i class="fas fa-truck mr-1"></i> <span data-i18n="orderTracking">Order Tracking</span>
-                            </span>
+                        <div class="flex justify-between">
+                            <span class="text-[10px] font-bold text-[var(--text-gold,#DCA773)]">Order Tracking</span>
                             <span id="orderStatusText" class="text-[10px] font-bold text-amber-400">---</span>
                         </div>
                         <div class="order-progress">
-                            <div class="order-progress-step">
-                                <div class="order-progress-dot active" id="stepReceived"><i class="fas fa-check"></i></div>
-                                <span class="order-progress-label active" id="labelReceived" data-i18n="received">Received</span>
-                            </div>
+                            <div class="order-progress-step"><div class="order-progress-dot active" id="stepReceived"><i class="fas fa-check"></i></div><span class="order-progress-label active">Received</span></div>
                             <div class="order-progress-line" id="lineReceived"></div>
-                            <div class="order-progress-step">
-                                <div class="order-progress-dot" id="stepPreparing"><i class="fas fa-fire"></i></div>
-                                <span class="order-progress-label" id="labelPreparing" data-i18n="preparing">Preparing</span>
-                            </div>
+                            <div class="order-progress-step"><div class="order-progress-dot" id="stepPreparing"><i class="fas fa-fire"></i></div><span class="order-progress-label">Preparing</span></div>
                             <div class="order-progress-line" id="linePreparing"></div>
-                            <div class="order-progress-step">
-                                <div class="order-progress-dot" id="stepReady"><i class="fas fa-bell"></i></div>
-                                <span class="order-progress-label" id="labelReady" data-i18n="ready">Ready</span>
-                            </div>
+                            <div class="order-progress-step"><div class="order-progress-dot" id="stepReady"><i class="fas fa-bell"></i></div><span class="order-progress-label">Ready</span></div>
                             <div class="order-progress-line" id="lineReady"></div>
-                            <div class="order-progress-step">
-                                <div class="order-progress-dot" id="stepDelivered"><i class="fas fa-home"></i></div>
-                                <span class="order-progress-label" id="labelDelivered" data-i18n="delivered">Delivered</span>
-                            </div>
+                            <div class="order-progress-step"><div class="order-progress-dot" id="stepDelivered"><i class="fas fa-home"></i></div><span class="order-progress-label">Delivered</span></div>
                         </div>
                     </div>
-
-                    <div>
-                        <label class="block font-bold text-[var(--text-gold,#DCA773)] mb-1.5 uppercase tracking-wider text-[10px]" data-i18n="mealPeriod">Meal Period</label>
-                        <select id="guestMealType" class="w-full remal-input bg-stone-950 border border-stone-800 rounded-2xl p-3.5 font-bold cursor-pointer text-xs text-stone-200">
-                            <option value="Breakfast">🌅 Breakfast (6:00 - 11:00)</option>
-                            <option value="Lunch">☀️ Lunch (12:00 - 15:00)</option>
-                            <option value="Dinner">🌙 Dinner (18:00 - 23:00)</option>
-                            <option value="All Day">🕐 All Day Dining</option>
-                            <option value="Late Night">🌃 Late Night (23:00 - 6:00)</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <button onclick="openMenuModal()" class="w-full bg-stone-950/80 hover:border-[var(--text-gold,#DCA773)] text-[var(--text-gold,#DCA773)] border border-amber-500/30 font-bold py-4 px-4 rounded-2xl transition flex items-center justify-between shadow-md">
-                            <span class="flex items-center gap-3">
-                                <i class="fas fa-utensils"></i> <span data-i18n="browseMenu">Browse Menu</span>
-                            </span>
-                            <span id="selectedBadgeCount" class="bg-[var(--text-gold,#DCA773)] text-stone-950 px-3.5 py-1 rounded-full text-[11px] font-black">0</span>
-                        </button>
-                    </div>
-
-                    <div>
-                        <label class="block font-bold text-[var(--text-gold,#DCA773)] mb-1.5 uppercase tracking-wider text-[10px]" data-i18n="specialInstructions">Special Instructions / Allergies</label>
-                        <textarea id="guestSpecialInstructions" placeholder="e.g., No onions, gluten allergy..." class="w-full h-20 bg-stone-950 border border-stone-800 rounded-2xl p-3.5 outline-none resize-none text-xs text-stone-200"></textarea>
-                    </div>
-
-                    <div>
-                        <label class="block font-bold text-[var(--text-gold,#DCA773)] mb-1.5 uppercase tracking-wider text-[10px]" data-i18n="deliveryTime">Delivery Time</label>
-                        <select id="deliveryTime" class="w-full bg-stone-950 border border-stone-800 rounded-2xl p-3.5 font-bold cursor-pointer text-xs text-stone-200">
-                            <option value="As soon as possible">⚡ ASAP (~30 min)</option>
-                            <option value="In 45 minutes">🕒 45 min</option>
-                            <option value="In 1 hour">🕒 1 hour</option>
-                        </select>
-                    </div>
-
-                    <div class="space-y-3 pt-2">
-                        <button onclick="submitRoomServiceOrder('direct')" class="w-full bg-[#DCA773] hover:bg-[#ebd0b3] text-stone-950 font-black py-4 rounded-2xl text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2.5 shadow-lg">
-                            <i class="fas fa-concierge-bell"></i> <span data-i18n="directOrder">Direct Order to Kitchen</span>
-                        </button>
-                        <button onclick="submitRoomServiceOrder('whatsapp')" class="w-full bg-[#10b981] hover:bg-[#34d399] text-stone-950 font-black py-3.5 rounded-2xl text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2.5 shadow-lg">
-                            <i class="fab fa-whatsapp text-lg"></i> <span data-i18n="whatsappOrder">Send via WhatsApp</span>
-                        </button>
-                    </div>
+                    <select id="guestMealType" class="w-full remal-input bg-stone-950 border border-stone-800 rounded-2xl p-3.5 text-xs text-stone-200">
+                        <option value="Breakfast">🌅 Breakfast</option>
+                        <option value="Lunch">☀️ Lunch</option>
+                        <option value="Dinner">🌙 Dinner</option>
+                        <option value="All Day">🕐 All Day</option>
+                    </select>
+                    <button onclick="openMenuModal()" class="w-full bg-stone-950/80 text-[var(--text-gold,#DCA773)] border border-amber-500/30 font-bold py-4 rounded-2xl">
+                        🍽️ Browse Menu <span id="selectedBadgeCount" class="bg-[var(--text-gold,#DCA773)] text-stone-950 px-3 py-1 rounded-full text-[11px] font-black">0</span>
+                    </button>
+                    <textarea id="guestSpecialInstructions" placeholder="Special Instructions / Allergies..." class="w-full h-20 bg-stone-950 border border-stone-800 rounded-2xl p-3.5 text-xs text-stone-200"></textarea>
+                    <select id="deliveryTime" class="w-full bg-stone-950 border border-stone-800 rounded-2xl p-3.5 text-xs text-stone-200">
+                        <option value="As soon as possible">⚡ ASAP (~30 min)</option>
+                        <option value="In 45 minutes">🕒 45 min</option>
+                        <option value="In 1 hour">🕒 1 hour</option>
+                    </select>
+                    <button onclick="submitRoomServiceOrder('direct')" class="w-full bg-[#DCA773] text-stone-950 font-black py-4 rounded-2xl">
+                        🛎️ Direct Order to Kitchen
+                    </button>
+                    <button onclick="submitRoomServiceOrder('whatsapp')" class="w-full bg-[#10b981] text-stone-950 font-black py-3.5 rounded-2xl">
+                        📱 Send via WhatsApp
+                    </button>
                 </div>
 
-                <div id="otherServiceSection" class="hidden space-y-4 animate-fade-in-up">
-                    <button onclick="backToServices()" class="text-[10px] text-stone-400 hover:text-[var(--text-gold,#DCA773)] font-bold transition">
-                        <i class="fas fa-arrow-left mr-1"></i> <span data-i18n="backToServices">Back to Services</span>
-                    </button>
+                <div id="otherServiceSection" class="hidden space-y-4">
+                    <button onclick="backToServices()" class="text-[10px] text-stone-400 font-bold">← Back to Services</button>
                     <div class="p-4 bg-stone-950/60 border border-amber-500/20 rounded-2xl space-y-3">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center font-bold" id="otherServiceIcon"><i class="fas fa-concierge-bell"></i></div>
-                            <div>
-                                <p class="font-bold text-stone-100 text-xs" id="otherServiceTitle">Service</p>
-                                <p class="text-[9px] text-stone-400" id="otherServiceSubtitle">Description</p>
-                            </div>
+                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center" id="otherServiceIcon"><i class="fas fa-concierge-bell"></i></div>
+                            <div><p class="font-bold text-stone-100 text-xs" id="otherServiceTitle">Service</p><p class="text-[9px] text-stone-400" id="otherServiceSubtitle">Description</p></div>
                         </div>
                         <div id="otherServiceFields" class="space-y-3"></div>
-                        <div>
-                            <label class="block font-bold text-[var(--text-gold,#DCA773)] mb-1.5 uppercase tracking-wider text-[10px]" data-i18n="additionalNotes">Additional Notes</label>
-                            <textarea id="otherServiceNotes" placeholder="Any specific details..." class="w-full h-20 bg-stone-950 border border-stone-800 rounded-2xl p-3.5 outline-none resize-none text-xs text-stone-200"></textarea>
-                        </div>
-                        <button onclick="submitOtherService()" class="w-full bg-[#DCA773] hover:bg-[#ebd0b3] text-stone-950 font-black py-4 rounded-2xl text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2.5 shadow-lg">
-                            <i class="fas fa-paper-plane"></i> <span data-i18n="submitRequest">Submit Request</span>
-                        </button>
+                        <textarea id="otherServiceNotes" placeholder="Additional Notes..." class="w-full h-20 bg-stone-950 border border-stone-800 rounded-2xl p-3.5 text-xs text-stone-200"></textarea>
+                        <button onclick="submitOtherService()" class="w-full bg-[#DCA773] text-stone-950 font-black py-4 rounded-2xl">📋 Submit Request</button>
                     </div>
                 </div>
             </div>
 
             <div id="offersSection" class="hidden space-y-4">
-                <p class="text-center text-[10px] text-stone-400 font-bold uppercase tracking-wider">
-                    <i class="fas fa-star mr-1"></i> <span data-i18n="exclusiveOffers">Exclusive Offers</span>
-                </p>
+                <p class="text-center text-[10px] text-stone-400 font-bold">⭐ Exclusive Offers</p>
                 <div id="offersContainer" class="space-y-4"></div>
             </div>
 
             <div id="faqSection" class="hidden space-y-4">
-                <p class="text-center text-[10px] text-stone-400 font-bold uppercase tracking-wider" data-i18n="faqTitle">Frequently Asked Questions</p>
+                <p class="text-center text-[10px] text-stone-400 font-bold">❓ Frequently Asked Questions</p>
                 <div class="space-y-3" id="faqContainer"></div>
+            </div>
+
+            <div id="orderHistorySection" class="hidden space-y-4">
+                <p class="text-center text-[10px] text-stone-400 font-bold">📜 Order History</p>
+                <div id="orderHistoryContainer" class="space-y-3"></div>
             </div>
         </div>
     </div>
 
-    <!-- MODALE CHAT GUEST -->
-    <div id="guestChatModal" class="hidden fixed inset-0 bg-black/80 z-[300] flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-stone-900 border border-amber-500/30 w-full max-w-md rounded-3xl p-6 space-y-4 max-h-[80vh] flex flex-col shadow-2xl">
-            <div class="flex justify-between items-center border-b border-stone-800 pb-3">
-                <h3 class="text-xs font-serif-luxury font-bold text-[var(--text-gold,#DCA773)] uppercase tracking-widest">💬 Front Desk Chat</h3>
-                <div class="flex items-center gap-2">
-                    <button onclick="toggleChatSound()" id="chatSoundToggle" class="text-stone-400 hover:text-stone-100 text-sm">🔊</button>
-                    <button onclick="closeGuestChatModal()" class="text-stone-400 hover:text-stone-100 text-xl font-bold">✕</button>
+    <!-- MODALE CHAT -->
+    <div id="guestChatModal" class="hidden fixed inset-0 bg-black/80 z-[300] flex items-center justify-center p-4">
+        <div class="bg-stone-900 border border-amber-500/30 w-full max-w-md rounded-3xl p-6 space-y-4 max-h-[80vh] flex flex-col">
+            <div class="flex justify-between border-b border-stone-800 pb-3">
+                <h3 class="text-xs font-bold text-[var(--text-gold,#DCA773)]">💬 Front Desk Chat</h3>
+                <div class="flex gap-2">
+                    <button onclick="toggleChatSound()" id="chatSoundToggle" class="text-stone-400">🔊</button>
+                    <button onclick="closeGuestChatModal()" class="text-stone-400">✕</button>
                 </div>
             </div>
-            <div id="staffPresenceStatus" class="chat-presence-status text-gray-400">● Staff offline</div>
-            <div id="guestChatContainer" class="flex-1 overflow-y-auto space-y-2 pr-1 max-h-[50vh]"></div>
-            <div id="chatTypingIndicator" class="chat-typing-indicator hidden">Staff is typing...</div>
-            <div class="flex gap-2 pt-2 border-t border-stone-800">
-                <input type="text" id="guestChatInput" placeholder="Write a message..." class="flex-1 bg-stone-950 border border-stone-800 rounded-xl px-3 py-2 text-xs text-stone-100 outline-none focus:border-amber-500" onkeypress="if(event.key==='Enter') sendGuestChatMessage()">
-                <button onclick="sendGuestChatMessage()" class="bg-[var(--text-gold,#DCA773)] text-stone-950 font-bold px-4 py-2 rounded-xl text-xs hover:bg-[#ebd0b3]">Send</button>
+            <div id="staffPresenceStatus" class="text-gray-400 text-[10px]">● Staff offline</div>
+            <div id="guestChatContainer" class="flex-1 overflow-y-auto space-y-2"></div>
+            <div class="flex gap-2 border-t border-stone-800 pt-2">
+                <input type="text" id="guestChatInput" placeholder="Write a message..." class="flex-1 bg-stone-950 border border-stone-800 rounded-xl px-3 py-2 text-xs text-stone-100" onkeypress="if(event.key==='Enter') sendGuestChatMessage()">
+                <button onclick="sendGuestChatMessage()" class="bg-[#DCA773] text-stone-950 font-bold px-4 py-2 rounded-xl text-xs">Send</button>
             </div>
         </div>
     </div>
 
     <!-- MENU MODAL -->
-    <div id="menuModal" class="hidden fixed inset-0 bg-black/90 z-[100] flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-stone-900 border border-amber-500/30 w-full max-w-lg rounded-3xl p-6 space-y-4 max-h-[90vh] flex flex-col shadow-2xl">
-            <div class="flex justify-between items-center border-b border-stone-800 pb-3">
-                <h3 class="text-xs font-serif-luxury font-bold text-[var(--text-gold,#DCA773)] uppercase tracking-widest">
-                    <i class="fas fa-book-open mr-1"></i> <span data-i18n="restaurantMenu">Restaurant Menu</span>
-                </h3>
-                <button onclick="closeMenuModal()" class="text-stone-400 hover:text-stone-100 text-xl font-bold">✕</button>
+    <div id="menuModal" class="hidden fixed inset-0 bg-black/90 z-[100] flex items-center justify-center p-4">
+        <div class="bg-stone-900 border border-amber-500/30 w-full max-w-lg rounded-3xl p-6 space-y-4 max-h-[90vh] flex flex-col">
+            <div class="flex justify-between border-b border-stone-800 pb-3">
+                <h3 class="text-xs font-bold text-[var(--text-gold,#DCA773)]">🍽️ Restaurant Menu</h3>
+                <button onclick="closeMenuModal()" class="text-stone-400">✕</button>
             </div>
-            <div class="relative">
-                <i class="fas fa-search absolute left-3.5 top-3 text-stone-400 text-xs"></i>
-                <input type="text" id="menuSearchInput" oninput="renderMenuItems()" placeholder="Search dish..." class="w-full bg-stone-950 border border-stone-800 rounded-xl pl-9 pr-3 py-2 text-xs text-stone-100 outline-none focus:border-amber-500">
+            <input type="text" id="menuSearchInput" oninput="renderMenuItems()" placeholder="Search dish..." class="w-full bg-stone-950 border border-stone-800 rounded-xl px-3 py-2 text-xs text-stone-100">
+            <div id="menuItemsContainer" class="flex-1 overflow-y-auto space-y-3"></div>
+            <div class="flex justify-between text-xs font-bold border-t border-stone-800 pt-2">
+                <span class="text-stone-400">Total:</span>
+                <span id="modalMenuTotalSummary" class="text-[var(--text-gold,#DCA773)]">0 items · 0.00 AED</span>
             </div>
-            <div id="menuItemsContainer" class="flex-1 overflow-y-auto pr-1 space-y-3 scrollbar-none"></div>
-            <div class="border-t border-stone-800 pt-3 space-y-3">
-                <div class="flex justify-between items-center text-xs font-bold">
-                    <span class="text-stone-400" data-i18n="total">Total:</span>
-                    <span id="modalMenuTotalSummary" class="text-[var(--text-gold,#DCA773)] font-serif-luxury text-sm">0 items · 0.00 AED</span>
-                </div>
-                <button onclick="confirmMenuSelection()" class="w-full bg-[var(--text-gold,#DCA773)] text-stone-950 font-bold py-3.5 rounded-2xl text-xs uppercase tracking-widest hover:bg-[#ebd0b3] transition">
-                    <span data-i18n="confirmSelection">Confirm Selection</span>
-                </button>
-            </div>
+            <button onclick="confirmMenuSelection()" class="w-full bg-[#DCA773] text-stone-950 font-bold py-3.5 rounded-2xl">Confirm Selection</button>
         </div>
     </div>
 
@@ -559,175 +399,14 @@ body.light-mode .toast-notification .text-stone-100 {
     <script src="assets/js/services/requests.js"></script>
     <script src="assets/js/services/orders.js"></script>
     
-    <<script>
-    initTheme();
-    setLanguage(currentLanguage);
-    renderMenuItems();
-    renderFaqList();
-    renderOneTapServices();
-    restaurerSession();
-    fetchOffers();
-</script>
-        
- </script>  
-    // ==================== TOUT EN UN ====================
-    function ensureContainers() {
-        const mainScreen = document.getElementById('mainScreen');
-        const card = mainScreen.querySelector('.remal-card');
-        
-        // Météo
-        if (!document.getElementById('weatherContainer')) {
-            const weatherDiv = document.createElement('div');
-            weatherDiv.id = 'weatherContainer';
-            card.insertBefore(weatherDiv, card.children[2]);
-        }
-        
-        // Bouton History
-        if (!document.getElementById('tabHistory')) {
-            const tabFaq = document.getElementById('tabFaq');
-            const historyBtn = document.createElement('button');
-            historyBtn.id = 'tabHistory';
-            historyBtn.className = 'tab-btn flex-1 py-3 rounded-xl text-xs font-bold transition';
-            historyBtn.setAttribute('onclick', "showOrderHistory()");
-            historyBtn.innerHTML = '<i class="fas fa-receipt mr-1"></i> History';
-            tabFaq.parentNode.insertBefore(historyBtn, tabFaq);
-        }
-        
-        // Section History
-        if (!document.getElementById('orderHistorySection')) {
-            const faqSection = document.getElementById('faqSection');
-            const historySection = document.createElement('div');
-            historySection.id = 'orderHistorySection';
-            historySection.className = 'hidden space-y-4';
-            historySection.innerHTML = `
-                <p class="text-center text-[10px] text-stone-400 font-bold uppercase tracking-wider">
-                    <i class="fas fa-receipt mr-1"></i> Order History
-                </p>
-                <div id="orderHistoryContainer" class="space-y-3"></div>
-            `;
-            faqSection.parentNode.insertBefore(historySection, faqSection.nextSibling);
-        }
-    }
-
-    // ==================== MÉTÉO ====================
-    async function loadWeather() {
-        try {
-            const response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=24.1556&longitude=52.6833&current=temperature_2m,weather_code,wind_speed_10m&timezone=Asia/Dubai');
-            const data = await response.json();
-            const container = document.getElementById('weatherContainer');
-            if (!container) return;
-            const temp = Math.round(data.current.temperature_2m);
-            const wind = Math.round(data.current.wind_speed_10m);
-            const code = data.current.weather_code;
-            const icons = { 0: '☀️', 1: '🌤️', 2: '⛅', 3: '☁️', 51: '🌦️', 61: '🌧️', 80: '🌧️', 95: '⛈️' };
-            const icon = icons[code] || '🌡️';
-            container.innerHTML = `
-                <div class="p-3 rounded-2xl border" style="background: rgba(14, 165, 233, 0.1); border-color: rgba(14, 165, 233, 0.3);">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <div>
-                            <p style="font-size:9px; font-weight:bold; color:#38bdf8;">Al Dhannah City</p>
-                            <p style="font-size:24px; font-weight:bold; color:white; margin-top:4px;">${temp}°C</p>
-                        </div>
-                        <span style="font-size:30px;">${icon}</span>
-                    </div>
-                    <p style="font-size:8px; color:#a8a29e; margin-top:8px;">💨 ${wind} km/h</p>
-                </div>
-            `;
-        } catch (err) {
-            console.log('Weather unavailable');
-        }
-    }
-
-    // ==================== HISTORIQUE ====================
-    window.showOrderHistory = function() {
-        document.getElementById('servicesSection').classList.add('hidden');
-        document.getElementById('offersSection').classList.add('hidden');
-        document.getElementById('faqSection').classList.add('hidden');
-        document.getElementById('orderHistorySection').classList.remove('hidden');
-        document.getElementById('tabServices').classList.remove('active');
-        document.getElementById('tabOffers').classList.remove('active');
-        document.getElementById('tabFaq').classList.remove('active');
-        document.getElementById('tabHistory').classList.add('active');
-        fetchOrderHistory();
-    };
-
-    window.fetchOrderHistory = async function() {
-        const room = localStorage.getItem('remal_guest_room');
-        const container = document.getElementById('orderHistoryContainer');
-        if (!room || !container) return;
-        try {
-            const { data } = await window.supabaseClient.from('food_orders').select('*').eq('room_number', String(room)).order('created_at', { ascending: false }).limit(20);
-            if (!data || data.length === 0) {
-                container.innerHTML = '<p class="text-center text-stone-400 py-6">No orders yet</p>';
-                return;
-            }
-            container.innerHTML = data.map(order => {
-                let itemsList = '';
-                try { itemsList = (typeof order.items === 'string' ? JSON.parse(order.items) : order.items).map(i => `${i.quantity}x ${i.name}`).join(', '); } catch(e) {}
-                return `
-                    <div class="p-3 bg-stone-950/60 border border-stone-800 rounded-xl">
-                        <div class="flex justify-between">
-                            <p class="font-bold text-stone-100 text-xs">🛎️ #${String(order.id).slice(-6)}</p>
-                            <span class="text-[9px] text-stone-400">${order.status}</span>
-                        </div>
-                        <p class="text-[9px] text-stone-400 mt-1">${itemsList}</p>
-                        <p class="text-[10px] font-bold text-[var(--text-gold,#DCA773)] mt-2">AED ${(order.total_amount || 0).toFixed(2)}</p>
-                    </div>
-                `;
-            }).join('');
-        } catch(e) {
-            container.innerHTML = '<p class="text-center text-stone-400 py-6">Error loading history</p>';
-        }
-    };
-
-    // ==================== FAQ (au cas où supprimé) ====================
-    window.renderFaqList = function() {
-        const container = document.getElementById('faqContainer');
-        if (!container) return;
-        const faqs = {
-            en: [
-                { q: 'What is the Wi-Fi password?', a: 'Connect to "Remal_Guest" - no password required.' },
-                { q: 'What are the breakfast hours?', a: 'Daily at Falaj Restaurant from 06:30 AM to 11:00 AM.' },
-                { q: 'How do I request a late check-out?', a: 'Use the Services tab and select "Late Check-out".' },
-                { q: 'What are the pool timings?', a: 'Al Waha Pool is open from 07:00 AM to 08:00 PM.' }
-            ],
-            fr: [
-                { q: 'Quel est le mot de passe Wi-Fi ?', a: 'Connectez-vous à "Remal_Guest" - aucun mot de passe requis.' },
-                { q: 'Quels sont les horaires du petit-déjeuner ?', a: 'Tous les jours au restaurant Falaj de 06h30 à 11h00.' },
-                { q: 'Comment demander un départ tardif ?', a: 'Utilisez l\'onglet Services et sélectionnez "Départ tardif".' },
-                { q: 'Quels sont les horaires de la piscine ?', a: 'La piscine Al Waha est ouverte de 07h00 à 20h00.' }
-            ],
-            ar: [
-                { q: 'ما هي كلمة مرور الواي فاي؟', a: 'اتصل بشبكة "Remal_Guest" - بدون كلمة مرور.' },
-                { q: 'ما هي مواعيد الإفطار؟', a: 'يومياً في مطعم الفلج من 06:30 صباحاً حتى 11:00.' },
-                { q: 'كيف أطلب مغادرة متأخرة؟', a: 'استخدم تبويب الخدمات واختر "مغادرة متأخرة".' },
-                { q: 'ما هي مواعيد المسبح؟', a: 'مسبح الواحة مفتوح من 07:00 صباحاً حتى 08:00 مساءً.' }
-            ],
-            hi: [
-                { q: 'वाई-फाई पासवर्ड क्या है?', a: '"Remal_Guest" से कनेक्ट करें - कोई पासवर्ड नहीं।' },
-                { q: 'नाश्ते का समय क्या है?', a: 'फलज रेस्तरां में रोजाना सुबह 06:30 से 11:00 बजे तक।' },
-                { q: 'लेट चेक-आउट कैसे करें?', a: 'सेवाएं टैब में जाएं और "लेट चेक-आउट" चुनें।' },
-                { q: 'पूल का समय क्या है?', a: 'अल वाहा पूल सुबह 07:00 से रात 08:00 बजे तक खुला है।' }
-            ]
-        };
-        const lang = localStorage.getItem('remal_language') || 'en';
-        const faqData = faqs[lang] || faqs.en;
-        container.innerHTML = faqData.map(faq => `
-            <div class="p-3.5 bg-stone-950/60 border border-amber-500/20 rounded-2xl">
-                <p class="text-[11px] font-bold text-[var(--text-gold,#DCA773)]">❓ ${faq.q}</p>
-                <p class="text-[10px] text-stone-400 mt-1">${faq.a}</p>
-            </div>
-        `).join('');
-    };
-
-    // ==================== INITIALISATION ====================
-    document.addEventListener('DOMContentLoaded', function() {
-        setTimeout(() => {
-            ensureContainers();
-            loadWeather();
-            window.renderFaqList();
-        }, 1000);
-    });
-</script>
+    <script>
+        initTheme();
+        setLanguage(currentLanguage);
+        renderMenuItems();
+        renderFaqList();
+        renderOneTapServices();
+        restaurerSession();
+        fetchOffers();
+    </script>
 </body>
 </html>
