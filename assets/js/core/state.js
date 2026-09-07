@@ -20,6 +20,15 @@ window.activeServiceRequests = window.activeServiceRequests || [];
 // ==================== EXPOSER GLOBALEMENT ====================
 window.supabaseClient = supabaseClient;
 window.pmsSupabaseClient = pmsSupabaseClient;
+window.menuCart = menuCart;
+window.cachedGuestData = cachedGuestData;
+window.isGuestVerified = isGuestVerified;
+window.currentOrderId = currentOrderId;
+window.favoritesList = favoritesList;
+window.currentService = currentService;
+window.currentTab = currentTab;
+window.currentOffers = currentOffers;
+window.currentLanguage = currentLanguage;
 
 console.log('✅ Guest Hub state initialized');
 console.log('🔌 supabaseClient:', supabaseClient ? 'OK - CONNECTED' : 'MISSING');
