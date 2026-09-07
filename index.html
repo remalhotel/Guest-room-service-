@@ -99,6 +99,66 @@
         .service-tracking-dot.completed { background: #10b981; border-color: #10b981; color: #ffffff; }
         .service-tracking-line { flex: 1; height: 2px; background: #525252; margin: 0 -2px; position: relative; top: -10px; z-index: 1; transition: background 0.3s; }
         .service-tracking-line.completed { background: #10b981; }
+   /* ==================== CORRECTIONS MODE CLAIR ==================== */
+body.light-mode .text-stone-100,
+body.light-mode .text-stone-200,
+body.light-mode .text-stone-300,
+body.light-mode #guestChatContainer .chat-message p,
+body.light-mode #orderHistoryContainer p,
+body.light-mode #oneTapContainer span,
+body.light-mode #oneTapContainer button,
+body.light-mode #weatherContainer p,
+body.light-mode #weatherContainer span,
+body.light-mode #orderHistoryContainer .text-stone-100,
+body.light-mode #orderHistoryContainer .text-stone-400 {
+    color: #1e293b !important;
+}
+
+body.light-mode .chat-message.guest {
+    background-color: #DCA773 !important;
+    color: #1c1917 !important;
+}
+
+body.light-mode .chat-message.staff {
+    background-color: #e2e8f0 !important;
+    color: #0f172a !important;
+}
+
+body.light-mode #oneTapContainer button {
+    background-color: #e2e8f0 !important;
+    border-color: #cbd5e1 !important;
+}
+
+body.light-mode #oneTapContainer button span {
+    color: #0f172a !important;
+}
+
+body.light-mode #weatherContainer {
+    background-color: #f1f5f9 !important;
+    border-color: #e2e8f0 !important;
+}
+
+body.light-mode #weatherContainer p,
+body.light-mode #weatherContainer span {
+    color: #1e293b !important;
+}
+
+body.light-mode #orderHistoryContainer .bg-stone-950\/60 {
+    background-color: #f1f5f9 !important;
+    border-color: #e2e8f0 !important;
+}
+
+body.light-mode #staffPresenceStatus span {
+    color: inherit !important;
+}
+
+body.light-mode #chatTypingIndicator {
+    color: #64748b !important;
+}
+
+body.light-mode .toast-notification .text-stone-100 {
+    color: #0f172a !important;
+}
     </style>
 </head>
 <body class="min-h-screen lock-screen bg-stone-950 text-stone-100 font-sans">
