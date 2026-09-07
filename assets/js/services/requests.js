@@ -16,7 +16,7 @@ async function submitOtherService() {
         service_type: serviceData.title,
         details: fullDetails,
         status: 'Pending',
-        created_at: new Date().toISOString()
+        created_at: new Date().toLocaleString('en-US', { timeZone: 'Asia/Dubai' })
     };
     try {
         if (supabaseClient) {
