@@ -28,6 +28,41 @@ function switchTab(tab) {
     }
 }
 
+function showService(serviceId) {
+    console.log('🔍 showService called:', serviceId);
+    currentService = serviceId;
+    document.getElementById('servicesList').classList.add('hidden');
+    
+    if (serviceId === 'room_service') {
+        document.getElementById('roomServiceSection').classList.remove('hidden');
+        document.getElementById('otherServiceSection').classList.add('hidden');
+        renderMenuItems();
+    } else {
+        document.getElementById('roomServiceSection').classList.add('hidden');
+        document.getElementById('otherServiceSection').classList.remove('hidden');
+        
+        const serviceData = SERVICES_DATA[serviceId];
+        console.log('📦 Service data:', serviceData);
+        
+        if (serviceData) {
+            document.getElementById('otherServiceTitle').innerText = serviceData.title;
+            document.getElementById('otherServiceSubtitle').innerText = serviceData.subtitle;
+            document.getElementById('otherServiceIcon').innerHTML = `<i class="fas ${serviceData.icon}"></i>`;
+            renderServiceFields(serviceData.fields);
+        } else {
+            console.error('❌ Service not found:', serviceId);
+        }
+    }
+}
+
+function backToServices() {
+    document.getElementById('servicesList').classList.remove('hidden');
+    document.getElementById('roomServiceSection').classList.add('hidden');
+    document.getElementById('otherServiceSection').classList.add('hidden');
+    currentService = null;
+    renderServiceRequestsTracking();
+}
+
 function showFavorites() {
     document.getElementById('servicesSection').classList.add('hidden');
     document.getElementById('offersSection').classList.add('hidden');
@@ -44,35 +79,8 @@ function showFavorites() {
     renderFavoritesView();
 }
 
-function showService(serviceId) {
-    currentService = serviceId;
-    document.getElementById('servicesList').classList.add('hidden');
-    if (serviceId === 'room_service') {
-        document.getElementById('roomServiceSection').classList.remove('hidden');
-        document.getElementById('otherServiceSection').classList.add('hidden');
-        renderMenuItems();
-        
-        // Charger les suggestions personnalisées
-        if (typeof fetchPersonalizedSuggestions === 'function') {
-            fetchPersonalizedSuggestions();
-        }
-    } else {
-        document.getElementById('roomServiceSection').classList.add('hidden');
-        document.getElementById('otherServiceSection').classList.remove('hidden');
-        const serviceData = SERVICES_DATA[serviceId];
-        if (serviceData) {
-            document.getElementById('otherServiceTitle').innerText = serviceData.title;
-            document.getElementById('otherServiceSubtitle').innerText = serviceData.subtitle;
-            document.getElementById('otherServiceIcon').innerHTML = `<i class="fas ${serviceData.icon}"></i>`;
-            renderServiceFields(serviceData.fields);
-        }
-    }
-}
-
-function backToServices() {
-    document.getElementById('servicesList').classList.remove('hidden');
-    document.getElementById('roomServiceSection').classList.add('hidden');
-    document.getElementById('otherServiceSection').classList.add('hidden');
-    currentService = null;
-    renderServiceRequestsTracking();
-}
+// Exposer globalement
+window.switchTab = switchTab;
+window.showService = showService;
+window.backToServices = backToServices;
+window.showFavorites = showFavorites;
