@@ -13,7 +13,9 @@ function showToast(message, type = 'info') {
 }
 
 function getGreeting() {
-    const hour = new Date().getHours();
+    // Utiliser l'heure de Dubaï (UTC+4)
+    const dubaiTime = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Dubai' }));
+    const hour = dubaiTime.getHours();
     if (hour < 12) return { text: 'Good Morning', emoji: '🌅' };
     if (hour < 18) return { text: 'Good Afternoon', emoji: '☀️' };
     return { text: 'Good Evening', emoji: '🌙' };
@@ -35,4 +37,27 @@ function getTimeAgo(timestamp) {
 function getBadgeHTML(badges) {
     if (!badges || !Array.isArray(badges)) return '';
     return badges.map(b => `<span class="inline-block text-[8px] bg-stone-800 text-amber-400 border border-amber-500/30 px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wider mr-1">${b}</span>`).join('');
+}
+
+// ==================== HEURE DE DUBAÏ ====================
+function getDubaiTime() {
+    return new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Dubai' }));
+}
+
+function formatDubaiTime(date) {
+    return date.toLocaleTimeString('en-US', { 
+        timeZone: 'Asia/Dubai', 
+        hour: '2-digit', 
+        minute: '2-digit',
+        hour12: false 
+    });
+}
+
+function formatDubaiDate(date) {
+    return date.toLocaleDateString('en-US', { 
+        timeZone: 'Asia/Dubai',
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric'
+    });
 }
