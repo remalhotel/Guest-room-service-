@@ -52,6 +52,7 @@ async function verifierIdentiteClient() {
         isGuestVerified = true;
         localStorage.setItem('remal_guest_room', pmsData.room);
         localStorage.setItem('remal_guest_data', JSON.stringify(pmsData));
+        localStorage.setItem('remal_departure', pmsData.departure || '');
         
         afficherPagePersonnalisee(pmsData, pmsData.room);
         
@@ -64,6 +65,7 @@ async function verifierIdentiteClient() {
             mainScreen.classList.add('screen-enter'); 
             verifierEtRestaurerCommandeEnCours();
             fetchServiceRequestsTracking();
+            initCheckoutCountdown();
         }, 400);
 
     } catch (error) { 
@@ -96,6 +98,7 @@ function changerDeChambre() {
     localStorage.removeItem('remal_guest_room');
     localStorage.removeItem('remal_guest_data');
     localStorage.removeItem('remal_current_order_id');
+    localStorage.removeItem('remal_departure');
     
     document.getElementById('lockRoomInput').value = '';
     document.getElementById('lockNameInput').value = '';
@@ -122,6 +125,7 @@ function restaurerSession() {
             document.getElementById('mainScreen').classList.remove('hidden');
             verifierEtRestaurerCommandeEnCours();
             fetchServiceRequestsTracking();
+            initCheckoutCountdown();
         } catch (e) {}
     }
 }
