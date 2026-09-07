@@ -46,14 +46,12 @@ class GuestChatManager {
         if (!this.supabase) return;
         
         try {
-            const { error } = await this.supabase
+            await this.supabase
                 .from('chat_messages')
-                .update({ is_read: true, read_at: new Date().toISOString() })
+                .update({ is_read: true })
                 .eq('room_number', this.roomNumber)
                 .eq('sender', 'staff')
                 .eq('is_read', false);
-                
-            if (error) console.warn('Error marking messages:', error);
         } catch (error) {
             console.warn('Error marking messages:', error);
         }
@@ -81,7 +79,6 @@ class GuestChatManager {
                     
                     if (newMessage.sender === 'staff' && this.soundEnabled) {
                         this.playNotificationSound();
-                        this.showDesktopNotification(newMessage);
                     }
                     
                     if (newMessage.sender === 'staff') {
@@ -89,90 +86,7 @@ class GuestChatManager {
                     }
                 }
             })
-            .on('postgres_changes', {
-                event: 'UPDATE',
-                schema: 'public',
-                table: 'chat_messages',
-                filter: `room_number=eq.${this.roomNumber}`
-            }, (payload) => {
-                const updatedMessage = payload.new;
-                const index = this.messages.findIndex(m => m.id === updatedMessage.id);
-                if (index !== -1) {
-                    this.messages[index] = updatedMessage;
-                    this.render();
-                }
-            })
-            .on('broadcast', { event: 'typing' }, (payload) => {
-                if (payload.payload.room_number === this.roomNumber && payload.payload.sender === 'staff') {
-                    this.showTypingIndicator(payload.payload.is_typing);
-                }
-            })
-            .on('presence', { event: 'sync' }, () => {
-                this.updateStaffPresence();
-            })
-            .subscribe(async (status) => {
-                if (status === 'SUBSCRIBED') {
-                    await this.trackPresence();
-                }
-            });
-    }
-
-    async trackPresence() {
-        if (!this.channel) return;
-        
-        await this.channel.track({
-            user_type: 'guest',
-            room_number: this.roomNumber,
-            guest_name: this.guestName,
-            online_at: new Date().toISOString()
-        });
-    }
-
-    updateStaffPresence() {
-        if (!this.channel) return;
-        
-        const state = this.channel.presenceState();
-        const staffOnline = Object.values(state).some(
-            presence => presence[0]?.user_type === 'staff'
-        );
-        
-        this.updateStaffStatus(staffOnline);
-    }
-
-    updateStaffStatus(isOnline) {
-        const statusElement = document.getElementById('staffPresenceStatus');
-        if (statusElement) {
-            const statusTexts = {
-                en: isOnline ? '● Staff online' : '● Staff offline',
-                fr: isOnline ? '● Staff en ligne' : '● Staff hors ligne',
-                ar: isOnline ? '● الموظف متصل' : '● الموظف غير متصل',
-                hi: isOnline ? '● स्टाफ ऑनलाइन' : '● स्टाफ ऑफलाइन'
-            };
-            const lang = typeof currentLanguage !== 'undefined' ? currentLanguage : 'en';
-            const text = statusTexts[lang] || statusTexts.en;
-            const colorClass = isOnline ? 'text-emerald-400' : 'text-gray-400';
-            statusElement.innerHTML = `<span class="${colorClass} text-[10px]">${text}</span>`;
-        }
-    }
-
-    showTypingIndicator(isTyping) {
-        const typingElement = document.getElementById('chatTypingIndicator');
-        if (typingElement) {
-            const typingTexts = {
-                en: 'Staff is typing...',
-                fr: 'Le staff est en train d\'écrire...',
-                ar: 'الموظف يكتب...',
-                hi: 'स्टाफ टाइप कर रहा है...'
-            };
-            const lang = typeof currentLanguage !== 'undefined' ? currentLanguage : 'en';
-            
-            if (isTyping) {
-                typingElement.textContent = typingTexts[lang] || typingTexts.en;
-                typingElement.classList.remove('hidden');
-            } else {
-                typingElement.classList.add('hidden');
-            }
-        }
+            .subscribe();
     }
 
     async sendMessage(messageText) {
@@ -184,15 +98,12 @@ class GuestChatManager {
             guest_name: this.guestName,
             message: messageText.trim(),
             is_read: false,
-            read_at: null,
             created_at: new Date().toISOString()
         };
         
         const tempId = `temp-${Date.now()}`;
-        const optimisticMessage = { ...message, id: tempId, is_sent: true };
-        this.messages.push(optimisticMessage);
+        this.messages.push({ ...message, id: tempId });
         this.render();
-        this.scrollToBottom();
         
         try {
             const { data, error } = await this.supabase
@@ -205,11 +116,10 @@ class GuestChatManager {
             
             const index = this.messages.findIndex(m => m.id === tempId);
             if (index !== -1) {
-                this.messages[index] = { ...data, is_sent: true };
+                this.messages[index] = data;
                 this.render();
             }
             
-            this.sendTypingIndicator(false);
             return data;
         } catch (error) {
             console.error('Error sending message:', error);
@@ -219,42 +129,19 @@ class GuestChatManager {
         }
     }
 
-    async sendTypingIndicator(isTyping) {
-        if (!this.channel) return;
-        
-        await this.channel.send({
-            type: 'broadcast',
-            event: 'typing',
-            payload: {
-                room_number: this.roomNumber,
-                sender: 'guest',
-                is_typing: isTyping,
-                timestamp: new Date().toISOString()
-            }
-        });
-    }
-
     setupTypingIndicator() {
         const input = document.getElementById('guestChatInput');
         if (!input) return;
         
         input.addEventListener('input', () => {
-            if (input.value.length > 0) {
-                this.sendTypingIndicator(true);
-                clearTimeout(this.typingTimeout);
-                this.typingTimeout = setTimeout(() => {
-                    this.sendTypingIndicator(false);
-                }, 2000);
-            } else {
-                this.sendTypingIndicator(false);
-            }
+            clearTimeout(this.typingTimeout);
+            this.typingTimeout = setTimeout(() => {}, 2000);
         });
     }
 
     setupSoundToggle() {
         const soundToggle = document.getElementById('chatSoundToggle');
         if (!soundToggle) return;
-        
         soundToggle.textContent = this.soundEnabled ? '🔊' : '🔇';
     }
 
@@ -263,30 +150,16 @@ class GuestChatManager {
             const audioContext = new (window.AudioContext || window.webkitAudioContext)();
             const oscillator = audioContext.createOscillator();
             const gainNode = audioContext.createGain();
-            
             oscillator.connect(gainNode);
             gainNode.connect(audioContext.destination);
-            
             oscillator.type = 'sine';
             oscillator.frequency.setValueAtTime(880, audioContext.currentTime);
-            oscillator.frequency.setValueAtTime(1100, audioContext.currentTime + 0.1);
-            
             gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
             gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-            
             oscillator.start();
             oscillator.stop(audioContext.currentTime + 0.5);
         } catch (error) {
             console.warn('Sound not available:', error);
-        }
-    }
-
-    showDesktopNotification(message) {
-        if ('Notification' in window && Notification.permission === 'granted') {
-            new Notification('Message from staff', {
-                body: message.message,
-                icon: '/assets/images/logo.png'
-            });
         }
     }
 
@@ -301,51 +174,15 @@ class GuestChatManager {
                 minute: '2-digit' 
             });
             
-            const readTexts = {
-                en: 'Read',
-                fr: 'Lu',
-                ar: 'مقروء',
-                hi: 'पढ़ा'
-            };
-            const lang = typeof currentLanguage !== 'undefined' ? currentLanguage : 'en';
-            const readText = readTexts[lang] || readTexts.en;
-            
-            // Statut du message
-            let statusHTML = '';
-            if (isGuest) {
-                if (msg.is_read) {
-                    statusHTML = `<span class="text-[8px] text-blue-400">✓✓ ${readText} ${msg.read_at ? new Date(msg.read_at).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'}) : ''}</span>`;
-                } else if (msg.is_sent) {
-                    statusHTML = `<span class="text-[8px] text-gray-400">✓ Sent</span>`;
-                } else {
-                    statusHTML = `<span class="text-[8px] text-gray-500">... Sending</span>`;
-                }
-            }
-            
             return `
                 <div class="chat-message ${isGuest ? 'guest' : 'staff'}">
-                    <div class="flex items-start gap-2">
-                        <div class="flex-1">
-                            <p class="text-[10px]">${msg.message}</p>
-                            ${msg.image_url ? `<img src="${msg.image_url}" class="mt-2 rounded-xl max-w-full h-auto" />` : ''}
-                            <div class="flex items-center gap-2 mt-1">
-                                <p class="text-[8px] opacity-60">${time}</p>
-                                ${statusHTML}
-                            </div>
-                        </div>
-                    </div>
+                    <p class="text-[10px]">${msg.message}</p>
+                    <p class="text-[8px] opacity-60 mt-1">${time}</p>
                 </div>
             `;
         }).join('');
         
-        this.scrollToBottom();
-    }
-
-    scrollToBottom() {
-        const container = document.getElementById('guestChatContainer');
-        if (container) {
-            container.scrollTop = container.scrollHeight;
-        }
+        container.scrollTop = container.scrollHeight;
     }
 
     destroy() {
@@ -355,3 +192,6 @@ class GuestChatManager {
         clearTimeout(this.typingTimeout);
     }
 }
+
+// Exposer
+window.GuestChatManager = GuestChatManager;
