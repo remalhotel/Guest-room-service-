@@ -22,7 +22,7 @@ async function submitRoomServiceOrder(method) {
         special_instructions: instructions,
         total_amount: totalAmount,
         status: 'Pending',
-        created_at: new Date().toISOString()
+        created_at: new Date().toLocaleString('en-US', { timeZone: 'Asia/Dubai' })
     };
 
     try {
