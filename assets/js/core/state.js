@@ -12,12 +12,10 @@ let currentTab = 'services';
 let currentOffers = [];
 let currentLanguage = localStorage.getItem('remal_language') || 'en';
 let trackingTimeout = null;
-let serviceRequestsTimeout = null;
 let guestChatManager = null;
 
 window.activeServiceRequests = window.activeServiceRequests || [];
 
-// ==================== EXPOSER GLOBALEMENT ====================
 window.supabaseClient = supabaseClient;
 window.pmsSupabaseClient = pmsSupabaseClient;
 window.menuCart = menuCart;
@@ -30,6 +28,5 @@ window.currentTab = currentTab;
 window.currentOffers = currentOffers;
 window.currentLanguage = currentLanguage;
 
-console.log('✅ Guest Hub state initialized');
-console.log('🔌 supabaseClient:', supabaseClient ? 'OK - CONNECTED' : 'MISSING');
-console.log('🔌 pmsSupabaseClient:', pmsSupabaseClient ? 'OK - CONNECTED' : 'MISSING');
+console.log('✅ State initialized');
+console.log('🔌 supabaseClient:', supabaseClient ? 'OK' : 'MISSING');
