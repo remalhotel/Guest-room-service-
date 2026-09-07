@@ -2,9 +2,11 @@
 function renderServiceFields(fields) {
     const container = document.getElementById('otherServiceFields');
     if (!container) {
-        console.error('❌ Container otherServiceFields not found');
+        console.error('❌ otherServiceFields not found');
         return;
     }
+    
+    console.log('📝 Rendering fields:', fields);
     
     container.innerHTML = fields.map(field => {
         if (field.type === 'select') {
@@ -41,18 +43,18 @@ function renderServiceFields(fields) {
         }
         return '';
     }).join('');
+    
+    console.log('✅ Fields rendered');
 }
 
-// ==================== ONE-TAP SERVICES (CONNECTÉS AU STAFF) ====================
+// ==================== ONE-TAP SERVICES ====================
 const ONE_TAP_SERVICES = [
-    { id: 'one_tap_cleaning', icon: '🧹', label: 'Clean Room Now', serviceType: 'Housekeeping / Room Cleaning', details: 'Immediate room cleaning requested', staffTab: 'housekeeping' },
-    { id: 'one_tap_towels', icon: '🧴', label: 'Fresh Towels', serviceType: 'Housekeeping / Room Cleaning', details: 'Fresh towels requested', staffTab: 'housekeeping' },
-    { id: 'one_tap_water', icon: '💧', label: 'Water Bottles', serviceType: 'Front Desk Inquiry', details: 'Extra water bottles requested', staffTab: 'front_desk' },
-    { id: 'one_tap_ice', icon: '🧊', label: 'Ice Bucket', serviceType: 'Front Desk Inquiry', details: 'Ice bucket requested', staffTab: 'front_desk' },
-    { id: 'one_tap_wakeup', icon: '⏰', label: 'Wake-up 7AM', serviceType: 'Wake-up Call / Alarm Service', details: 'Wake-up call at 7:00 AM', staffTab: 'front_desk' },
-    { id: 'one_tap_taxi', icon: '🚕', label: 'Book Taxi', serviceType: 'Front Desk Inquiry', details: 'Taxi booking requested', staffTab: 'front_desk' },
-    { id: 'one_tap_maintenance', icon: '🔧', label: 'Report Issue', serviceType: 'Maintenance / Technical Support', details: 'Technical issue reported', staffTab: 'maintenance' },
-    { id: 'one_tap_luggage', icon: '🧳', label: 'Luggage Help', serviceType: 'Luggage Assistance', details: 'Luggage assistance requested', staffTab: 'front_desk' }
+    { id: 'one_tap_cleaning', icon: '🧹', label: 'Clean Room', serviceType: 'Housekeeping / Room Cleaning', details: 'Immediate room cleaning requested' },
+    { id: 'one_tap_towels', icon: '🧴', label: 'Fresh Towels', serviceType: 'Housekeeping / Room Cleaning', details: 'Fresh towels requested' },
+    { id: 'one_tap_water', icon: '💧', label: 'Water', serviceType: 'Front Desk Inquiry', details: 'Water bottles requested' },
+    { id: 'one_tap_ice', icon: '🧊', label: 'Ice', serviceType: 'Front Desk Inquiry', details: 'Ice bucket requested' },
+    { id: 'one_tap_wakeup', icon: '⏰', label: 'Wake-up 7AM', serviceType: 'Wake-up Call / Alarm Service', details: 'Wake-up call at 7:00 AM' },
+    { id: 'one_tap_taxi', icon: '🚕', label: 'Taxi', serviceType: 'Front Desk Inquiry', details: 'Taxi booking requested' }
 ];
 
 async function oneTapService(serviceId) {
@@ -60,10 +62,7 @@ async function oneTapService(serviceId) {
     if (!service) return;
     
     const room = cachedGuestData?.room || localStorage.getItem('remal_guest_room');
-    if (!room) {
-        showToast('Please verify your room first', 'error');
-        return;
-    }
+    if (!room) { showToast('Verify room first', 'error'); return; }
     
     const requestData = {
         room_number: String(room),
@@ -76,29 +75,12 @@ async function oneTapService(serviceId) {
     
     try {
         if (supabaseClient) {
-            const { error } = await supabaseClient
-                .from('guest_requests')
-                .insert([requestData]);
-                
-            if (error) {
-                console.error('Error submitting one-tap:', error);
-                showToast('Error: ' + error.message, 'error');
-                return;
-            }
+            const { error } = await supabaseClient.from('guest_requests').insert([requestData]);
+            if (error) { showToast('Error: ' + error.message, 'error'); return; }
         }
-        
         showToast(`${service.icon} ${service.label} requested!`, 'success');
-        
-        // Suivre l'utilisation
-        trackServiceUsage(service.serviceType);
-        
-        // Rafraîchir les demandes
-        if (typeof fetchServiceRequestsTracking === 'function') {
-            fetchServiceRequestsTracking();
-        }
-        
+        if (typeof fetchServiceRequestsTracking === 'function') fetchServiceRequestsTracking();
     } catch (err) {
-        console.error('Error submitting one-tap:', err);
         showToast('Error: ' + err.message, 'error');
     }
 }
@@ -112,9 +94,9 @@ function renderOneTapServices() {
             <p class="text-[9px] font-bold text-[var(--text-gold,#DCA773)] uppercase tracking-wider mb-2">
                 <i class="fas fa-hand-pointer mr-1"></i> One-Tap Services
             </p>
-            <div class="grid grid-cols-4 gap-2">
+            <div class="grid grid-cols-3 gap-2">
                 ${ONE_TAP_SERVICES.map(service => `
-                    <button onclick="oneTapService('${service.id}')" class="bg-stone-800 hover:bg-stone-700 text-stone-200 p-3 rounded-xl text-center transition hover:border-amber-500/50 border border-transparent">
+                    <button onclick="oneTapService('${service.id}')" class="bg-stone-800 hover:bg-stone-700 text-stone-200 p-3 rounded-xl text-center transition border border-transparent hover:border-amber-500/50">
                         <span class="text-2xl block mb-1">${service.icon}</span>
                         <span class="text-[7px] font-bold">${service.label}</span>
                     </button>
@@ -124,34 +106,19 @@ function renderOneTapServices() {
     `;
 }
 
-// ==================== RACCOURCIS RAPIDES ====================
+// ==================== RACCOURCIS ====================
 function trackServiceUsage(serviceId) {
     const usageKey = 'remal_service_usage';
     let usage = JSON.parse(localStorage.getItem(usageKey) || '{}');
-    
     usage[serviceId] = (usage[serviceId] || 0) + 1;
-    
-    const sortedEntries = Object.entries(usage).sort((a, b) => b[1] - a[1]);
-    if (sortedEntries.length > 5) {
-        usage = Object.fromEntries(sortedEntries.slice(0, 5));
-    }
-    
     localStorage.setItem(usageKey, JSON.stringify(usage));
     renderQuickAccess();
 }
 
 function getFrequentServices() {
-    const usageKey = 'remal_service_usage';
-    const usage = JSON.parse(localStorage.getItem(usageKey) || '{}');
-    
-    return Object.entries(usage)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 4)
-        .map(([serviceId, count]) => ({
-            serviceId,
-            count,
-            serviceData: SERVICES_DATA[serviceId]
-        }))
+    const usage = JSON.parse(localStorage.getItem('remal_service_usage') || '{}');
+    return Object.entries(usage).sort((a, b) => b[1] - a[1]).slice(0, 4)
+        .map(([serviceId, count]) => ({ serviceId, count, serviceData: SERVICES_DATA[serviceId] }))
         .filter(item => item.serviceData);
 }
 
@@ -159,23 +126,15 @@ function renderQuickAccess() {
     const container = document.getElementById('quickAccessContainer');
     if (!container) return;
     
-    const frequentServices = getFrequentServices();
-    
-    if (frequentServices.length === 0) {
-        container.classList.add('hidden');
-        container.innerHTML = '';
-        return;
-    }
+    const frequent = getFrequentServices();
+    if (frequent.length === 0) { container.classList.add('hidden'); container.innerHTML = ''; return; }
     
     container.classList.remove('hidden');
-    
     container.innerHTML = `
         <div class="p-3 bg-stone-950/60 border border-amber-500/20 rounded-2xl">
-            <p class="text-[9px] font-bold text-[var(--text-gold,#DCA773)] uppercase tracking-wider mb-2">
-                <i class="fas fa-bolt mr-1"></i> Quick Access
-            </p>
+            <p class="text-[9px] font-bold text-[var(--text-gold,#DCA773)] uppercase tracking-wider mb-2">⚡ Quick Access</p>
             <div class="flex gap-2 flex-wrap">
-                ${frequentServices.map(item => `
+                ${frequent.map(item => `
                     <button onclick="quickAccessService('${item.serviceId}')" class="flex items-center gap-1.5 bg-stone-800 hover:bg-stone-700 text-stone-200 px-3 py-1.5 rounded-full text-[9px] font-bold transition">
                         <i class="fas ${item.serviceData.icon} text-[var(--text-gold,#DCA773)]"></i>
                         ${item.serviceData.title.split('/')[0].trim()}
@@ -196,3 +155,12 @@ function initQuickAccess() {
     renderQuickAccess();
     renderOneTapServices();
 }
+
+// Exposer globalement
+window.renderServiceFields = renderServiceFields;
+window.oneTapService = oneTapService;
+window.renderOneTapServices = renderOneTapServices;
+window.trackServiceUsage = trackServiceUsage;
+window.renderQuickAccess = renderQuickAccess;
+window.quickAccessService = quickAccessService;
+window.initQuickAccess = initQuickAccess;
