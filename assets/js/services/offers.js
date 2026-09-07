@@ -8,15 +8,23 @@ async function fetchOffers() {
             .eq('is_active', true)
             .order('created_at', { ascending: false })
             .limit(10);
-        if (data && data.length > 0) { currentOffers = data; renderOffers(data); } else { renderOffers([]); }
-    } catch (err) { renderOffers([]); }
+        if (data && data.length > 0) { 
+            currentOffers = data; 
+            renderOffers(data);
+            if (typeof cacheOffersData === 'function') cacheOffersData(data);
+        } else { 
+            renderOffers([]); 
+        }
+    } catch (err) { 
+        renderOffers([]); 
+    }
 }
 
 function renderOffers(offers) {
     const container = document.getElementById('offersContainer');
     if (!container) return;
     if (!offers || offers.length === 0) {
-        container.innerHTML = `<div class="text-center py-8"><i class="fas fa-tags text-3xl text-stone-600 mb-2"></i><p class="text-[10px] text-stone-400">${TRANSLATIONS[currentLanguage].noOffers}</p></div>`;
+        container.innerHTML = `<div class="text-center py-8"><i class="fas fa-tags text-3xl text-stone-600 mb-2"></i><p class="text-[10px] text-stone-400">${TRANSLATIONS[currentLanguage]?.noOffers || 'No offers'}</p></div>`;
         return;
     }
     const firstOffer = offers[0];
@@ -25,7 +33,7 @@ function renderOffers(offers) {
         <div class="featured-offer">
             <img src="${firstOffer.image || ''}" alt="${firstOffer.title}" onerror="this.src='https://via.placeholder.com/400x200?text=Remal+Offer'">
             <div class="featured-offer-overlay">
-                <span class="inline-block text-[8px] bg-[var(--text-gold,#DCA773)] text-stone-950 font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider mb-1">${TRANSLATIONS[currentLanguage].featured}</span>
+                <span class="inline-block text-[8px] bg-[var(--text-gold,#DCA773)] text-stone-950 font-extrabold px-2 py-0.5 rounded-full uppercase mb-1">Featured</span>
                 <p class="text-sm font-bold text-white">${firstOffer.title}</p>
                 <p class="text-[10px] text-stone-300">${firstOffer.description}</p>
                 <p class="text-lg font-bold text-[var(--text-gold,#DCA773)] mt-1">${firstOffer.price}</p>
@@ -49,6 +57,5 @@ function renderOffers(offers) {
     container.innerHTML = html;
 }
 
-// Exposer
 window.fetchOffers = fetchOffers;
 window.renderOffers = renderOffers;
