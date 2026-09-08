@@ -77,7 +77,6 @@
         body.light-mode .lock-card, body.light-mode .remal-card, body.light-mode #menuModal > div, body.light-mode #guestChatModal > div {
             background-color: #ffffff !important; border-color: rgba(217, 119, 6, 0.2) !important;
         }
-        body.light-mode .remal-banner { background-color: #f1f5f9 !important; }
         body.light-mode .text-stone-100, body.light-mode .text-stone-200, body.light-mode .text-stone-300 { color: #1e293b !important; }
         body.light-mode .text-stone-400, body.light-mode .text-stone-500 { color: #64748b !important; }
         body.light-mode input, body.light-mode select, body.light-mode textarea { background-color: #ffffff !important; border-color: #cbd5e1 !important; color: #0f172a !important; }
@@ -111,7 +110,7 @@
         </button>
         
         <div class="w-full max-w-md lock-card p-8 rounded-[2rem] space-y-6 bg-stone-900/80 border border-amber-500/20 backdrop-blur-xl shadow-2xl">
-            <div class="remal-banner text-center space-y-2 rounded-2xl p-6 border border-[var(--border-gold-strong,#DCA773)] bg-stone-950/40">
+            <div class="remal-banner text-center space-y-2 rounded-2xl p-6 border border-[var(--border-gold-strong,#DCA773)]">
                 <div class="w-20 h-20 mx-auto rounded-full bg-[var(--text-gold,#DCA773)] flex items-center justify-center shadow-2xl">
                     <i class="fas fa-concierge-bell text-2xl text-stone-950"></i>
                 </div>
@@ -184,7 +183,7 @@
         </a>
         
         <div class="w-full max-w-md mx-auto remal-card p-6 sm:p-8 rounded-[2rem] space-y-6 bg-stone-900/90 border border-amber-500/20 backdrop-blur-xl shadow-2xl mt-12 sm:mt-8">
-            <div class="remal-banner text-center border border-[var(--border-gold-strong,#DCA773)] pb-6 pt-7 rounded-2xl overflow-hidden bg-stone-950/50">
+            <div class="remal-banner text-center border border-[var(--border-gold-strong,#DCA773)] pb-6 pt-7 rounded-2xl overflow-hidden">
                 <div class="space-y-2">
                     <h1 class="text-2xl font-serif-luxury font-bold text-gold-gradient tracking-[0.15em]">GUEST HUB</h1>
                     <p class="text-[9px] text-stone-400 uppercase tracking-[0.2em] font-bold" data-i18n="hotelLocation">Remal Hotel & Villas • Al Dhannah City</p>
@@ -441,22 +440,20 @@
     <script src="assets/js/services/requests.js"></script>
     <script src="assets/js/services/orders.js"></script>
     
-       <!-- ==================== NOUVEAUX SCRIPTS ==================== -->
+    <!-- ==================== NOUVEAUX SCRIPTS ==================== -->
     <script src="assets/js/services/supabase-economy.js"></script>
     <script src="assets/js/security/security-guard.js"></script>
     <script src="assets/js/components/premium-experience.js"></script>
     <script src="assets/js/components/vip-mode.js"></script>
-
-    <!-- ==================== TOUS LES SCRIPTS PREMIUM ==================== -->
-<script src="assets/js/components/premium-loader.js"></script>
-<script src="assets/js/components/premium-toast.js"></script>
-<script src="assets/js/components/premium-tilt.js"></script>
-<script src="assets/js/components/premium-transitions.js"></script>
-<script src="assets/js/components/premium-sounds.js"></script>
-<script src="assets/js/components/premium-theme.js"></script>
-   <!-- AVANT les autres scripts -->
+    <script src="assets/js/components/premium-loader.js"></script>
+    <script src="assets/js/components/premium-toast.js"></script>
+    <script src="assets/js/components/premium-tilt.js"></script>
+    <script src="assets/js/components/premium-transitions.js"></script>
+    <script src="assets/js/components/premium-sounds.js"></script>
+    <script src="assets/js/components/premium-theme.js"></script>
     <script src="assets/js/components/laundry-session.js"></script>
     <script src="assets/js/components/laundry-link.js"></script>
+    
     <!-- ==================== INITIALISATION ==================== -->
     <script>
         initTheme();
