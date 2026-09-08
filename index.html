@@ -22,6 +22,8 @@
         .toast-in { animation: toastIn 0.4s ease forwards; }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-in-up { animation: fadeInUp 0.5s ease forwards; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.3); } }
         
         .tab-btn { transition: all 0.3s ease; }
         .tab-btn.active { background: var(--text-gold, #DCA773); color: #1c1917; font-weight: 900; box-shadow: 0 5px 15px rgba(220, 167, 115, 0.3); }
@@ -157,29 +159,18 @@
             <button onclick="setLanguage('hi')" id="langHiMain" class="lang-btn text-[10px] px-2.5 py-1 rounded-full font-bold transition">हिन्दी</button>
         </div>
 
-<div class="fixed top-4 right-4 z-50 flex gap-2">
-    <button onclick="toggleAutoTheme()" class="p-3 rounded-full bg-stone-900 border border-stone-800 text-amber-400 shadow-xl" title="Auto Theme">
-        <i class="fas fa-magic text-sm"></i>
-    </button>
-    <button onclick="toggleTheme()" id="themeToggleMain" class="theme-toggle-btn p-3 rounded-full bg-stone-900 border border-stone-800 text-amber-400 shadow-xl">
-        <i class="fas fa-sun text-sm" id="themeIconMain"></i>
-    </button>
-</div>
+        <button onclick="toggleTheme()" id="themeToggleMain" class="theme-toggle-btn fixed top-4 right-4 z-50 p-3 rounded-full bg-stone-900 border border-stone-800 text-amber-400 shadow-xl">
+            <i class="fas fa-sun text-sm" id="themeIconMain"></i>
+        </button>
 
         <button onclick="openGuestChatModal()" class="fixed bottom-4 left-4 z-50 bg-[#DCA773] text-stone-950 w-14 h-14 rounded-full flex items-center justify-center shadow-2xl">
             <i class="fas fa-comments text-lg"></i>
         </button>
 
         <button onclick="showRemindersModal()" class="fixed bottom-4 left-20 z-50 bg-stone-800 text-amber-400 w-12 h-12 rounded-full flex items-center justify-center shadow-2xl">
-    <i class="fas fa-bell"></i>
-</button>
-
-<button onclick="showAmbientSoundsModal()" class="fixed bottom-4 left-32 z-50 bg-stone-800 text-amber-400 w-10 h-10 rounded-full flex items-center justify-center shadow-2xl">
-    <i class="fas fa-music"></i>
-</button>
- <button onclick="showEmojiFeedback()" class="fixed bottom-20 right-4 z-50 bg-stone-800 text-amber-400 w-10 h-10 rounded-full flex items-center justify-center shadow-2xl">
-    <i class="fas fa-smile"></i>
- </button>       
+            <i class="fas fa-bell"></i>
+        </button>
+        
         <a href="tel:+971526966865" class="fixed bottom-4 right-4 z-50 bg-emerald-600 hover:bg-emerald-700 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-2xl">
             <i class="fas fa-phone-alt text-lg"></i>
         </a>
@@ -192,7 +183,6 @@
                     <div class="pt-3">
                         <p class="text-[10px] text-stone-400 uppercase tracking-wider" id="greetingTime">Welcome</p>
                         <div id="onlineStatusIndicator"></div>
-                        <div id="themeIndicatorContainer"></div>
                         <h2 id="welcomeGuestName" class="text-lg font-serif-luxury font-bold text-[var(--text-gold,#DCA773)] tracking-wide uppercase">---</h2>
                     </div>
                     <div class="pt-2">
@@ -246,63 +236,71 @@
                     
                     <div class="service-card p-4 bg-stone-950/60 border border-stone-800 rounded-2xl" onclick="showService('room_service')">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center font-bold"><i class="fas fa-utensils"></i></div>
+                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center"><i class="fas fa-utensils"></i></div>
                             <div><p class="font-bold text-stone-100 text-xs">Room Service / Order Food</p></div>
                         </div>
                     </div>
+                    
+                    <div class="service-card p-4 bg-stone-950/60 border border-stone-800 rounded-2xl" onclick="openLaundryApp()">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center"><i class="fas fa-tshirt"></i></div>
+                            <div>
+                                <p class="font-bold text-stone-100 text-xs">🧺 Laundry Service</p>
+                                <p class="text-[9px] text-stone-400">Wash, dry clean & ironing</p>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <div class="service-card p-4 bg-stone-950/60 border border-stone-800 rounded-2xl" onclick="showService('table_reservation')">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center font-bold"><i class="fas fa-calendar-check"></i></div>
+                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center"><i class="fas fa-calendar-check"></i></div>
                             <div><p class="font-bold text-stone-100 text-xs">Table Reservation</p></div>
                         </div>
                     </div>
+                    
                     <div class="service-card p-4 bg-stone-950/60 border border-stone-800 rounded-2xl" onclick="showService('wakeup_call')">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center font-bold"><i class="fas fa-clock"></i></div>
+                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center"><i class="fas fa-clock"></i></div>
                             <div><p class="font-bold text-stone-100 text-xs">Wake-up Call / Alarm</p></div>
                         </div>
                     </div>
+                    
                     <div class="service-card p-4 bg-stone-950/60 border border-stone-800 rounded-2xl" onclick="showService('late_checkout')">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center font-bold"><i class="fas fa-hourglass-half"></i></div>
+                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center"><i class="fas fa-hourglass-half"></i></div>
                             <div><p class="font-bold text-stone-100 text-xs">Late Check-out / Extension</p></div>
                         </div>
                     </div>
+                    
                     <div class="service-card p-4 bg-stone-950/60 border border-stone-800 rounded-2xl" onclick="showService('housekeeping')">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center font-bold"><i class="fas fa-broom"></i></div>
+                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center"><i class="fas fa-broom"></i></div>
                             <div><p class="font-bold text-stone-100 text-xs">Housekeeping / Room Cleaning</p></div>
                         </div>
                     </div>
+                    
                     <div class="service-card p-4 bg-stone-950/60 border border-stone-800 rounded-2xl" onclick="showService('front_desk')">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center font-bold"><i class="fas fa-headset"></i></div>
+                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center"><i class="fas fa-headset"></i></div>
                             <div><p class="font-bold text-stone-100 text-xs">Front Desk Inquiry</p></div>
                         </div>
                     </div>
+                    
                     <div class="service-card p-4 bg-stone-950/60 border border-stone-800 rounded-2xl" onclick="showService('luggage')">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center font-bold"><i class="fas fa-suitcase"></i></div>
+                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center"><i class="fas fa-suitcase"></i></div>
                             <div><p class="font-bold text-stone-100 text-xs">Luggage Assistance</p></div>
                         </div>
                     </div>
+                    
                     <div class="service-card p-4 bg-stone-950/60 border border-stone-800 rounded-2xl" onclick="showService('maintenance')">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center font-bold"><i class="fas fa-tools"></i></div>
+                            <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center"><i class="fas fa-tools"></i></div>
                             <div><p class="font-bold text-stone-100 text-xs">Maintenance / Technical Support</p></div>
                         </div>
                     </div>
-                   </div>
-                   <div class="service-card p-4 bg-stone-950/60 border border-stone-800 rounded-2xl" onclick="openLaundryApp()">
-                    <div class="flex items-center gap-3">
-                           <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center"><i class="fas fa-tshirt"></i></div>
-                   <div>
-                <p class="font-bold text-stone-100 text-xs">🧺 Laundry Service</p>
-                  <p class="text-[9px] text-stone-400">Wash, dry clean & ironing</p>
-                   </div>
-                   </div>
-                      </div>
-                
+                </div>
+
                 <div id="roomServiceSection" class="hidden space-y-4">
                     <button onclick="backToServices()" class="text-[10px] text-stone-400 font-bold">← Back to Services</button>
                     <div id="orderTrackingSection" class="hidden p-4 bg-stone-950/80 border border-amber-500/30 rounded-2xl space-y-3">
