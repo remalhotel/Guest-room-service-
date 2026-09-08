@@ -1,4 +1,4 @@
-// Lien Laundry avec transition fluide
+// ==================== LAUNDRY LINK ====================
 class LaundryLink {
     constructor() {
         this.laundryURL = 'https://laundry-requirements.vercel.app/';
@@ -9,20 +9,22 @@ class LaundryLink {
         this.checkReturn();
     }
     
-    // Aller vers Laundry
     goToLaundry() {
         const room = document.getElementById('displayRoomNumber')?.textContent || 
                      localStorage.getItem('roomNumber');
         const name = document.getElementById('welcomeGuestName')?.textContent || 
                      localStorage.getItem('guestName');
+        const lang = localStorage.getItem('remal_lang') || localStorage.getItem('language') || 'en';
         
         if (!room || room === '---') {
             this.toast('Veuillez vérifier votre chambre', 'error');
             return;
         }
         
-        // Créer session
+        // Créer session avec la langue
         const session = laundrySession.create(room, name);
+        session.lang = lang;
+        localStorage.setItem('shared_guest_session', JSON.stringify(session));
         
         // Transition
         this.transition('going', name, room);
@@ -33,42 +35,51 @@ class LaundryLink {
                 room: room,
                 name: name,
                 token: session.token,
+                lang: lang,
                 return_url: window.location.origin + window.location.pathname
             });
             window.location.href = `${this.laundryURL}?${params.toString()}`;
         }, 2000);
     }
     
-    // Vérifier retour
     checkReturn() {
         const params = new URLSearchParams(window.location.search);
         const token = params.get('token');
         const room = params.get('room');
         const name = params.get('name');
+        const lang = params.get('lang');
         
         if (token && room && name) {
             if (laundrySession.validate(token, room, name)) {
-                // Session valide - retour auto
+                // Restaurer la langue
+                if (lang) {
+                    localStorage.setItem('remal_lang', lang);
+                    localStorage.setItem('language', lang);
+                    if (typeof setLanguage === 'function') {
+                        setLanguage(lang);
+                    }
+                }
+                
                 this.autoLogin(room, name);
                 window.history.replaceState({}, document.title, window.location.pathname);
             }
         }
     }
     
-    // Auto-login au retour
     autoLogin(room, name) {
         this.transition('returning', name, room);
         
         setTimeout(() => {
-            // Remplir et connecter
-            document.getElementById('lockRoomInput').value = room;
-            document.getElementById('lockNameInput').value = name;
+            const roomInput = document.getElementById('lockRoomInput');
+            const nameInput = document.getElementById('lockNameInput');
+            
+            if (roomInput) roomInput.value = room;
+            if (nameInput) nameInput.value = name;
             
             if (typeof verifierIdentiteClient === 'function') {
                 verifierIdentiteClient();
             }
             
-            // Nettoyer
             const overlay = document.getElementById('laundryOverlay');
             if (overlay) overlay.remove();
             
@@ -77,7 +88,6 @@ class LaundryLink {
         }, 2000);
     }
     
-    // Transition animée
     transition(direction, name, room) {
         const overlay = document.createElement('div');
         overlay.id = 'laundryOverlay';
@@ -114,7 +124,6 @@ class LaundryLink {
         document.body.appendChild(overlay);
     }
     
-    // Toast
     toast(message, type = 'info') {
         const toast = document.createElement('div');
         toast.style.cssText = `
@@ -127,7 +136,6 @@ class LaundryLink {
         `;
         toast.textContent = `${type === 'error' ? '❌' : '✅'} ${message}`;
         document.body.appendChild(toast);
-        
         setTimeout(() => toast.remove(), 3000);
     }
 }
