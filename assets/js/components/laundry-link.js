@@ -1,4 +1,6 @@
 // ==================== LAUNDRY LINK ====================
+// Seamless transition between Guest Hub and Laundry OS
+
 class LaundryLink {
     constructor() {
         this.laundryURL = 'https://laundry-requirements.vercel.app/';
@@ -10,45 +12,43 @@ class LaundryLink {
     }
     
     goToLaundry() {
-    const room = document.getElementById('displayRoomNumber')?.textContent || 
-                 localStorage.getItem('roomNumber');
-    const name = document.getElementById('welcomeGuestName')?.textContent || 
-                 localStorage.getItem('guestName');
-    
-    // ========== AJOUTER CECI ==========
-    // Récupérer la langue actuelle du client
-    const currentLang = localStorage.getItem('remal_lang') || 
-                       localStorage.getItem('language') || 
-                       localStorage.getItem('currentLang') || 
-                       'en';
-    console.log('🌍 Langue détectée:', currentLang);
-    // ==================================
-    
-    if (!room || room === '---') {
-        this.toast('Veuillez vérifier votre chambre', 'error');
-        return;
+        const room = document.getElementById('displayRoomNumber')?.textContent || 
+                     localStorage.getItem('roomNumber');
+        const name = document.getElementById('welcomeGuestName')?.textContent || 
+                     localStorage.getItem('guestName');
+        
+        // Get current language
+        const currentLang = localStorage.getItem('remal_lang') || 
+                           localStorage.getItem('language') || 
+                           localStorage.getItem('currentLang') || 
+                           'en';
+        console.log('Language detected:', currentLang);
+        
+        if (!room || room === '---') {
+            this.toast('Please verify your room first', 'error');
+            return;
+        }
+        
+        // Create session with language
+        const session = laundrySession.create(room, name);
+        session.lang = currentLang;
+        localStorage.setItem('shared_guest_session', JSON.stringify(session));
+        
+        // Show transition
+        this.transition('going', name, room);
+        
+        // Redirect with language
+        setTimeout(() => {
+            const params = new URLSearchParams({
+                room: room,
+                name: name,
+                token: session.token,
+                lang: currentLang,
+                return_url: window.location.origin + window.location.pathname
+            });
+            window.location.href = `${this.laundryURL}?${params.toString()}`;
+        }, 2000);
     }
-    
-    // Créer session avec la langue
-    const session = laundrySession.create(room, name);
-    session.lang = currentLang;
-    localStorage.setItem('shared_guest_session', JSON.stringify(session));
-    
-    // Transition
-    this.transition('going', name, room);
-    
-    // Redirection avec la langue
-    setTimeout(() => {
-        const params = new URLSearchParams({
-            room: room,
-            name: name,
-            token: session.token,
-            lang: currentLang,  // ========== AJOUTER CECI ==========
-            return_url: window.location.origin + window.location.pathname
-        });
-        window.location.href = `${this.laundryURL}?${params.toString()}`;
-    }, 2000);
-}
     
     checkReturn() {
         const params = new URLSearchParams(window.location.search);
@@ -59,13 +59,15 @@ class LaundryLink {
         
         if (token && room && name) {
             if (laundrySession.validate(token, room, name)) {
-                // Restaurer la langue
+                // Restore language
                 if (lang) {
                     localStorage.setItem('remal_lang', lang);
                     localStorage.setItem('language', lang);
+                    
                     if (typeof setLanguage === 'function') {
                         setLanguage(lang);
                     }
+                    console.log('Language restored:', lang);
                 }
                 
                 this.autoLogin(room, name);
@@ -91,7 +93,7 @@ class LaundryLink {
             const overlay = document.getElementById('laundryOverlay');
             if (overlay) overlay.remove();
             
-            this.toast(`Bienvenue ${name} !`, 'success');
+            this.toast(`Welcome back ${name}!`, 'success');
             laundrySession.clear();
         }, 2000);
     }
@@ -112,11 +114,11 @@ class LaundryLink {
                 <div style="font-size: 60px; animation: bounce 1s infinite;">
                     ${going ? '🧺' : '🏨'}
                 </div>
-                <h2 style="color: #DCA773; font-size: 22px; margin-top: 20px; font-weight: bold;">
+                <h2 style="color: #DCA773; font-size: 22px; margin-top: 20px; font-weight: bold; font-family: 'Cinzel', serif;">
                     ${going ? 'Laundry Service' : 'Guest Hub'}
                 </h2>
                 <p style="color: #a8a29e; font-size: 11px; margin-top: 10px;">
-                    ${going ? 'Ouverture...' : 'Retour...'}
+                    ${going ? 'Opening your laundry space...' : 'Returning to your space...'}
                 </p>
                 <div style="margin-top: 20px;">
                     <span style="display: inline-block; width: 8px; height: 8px; background: #DCA773; border-radius: 50%; animation: pulse 0.6s infinite; margin: 0 3px;"></span>
@@ -124,7 +126,7 @@ class LaundryLink {
                     <span style="display: inline-block; width: 8px; height: 8px; background: #DCA773; border-radius: 50%; animation: pulse 0.6s 0.4s infinite; margin: 0 3px;"></span>
                 </div>
                 <p style="color: #57534e; font-size: 10px; margin-top: 20px;">
-                    ${name} • Chambre ${room}
+                    ${name} • Room ${room}
                 </p>
             </div>
         `;
