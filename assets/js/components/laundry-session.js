@@ -1,9 +1,12 @@
 // ==================== LAUNDRY SESSION ====================
+// Shared session between Guest Hub and Laundry OS
+
 class LaundrySession {
     constructor() {
         this.key = 'shared_guest_session';
     }
     
+    // Create session before going to Laundry
     create(room, name) {
         const session = {
             room: room,
@@ -15,6 +18,7 @@ class LaundrySession {
         return session;
     }
     
+    // Validate session on return
     validate(token, room, name) {
         const data = localStorage.getItem(this.key);
         if (!data) return false;
@@ -25,11 +29,13 @@ class LaundrySession {
                session.name === name;
     }
     
+    // Get active session
     get() {
         const data = localStorage.getItem(this.key);
         return data ? JSON.parse(data) : null;
     }
     
+    // Clear session
     clear() {
         localStorage.removeItem(this.key);
     }
