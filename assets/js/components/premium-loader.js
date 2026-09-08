@@ -29,8 +29,10 @@ class PremiumLoader {
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            background: #0c0a09;
-            animation: fadeOut 0.5s ease 1.5s forwards;
+            background: rgba(12, 10, 9, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            animation: loaderFadeOut 0.5s ease 1.5s forwards;
         `;
         
         loader.innerHTML = `
@@ -91,7 +93,7 @@ class PremiumLoader {
                 
                 <p style="
                     font-size: 8px;
-                    color: #57534e;
+                    color: #a8a29e;
                     margin-top: 15px;
                     letter-spacing: 0.3em;
                 ">
@@ -117,7 +119,7 @@ class PremiumLoader {
                 from { opacity: 0; letter-spacing: 0.5em; }
                 to { opacity: 1; letter-spacing: 0.3em; }
             }
-            @keyframes fadeOut {
+            @keyframes loaderFadeOut {
                 from { opacity: 1; }
                 to { opacity: 0; visibility: hidden; }
             }
