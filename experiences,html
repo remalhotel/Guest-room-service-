@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Remal Experiences - Offres & Activités</title>
+    
+    <!-- CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --gold: #DCA773;
+            --gold-light: #EAD0B3;
+            --gold-dark: #B88351;
+            --bg-dark: #0a0908;
+            --bg-card: rgba(22, 20, 18, 0.92);
+            --text-main: #ffffff;
+            --text-muted: #a8a29e;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #0a0908;
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .font-luxury { font-family: 'Cinzel', serif; }
+        
+        /* ---------- EN-TÊTE ---------- */
+        .header {
+            position: relative;
+            height: 55vh;
+            min-height: 350px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url('assets/images/remal-hotel-night.jpg') center/cover no-repeat;
+            animation: slowZoom 15s ease-in-out infinite;
+        }
+        
+        .header::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(10,9,8,0.5) 0%, rgba(10,9,8,0.75) 50%, #0a0908 100%);
+        }
+        
+        @keyframes slowZoom {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes goldShimmer {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes pulseGold {
+            0%, 100% { box-shadow: 0 0 20px rgba(220, 167, 115, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(220, 167, 115, 0.6); }
+        }
+        
+        @keyframes cardIn {
+            from { opacity: 0; transform: translateY(40px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        
+        @keyframes floatUp {
+            0% { opacity: 0; transform: translateY(0) rotate(0deg); }
+            50% { opacity: 1; }
+            100% { opacity: 0; transform: translateY(-150px) rotate(360deg); }
+        }
+        
+        .gold-text {
+            background: linear-gradient(135deg, #EAD0B3 0%, #DCA773 30%, #fff 50%, #DCA773 70%, #B88351 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: goldShimmer 4s linear infinite;
+        }
+        
+        .offer-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(220, 167, 115, 0.3);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
+            animation: cardIn 0.6s ease forwards;
+            opacity: 0;
+            position: relative;
+        }
+        
+        .offer-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: var(--gold);
+            box-shadow: 0 20px 60px rgba(220, 167, 115, 0.3);
+        }
+        
+        .offer-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            transition: all 0.5s ease;
+        }
+        
+        .offer-card:hover img {
+            transform: scale(1.08);
+        }
+        
+        .offer-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #000;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 900;
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            animation: pulseGold 2s ease-in-out infinite;
+            z-index: 5;
+        }
+        
+        .venue-tag {
+            display: inline-block;
+            background: rgba(220, 167, 115, 0.15);
+            color: #DCA773;
+            border: 1px solid rgba(220, 167, 115, 0.3);
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 8px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        
+        .nav-pill {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 10px 0;
+            scrollbar-width: none;
+        }
+        
+        .nav-pill::-webkit-scrollbar { display: none; }
+        
+        .nav-pill button {
+            white-space: nowrap;
+            padding: 10px 18px;
+            border-radius: 25px;
+            border: 1px solid rgba(220, 167, 115, 0.3);
+            background: rgba(28, 25, 23, 0.8);
+            color: #a8a29e;
+            font-weight: bold;
+            font-size: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-pill button.active {
+            background: var(--gold);
+            color: #000;
+            border-color: var(--gold);
+        }
+        
+        .gold-particle {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            animation: floatUp 4s ease-out forwards;
+        }
+        
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 10000;
+            background: rgba(28, 25, 23, 0.8);
+            color: var(--gold);
+            border: 1px solid rgba(220, 167, 115, 0.3);
+            border-radius: 25px;
+            padding: 10px 18px;
+            font-weight: bold;
+            font-size: 11px;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .back-btn:hover {
+            transform: scale(1.05);
+            border-color: var(--gold);
+        }
+        
+        .detail-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 20000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.9);
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .detail-content {
+            background: #1c1917;
+            border: 2px solid var(--gold);
+            border-radius: 25px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: slideUp 0.4s ease;
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- BOUTON RETOUR -->
+    <button class="back-btn" onclick="goBack()">
+        <span>🏨</span> Guest Hub
+    </button>
+
+    <!-- EN-TÊTE HERO -->
+    <header class="header">
+        <div class="header-content">
+            <p style="font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: #DCA773; margin-bottom: 15px;">
+                ✨ Discover ✨
+            </p>
+            <h1 class="font-luxury gold-text" style="font-size: 36px; font-weight: bold; letter-spacing: 0.1em; margin-bottom: 15px;">
+                REMAL EXPERIENCES
+            </h1>
+            <p style="font-size: 11px; color: #a8a29e; letter-spacing: 0.2em; text-transform: uppercase;">
+                Falaj • Sarab • Al Rodah • Spa
+            </p>
+            <div style="margin-top: 25px; animation: float 3s ease-in-out infinite;">
+                <i class="fas fa-chevron-down" style="color: #DCA773; font-size: 20px;"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- NAVIGATION -->
+    <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div class="nav-pill" id="navPills">
+            <button class="active" onclick="filterOffers('all')">✨ All</button>
+            <button onclick="filterOffers('falaj')">🍽️ Falaj Restaurant</button>
+            <button onclick="filterOffers('sarab')">🍸 Sarab Lounge</button>
+            <button onclick="filterOffers('alrodah')">🕌 Al Rodah</button>
+            <button onclick="filterOffers('spa')">💆 Spa</button>
+        </div>
+    </div>
+
+    <!-- GRILLE D'OFFRES -->
+    <div style="max-width: 600px; margin: 0 auto; padding: 0 20px 100px;">
+        <div id="offersGrid" style="display: grid; grid-template-columns: 1fr; gap: 20px;"></div>
+    </div>
+
+    <script>
+        // ==================== DONNÉES DES OFFRES ====================
+        const offers = [
+            // FALAJ RESTAURANT
+            {
+                id: 1,
+                category: 'falaj',
+                venue: 'Falaj Restaurant',
+                title: 'International Breakfast Buffet',
+                description: 'Start your day with a lavish spread',
+                price: '120 AED',
+                image: 'https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?w=600',
+                badge: 'Morning',
+                details: 'Enjoy a sumptuous breakfast buffet featuring international and Arabic specialties. Fresh fruits, pastries, eggs station, and more. Served daily from 6:00 AM to 10:30 AM.'
+            },
+            {
+                id: 2,
+                category: 'falaj',
+                venue: 'Falaj Restaurant',
+                title: 'Friday Brunch Extravaganza',
+                description: 'The ultimate weekend brunch',
+                price: '250 AED',
+                image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=600',
+                badge: 'Weekend',
+                details: 'Join us for our famous Friday Brunch with live cooking stations, fresh seafood, carving station, and unlimited beverages. Family-friendly with kids corner.'
+            },
+            {
+                id: 3,
+                category: 'falaj',
+                venue: 'Falaj Restaurant',
+                title: 'Arabic Nights Theme Dinner',
+                description: 'Traditional Arabic cuisine experience',
+                price: '180 AED',
+                image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600',
+                badge: 'Cultural',
+                details: 'Immerse yourself in authentic Arabic hospitality with a lavish buffet of grilled meats, mezze, fresh bread, and traditional desserts. Live oud music.'
+            },
+            
+            // SARAB BAR LOUNGE
+            {
+                id: 4,
+                category: 'sarab',
+                venue: 'Sarab Bar Lounge',
+                title: 'Sunset Happy Hour',
+                description: 'Cocktails with stunning views',
+                price: '90 AED',
+                image: 'https://images.unsplash.com/photo-1470337458703-46ad1756a187?w=600',
+                badge: 'Sunset',
+                details: 'Sip on expertly crafted cocktails while enjoying breathtaking sunset views. Daily from 5:00 PM to 7:00 PM. Includes 2 signature drinks and light bites.'
+            },
+            {
+                id: 5,
+                category: 'sarab',
+                venue: 'Sarab Bar Lounge',
+                title: 'Shisha & Chill',
+                description: 'Premium shisha with lounge access',
+                price: '150 AED',
+                image: 'https://images.unsplash.com/photo-1543007630-9710e4a00a20?w=600',
+                badge: 'Relax',
+                details: 'Unwind in our elegant lounge with premium shisha flavors, comfortable seating, and ambient music. Includes your choice of shisha and Arabic coffee.'
+            },
+            {
+                id: 6,
+                category: 'sarab',
+                venue: 'Sarab Bar Lounge',
+                title: 'Live Music Nights',
+                description: 'Jazz and acoustic performances',
+                price: '120 AED',
+                image: 'https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=600',
+                badge: 'Live',
+                details: 'Enjoy live jazz and acoustic performances every Thursday and Friday night. Includes welcome drink and bar snacks.'
+            },
+            
+            // AL RODAH
+            {
+                id: 7,
+                category: 'alrodah',
+                venue: 'Al Rodah',
+                title: 'Private Event Venue',
+                description: 'Elegant space for special occasions',
+                price: 'Custom',
+                image: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=600',
+                badge: 'Events',
+                details: 'Our versatile Al Rodah venue is perfect for weddings, corporate events, and private celebrations. Capacity up to 200 guests. Full catering and decoration services available.'
+            },
+            {
+                id: 8,
+                category: 'alrodah',
+                venue: 'Al Rodah',
+                title: 'Afternoon High Tea',
+                description: 'Traditional tea experience',
+                price: '110 AED',
+                image: 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=600',
+                badge: 'Elegant',
+                details: 'Indulge in a refined afternoon tea with delicate sandwiches, scones, pastries, and a selection of premium teas. Served daily from 3:00 PM to 6:00 PM.'
+            },
+            {
+                id: 9,
+                category: 'alrodah',
+                venue: 'Al Rodah',
+                title: 'Business Lunch Package',
+                description: 'Corporate dining experience',
+                price: '95 AED',
+                image: 'https://images.unsplash.com/photo-1552566626-52f8b828add9?w=600',
+                badge: 'Business',
+                details: 'A sophisticated business lunch featuring a 3-course set menu with international cuisine. Perfect for meetings and corporate gatherings. WiFi and meeting facilities included.'
+            },
+            
+            // SPA
+            {
+                id: 10,
+                category: 'spa',
+                venue: 'Remal Spa',
+                title: 'Royal Spa Ritual',
+                description: 'Full body massage and facial',
+                price: '450 AED',
+                image: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=600',
+                badge: 'Signature',
+                details: 'Our signature Royal Spa Ritual features a 90-minute therapeutic massage, organic facial, and aromatherapy session. Includes access to sauna and jacuzzi.'
+            },
+            {
+                id: 11,
+                category: 'spa',
+                venue: 'Remal Spa',
+                title: 'Couples Retreat',
+                description: 'Side-by-side relaxing massage',
+                price: '600 AED',
+                image: 'https://images.unsplash.com/photo-1600334129128-685c5582fd35?w=600',
+                badge: 'Romance',
+                details: 'Share a blissful experience with our couples massage package. Includes side-by-side massage, champagne, chocolates, and private relaxation room.'
+            },
+            {
+                id: 12,
+                category: 'spa',
+                venue: 'Remal Spa',
+                title: 'Moroccan Hammam',
+                description: 'Traditional cleansing ritual',
+                price: '350 AED',
+                image: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=600',
+                badge: 'Traditional',
+                details: 'Experience the ancient art of Moroccan Hammam with black soap exfoliation, ghassoul clay mask, and relaxing massage. Skin will feel renewed and silky smooth.'
+            }
+        ];
+        
+        let currentFilter = 'all';
+        
+        // ==================== PARTICULES D'OR ====================
+        function createGoldParticles() {
+            setInterval(() => {
+                if (document.hidden) return;
+                const particle = document.createElement('div');
+                particle.className = 'gold-particle';
+                particle.style.cssText = `
+                    left: ${Math.random() * 100}%;
+                    bottom: -10px;
+                    width: ${Math.random() * 4 + 2}px;
+                    height: ${Math.random() * 4 + 2}px;
+                    background: radial-gradient(circle, #EAD0B3, #DCA773);
+                    border-radius: 50%;
+                `;
+                document.body.appendChild(particle);
+                setTimeout(() => particle.remove(), 4000);
+            }, 2500);
+        }
+        
+        // ==================== AFFICHAGE DES OFFRES ====================
+        function renderOffers() {
+            const grid = document.getElementById('offersGrid');
+            grid.innerHTML = '';
+            
+            const filtered = currentFilter === 'all' 
+                ? offers 
+                : offers.filter(o => o.category === currentFilter);
+            
+            filtered.forEach((offer, index) => {
+                const card = document.createElement('div');
+                card.className = 'offer-card';
+                card.style.animationDelay = `${index * 0.08}s`;
+                
+                card.innerHTML = `
+                    <div style="position: relative; overflow: hidden;">
+                        <img src="${offer.image}" alt="${offer.title}" 
+                             onerror="this.src='https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600'">
+                        <span class="offer-badge">${offer.badge}</span>
+                    </div>
+                    <div style="padding: 20px;">
+                        <span class="venue-tag">${offer.venue}</span>
+                        <h3 class="font-luxury" style="font-size: 17px; font-weight: bold; color: #DCA773; margin-bottom: 5px;">
+                            ${offer.title}
+                        </h3>
+                        <p style="font-size: 11px; color: #a8a29e; margin-bottom: 15px;">
+                            ${offer.description}
+                        </p>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span class="font-luxury" style="font-size: 18px; font-weight: bold; color: #DCA773;">
+                                ${offer.price}
+                            </span>
+                            <button onclick="showDetail(${offer.id})" style="
+                                background: #DCA773;
+                                color: #000;
+                                border: none;
+                                padding: 10px 20px;
+                                border-radius: 25px;
+                                font-weight: bold;
+                                font-size: 10px;
+                                cursor: pointer;
+                                transition: all 0.3s ease;
+                                letter-spacing: 0.5px;
+                            " onmouseover="this.style.transform='scale(1.05)'" 
+                               onmouseout="this.style.transform='scale(1)'">
+                                Discover →
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+        
+        // ==================== FILTRAGE ====================
+        function filterOffers(category) {
+            currentFilter = category;
+            
+            const buttons = document.querySelectorAll('.nav-pill button');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            renderOffers();
+        }
+        
+        // ==================== DÉTAIL DE L'OFFRE ====================
+        function showDetail(offerId) {
+            const offer = offers.find(o => o.id === offerId);
+            if (!offer) return;
+            
+            const modal = document.createElement('div');
+            modal.className = 'detail-modal';
+            modal.innerHTML = `
+                <div class="detail-content">
+                    <div style="position: relative;">
+                        <img src="${offer.image}" alt="${offer.title}" style="width: 100%; height: 220px; object-fit: cover; border-radius: 25px 25px 0 0;">
+                        <button onclick="this.closest('.detail-modal').remove()" style="
+                            position: absolute;
+                            top: 15px;
+                            right: 15px;
+                            background: rgba(0,0,0,0.7);
+                            color: #DCA773;
+                            border: 1px solid #DCA773;
+                            border-radius: 50%;
+                            width: 35px;
+                            height: 35px;
+                            cursor: pointer;
+                            font-size: 16px;
+                        ">✕</button>
+                    </div>
+                    <div style="padding: 25px;">
+                        <span class="venue-tag">${offer.venue}</span>
+                        <h2 class="font-luxury" style="font-size: 22px; font-weight: bold; color: #DCA773; margin: 10px 0;">
+                            ${offer.title}
+                        </h2>
+                        <p style="font-size: 12px; color: #a8a29e; line-height: 1.6; margin-bottom: 20px;">
+                            ${offer.details}
+                        </p>
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(220,167,115,0.2); padding-top: 20px;">
+                            <span class="font-luxury" style="font-size: 24px; font-weight: bold; color: #DCA773;">
+                                ${offer.price}
+                            </span>
+                            <button onclick="bookOffer('${offer.title}')" style="
+                                background: linear-gradient(135deg, #DCA773, #B88351);
+                                color: #000;
+                                border: none;
+                                padding: 12px 25px;
+                                border-radius: 25px;
+                                font-weight: 900;
+                                font-size: 11px;
+                                cursor: pointer;
+                                letter-spacing: 1px;
+                            ">BOOK NOW</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) modal.remove();
+            });
+            
+            document.body.appendChild(modal);
+        }
+        
+        // ==================== RÉSERVATION ====================
+        function bookOffer(title) {
+            const modal = document.querySelector('.detail-modal');
+            if (modal) modal.remove();
+            
+            showToast(`✨ ${title} - Booking request sent to concierge!`);
+        }
+        
+        // ==================== TOAST ====================
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 30000;
+                background: rgba(28, 25, 23, 0.95);
+                border: 1px solid #DCA773;
+                border-radius: 16px;
+                padding: 16px 24px;
+                color: #DCA773;
+                font-weight: bold;
+                font-size: 12px;
+                box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+                animation: fadeInUp 0.4s ease;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.transition = 'all 0.4s ease';
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100px)';
+                setTimeout(() => toast.remove(), 400);
+            }, 3000);
+        }
+        
+        // ==================== RETOUR ====================
+        function goBack() {
+            const token = new URLSearchParams(window.location.search).get('token');
+            const room = new URLSearchParams(window.location.search).get('room');
+            const name = new URLSearchParams(window.location.search).get('name');
+            
+            if (token && room && name) {
+                window.location.href = `index.html?room=${room}&name=${name}&token=${token}`;
+            } else {
+                window.location.href = 'index.html';
+            }
+        }
+        
+        // ==================== INITIALISATION ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            renderOffers();
+            createGoldParticles();
+        });
+    </script>
+</body>
+</html>
