@@ -86,30 +86,12 @@
             <button onclick="switchStaffTab('maintenance')" id="staffTabMaintenance" class="staff-tab-btn px-4 py-3 rounded-xl text-xs font-bold">
                 🔧 Maintenance <span id="badgeMaintenance" class="tab-notification-badge hidden">0</span>
             </button>
-            <button onclick="showOffersManagement()" id="navBtnOffers" class="staff-tab-btn px-4 py-3 rounded-xl text-xs font-bold">
-                📢 Offers
+            <button onclick="switchStaffTab('offers')" id="staffTabOffers" class="staff-tab-btn px-4 py-3 rounded-xl text-xs font-bold">
+                🏷️ Offers
             </button>
             <button onclick="switchStaffTab('analytics')" id="staffTabAnalytics" class="staff-tab-btn px-4 py-3 rounded-xl text-xs font-bold">
                 📊 Analytics
             </button>
-        </div>
-
-        <!-- OFFERS MANAGEMENT SECTION -->
-        <div id="offersManagementSection" class="hidden space-y-6">
-            <div style="padding: 20px; max-width: 800px; margin: 0 auto;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                    <h2 style="color: #DCA773; font-size: 20px; font-weight: bold; margin: 0;">📢 Offers Management</h2>
-                    <button onclick="offersManager.showAddForm()" style="background: #DCA773; color: #000; border: none; padding: 12px 25px; border-radius: 25px; font-weight: bold; font-size: 12px; cursor: pointer;">+ Add New Offer</button>
-                </div>
-                <div style="display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap;">
-                    <button onclick="offersManager.filterOffers('all')" class="offer-filter-btn active" data-filter="all">✨ All</button>
-                    <button onclick="offersManager.filterOffers('falaj')" class="offer-filter-btn" data-filter="falaj">🍽️ Falaj</button>
-                    <button onclick="offersManager.filterOffers('sarab')" class="offer-filter-btn" data-filter="sarab">🍸 Sarab</button>
-                    <button onclick="offersManager.filterOffers('alrodah')" class="offer-filter-btn" data-filter="alrodah">🕌 Al Rodah</button>
-                    <button onclick="offersManager.filterOffers('spa')" class="offer-filter-btn" data-filter="spa">💆 Spa</button>
-                </div>
-                <div id="offersList" style="display: grid; gap: 12px;"></div>
-            </div>
         </div>
 
         <!-- ANALYTICS SECTION -->
@@ -137,6 +119,29 @@
                 <button onclick="exportAnalyticsCSV()" class="flex-1 bg-emerald-500/20 text-emerald-400 py-3 rounded-xl text-xs font-bold">📥 Export CSV</button>
                 <button onclick="exportAnalyticsPDF()" class="flex-1 bg-blue-500/20 text-blue-400 py-3 rounded-xl text-xs font-bold">📄 Export PDF</button>
             </div>
+        </div>
+
+        <!-- OFFERS SECTION -->
+        <div id="offersManagementSection" class="hidden space-y-6">
+            <div class="remal-card rounded-2xl p-6 space-y-4">
+                <h2 class="text-sm font-bold text-[var(--text-gold)]">Create New Offer</h2>
+                <div id="uploadZone" onclick="document.getElementById('offerImageInput').click()" style="border:2px dashed #DCA773;border-radius:1rem;padding:2rem;text-align:center;cursor:pointer;">
+                    <div id="uploadPlaceholder">📁 Click to upload image</div>
+                    <img id="offerImagePreview" class="hidden w-full h-40 object-cover rounded-xl">
+                </div>
+                <input type="file" id="offerImageInput" accept="image/*" class="hidden" onchange="handleOfferImageSelect(event)">
+                <input type="text" id="offerTitle" placeholder="Title" class="w-full remal-input rounded-xl p-3 text-xs">
+                <input type="text" id="offerPrice" placeholder="Price (e.g., AED 75)" class="w-full remal-input rounded-xl p-3 text-xs">
+                <textarea id="offerDescription" rows="3" placeholder="Description" class="w-full remal-input rounded-xl p-3 text-xs"></textarea>
+                <select id="offerCategory" class="w-full remal-input rounded-xl p-3 text-xs">
+                    <option value="Pool & Beach">🏖️ Pool & Beach</option>
+                    <option value="Spa & Wellness">💆 Spa & Wellness</option>
+                    <option value="Dining">🍽️ Dining</option>
+                    <option value="Activities">🎯 Activities</option>
+                </select>
+                <button onclick="publishOffer()" class="w-full bg-[#DCA773] text-stone-950 font-black py-4 rounded-2xl">🚀 Publish Offer</button>
+            </div>
+            <div id="offersListContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
         </div>
 
         <!-- REQUESTS SECTION -->
@@ -185,7 +190,7 @@
         </div>
     </div>
 
-    <!-- Scripts existants -->
+    <!-- Scripts -->
     <script src="assets/js/config.js"></script>
     <script src="assets/js/staff/staff-state.js"></script>
     <script src="assets/js/staff/staff-helpers.js"></script>
@@ -198,10 +203,6 @@
     <script src="assets/js/staff/staff-analytics.js"></script>
     <script src="assets/js/staff/staff-theme.js"></script>
     <script src="assets/js/staff/staff-app.js"></script>
-    
-    <!-- NOUVEAU : Offers Manager -->
-    <script src="assets/js/staff/offers-manager.js"></script>
-    
     <script src="security-guard.js"></script>
 </body>
 </html>
