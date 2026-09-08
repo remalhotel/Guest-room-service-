@@ -17,11 +17,50 @@
     
     <!-- Styles -->
     <link rel="stylesheet" href="assets/css/style.css">
-    <!-- DÉSACTIVÉ POUR TEST
-<link rel="stylesheet" href="assets/css/premium-effects.css">
--->
     
     <style>
+        /* ==================== FORCER L'AFFICHAGE DES PHOTOS ==================== */
+        body {
+            background-image: url('assets/images/remal-hotel-night.jpg') !important;
+            background-size: cover !important;
+            background-position: center !important;
+            background-attachment: fixed !important;
+            background-repeat: no-repeat !important;
+            background-color: #0a0908;
+        }
+
+        body.light-mode {
+            background-image: url('assets/images/remal-hotel-day.jpg') !important;
+            background-size: cover !important;
+            background-position: center !important;
+            background-attachment: fixed !important;
+            background-repeat: no-repeat !important;
+            background-color: #f6f4f0;
+        }
+
+        /* Overlay pour la lisibilité */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, rgba(10, 9, 8, 0.85) 0%, rgba(10, 9, 8, 0.65) 50%, rgba(10, 9, 8, 0.85) 100%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        body.light-mode::before {
+            background: linear-gradient(to bottom, rgba(246, 244, 240, 0.85) 0%, rgba(246, 244, 240, 0.65) 50%, rgba(246, 244, 240, 0.85) 100%);
+        }
+
+        /* Tout le contenu au-dessus de l'overlay */
+        #lockScreen, #mainScreen, .fixed, .toast-notification {
+            position: relative;
+            z-index: 1;
+        }
+
         @keyframes slideOutLeft { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(-100px); } }
         @keyframes slideInRight { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
         .screen-exit { animation: slideOutLeft 0.4s ease forwards; }
@@ -75,7 +114,6 @@
         .chat-typing-indicator { font-size: 9px; color: #a8a29e; font-style: italic; margin-left: 12px; }
         .chat-presence-status { font-size: 10px; margin-bottom: 8px; }
 
-        body.light-mode { background-color: #f8fafc !important; color: #0f172a !important; }
         body.light-mode .lock-card, body.light-mode .remal-card, body.light-mode #menuModal > div, body.light-mode #guestChatModal > div {
             background-color: #ffffff !important; border-color: rgba(217, 119, 6, 0.2) !important;
         }
@@ -96,7 +134,7 @@
         .service-tracking-line { flex: 1; height: 2px; background: #525252; margin: 0 -2px; position: relative; top: -10px; z-index: 1; }
     </style>
 </head>
-<body class="min-h-screen lock-screen bg-stone-950 text-stone-100 font-sans">
+<body class="min-h-screen text-stone-100 font-sans">
 
     <!-- SCREEN 1: IDENTIFICATION -->
     <div id="lockScreen" class="min-h-screen flex items-center justify-center p-4 relative">
@@ -445,16 +483,8 @@
     <!-- ==================== NOUVEAUX SCRIPTS ==================== -->
     <script src="assets/js/services/supabase-economy.js"></script>
     <script src="assets/js/security/security-guard.js"></script>
-    <!-- DÉSACTIVÉS POUR TEST
-<script src="assets/js/components/premium-experience.js"></script>
-<script src="assets/js/components/vip-mode.js"></script>
-<script src="assets/js/components/premium-loader.js"></script>
-<script src="assets/js/components/premium-toast.js"></script>
-<script src="assets/js/components/premium-tilt.js"></script>
-<script src="assets/js/components/premium-transitions.js"></script>
-<script src="assets/js/components/premium-sounds.js"></script>
-<script src="assets/js/components/premium-theme.js"></script>
--->
+    <script src="assets/js/components/laundry-session.js"></script>
+    <script src="assets/js/components/laundry-link.js"></script>
     
     <!-- ==================== INITIALISATION ==================== -->
     <script>
