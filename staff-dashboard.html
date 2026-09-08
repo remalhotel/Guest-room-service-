@@ -86,8 +86,8 @@
             <button onclick="switchStaffTab('maintenance')" id="staffTabMaintenance" class="staff-tab-btn px-4 py-3 rounded-xl text-xs font-bold">
                 🔧 Maintenance <span id="badgeMaintenance" class="tab-notification-badge hidden">0</span>
             </button>
-            <button onclick="switchStaffTab('offers')" id="staffTabOffers" class="staff-tab-btn px-4 py-3 rounded-xl text-xs font-bold">
-                🏷️ Offers
+            <button onclick="showOffersManagement()" id="staffTabOffers" class="staff-tab-btn px-4 py-3 rounded-xl text-xs font-bold">
+                📢 Offers Management
             </button>
             <button onclick="switchStaffTab('analytics')" id="staffTabAnalytics" class="staff-tab-btn px-4 py-3 rounded-xl text-xs font-bold">
                 📊 Analytics
@@ -121,28 +121,8 @@
             </div>
         </div>
 
-        <!-- OFFERS SECTION -->
-        <div id="offersManagementSection" class="hidden space-y-6">
-            <div class="remal-card rounded-2xl p-6 space-y-4">
-                <h2 class="text-sm font-bold text-[var(--text-gold)]">Create New Offer</h2>
-                <div id="uploadZone" onclick="document.getElementById('offerImageInput').click()" style="border:2px dashed #DCA773;border-radius:1rem;padding:2rem;text-align:center;cursor:pointer;">
-                    <div id="uploadPlaceholder">📁 Click to upload image</div>
-                    <img id="offerImagePreview" class="hidden w-full h-40 object-cover rounded-xl">
-                </div>
-                <input type="file" id="offerImageInput" accept="image/*" class="hidden" onchange="handleOfferImageSelect(event)">
-                <input type="text" id="offerTitle" placeholder="Title" class="w-full remal-input rounded-xl p-3 text-xs">
-                <input type="text" id="offerPrice" placeholder="Price (e.g., AED 75)" class="w-full remal-input rounded-xl p-3 text-xs">
-                <textarea id="offerDescription" rows="3" placeholder="Description" class="w-full remal-input rounded-xl p-3 text-xs"></textarea>
-                <select id="offerCategory" class="w-full remal-input rounded-xl p-3 text-xs">
-                    <option value="Pool Al Roadah">🏖️ Pool Al Roadah</option>
-                    <option value="Spa & Wellness">💆 Spa & Wellness</option>
-                    <option value="Dining">🍽️ Dining</option>
-                    <option value="Activities">🎯 Activities</option>
-                </select>
-                <button onclick="publishOffer()" class="w-full bg-[#DCA773] text-stone-950 font-black py-4 rounded-2xl">🚀 Publish Offer</button>
-            </div>
-            <div id="offersListContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-        </div>
+        <!-- OFFERS MANAGEMENT SECTION (créée dynamiquement par offers-manager.js) -->
+        <div id="offersManagementSection" class="hidden space-y-6"></div>
 
         <!-- REQUESTS SECTION -->
         <div id="requestsSection" class="space-y-6">
@@ -190,7 +170,7 @@
         </div>
     </div>
 
-    <!-- Scripts -->
+    <!-- Scripts existants -->
     <script src="assets/js/config.js"></script>
     <script src="assets/js/staff/staff-state.js"></script>
     <script src="assets/js/staff/staff-helpers.js"></script>
@@ -203,6 +183,10 @@
     <script src="assets/js/staff/staff-analytics.js"></script>
     <script src="assets/js/staff/staff-theme.js"></script>
     <script src="assets/js/staff/staff-app.js"></script>
+    
+    <!-- NOUVEAU : Offers Manager -->
+    <script src="assets/js/staff/offers-manager.js"></script>
+    
     <script src="security-guard.js"></script>
 </body>
 </html>
