@@ -1,10 +1,9 @@
-// Session partagée Guest Hub ↔ Laundry OS
+// ==================== LAUNDRY SESSION ====================
 class LaundrySession {
     constructor() {
         this.key = 'shared_guest_session';
     }
     
-    // Créer la session avant d'aller au Laundry
     create(room, name) {
         const session = {
             room: room,
@@ -16,7 +15,6 @@ class LaundrySession {
         return session;
     }
     
-    // Vérifier la session au retour
     validate(token, room, name) {
         const data = localStorage.getItem(this.key);
         if (!data) return false;
@@ -27,13 +25,11 @@ class LaundrySession {
                session.name === name;
     }
     
-    // Récupérer la session
     get() {
         const data = localStorage.getItem(this.key);
         return data ? JSON.parse(data) : null;
     }
     
-    // Nettoyer
     clear() {
         localStorage.removeItem(this.key);
     }
