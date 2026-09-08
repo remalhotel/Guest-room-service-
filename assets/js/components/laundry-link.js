@@ -10,37 +10,45 @@ class LaundryLink {
     }
     
     goToLaundry() {
-        const room = document.getElementById('displayRoomNumber')?.textContent || 
-                     localStorage.getItem('roomNumber');
-        const name = document.getElementById('welcomeGuestName')?.textContent || 
-                     localStorage.getItem('guestName');
-        const lang = localStorage.getItem('remal_lang') || localStorage.getItem('language') || 'en';
-        
-        if (!room || room === '---') {
-            this.toast('Veuillez vérifier votre chambre', 'error');
-            return;
-        }
-        
-        // Créer session avec la langue
-        const session = laundrySession.create(room, name);
-        session.lang = lang;
-        localStorage.setItem('shared_guest_session', JSON.stringify(session));
-        
-        // Transition
-        this.transition('going', name, room);
-        
-        // Redirection
-        setTimeout(() => {
-            const params = new URLSearchParams({
-                room: room,
-                name: name,
-                token: session.token,
-                lang: lang,
-                return_url: window.location.origin + window.location.pathname
-            });
-            window.location.href = `${this.laundryURL}?${params.toString()}`;
-        }, 2000);
+    const room = document.getElementById('displayRoomNumber')?.textContent || 
+                 localStorage.getItem('roomNumber');
+    const name = document.getElementById('welcomeGuestName')?.textContent || 
+                 localStorage.getItem('guestName');
+    
+    // ========== AJOUTER CECI ==========
+    // Récupérer la langue actuelle du client
+    const currentLang = localStorage.getItem('remal_lang') || 
+                       localStorage.getItem('language') || 
+                       localStorage.getItem('currentLang') || 
+                       'en';
+    console.log('🌍 Langue détectée:', currentLang);
+    // ==================================
+    
+    if (!room || room === '---') {
+        this.toast('Veuillez vérifier votre chambre', 'error');
+        return;
     }
+    
+    // Créer session avec la langue
+    const session = laundrySession.create(room, name);
+    session.lang = currentLang;
+    localStorage.setItem('shared_guest_session', JSON.stringify(session));
+    
+    // Transition
+    this.transition('going', name, room);
+    
+    // Redirection avec la langue
+    setTimeout(() => {
+        const params = new URLSearchParams({
+            room: room,
+            name: name,
+            token: session.token,
+            lang: currentLang,  // ========== AJOUTER CECI ==========
+            return_url: window.location.origin + window.location.pathname
+        });
+        window.location.href = `${this.laundryURL}?${params.toString()}`;
+    }, 2000);
+}
     
     checkReturn() {
         const params = new URLSearchParams(window.location.search);
