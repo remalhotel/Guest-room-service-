@@ -1,155 +1,139 @@
-// ==================== LAUNDRY LINK (AJUSTÉ) ====================
-function openLaundryApp() {
-    // Récupération des données avec les bons noms de variables
-    const room = document.getElementById('displayRoomNumber')?.textContent || 
-                 localStorage.getItem('roomNumber') || 
-                 localStorage.getItem('remal_guest_room');
-    const guestName = document.getElementById('welcomeGuestName')?.textContent || 
-                     localStorage.getItem('guestName') || 
-                     'Guest';
-    
-    if (!room || room === '---') {
-        showToast('⚠️ Please verify your room first', 'error');
-        return;
+// Lien Laundry avec transition fluide
+class LaundryLink {
+    constructor() {
+        this.laundryURL = 'https://laundry-requirements.vercel.app/';
+        this.init();
     }
     
-    // Vérification VIP
-    const isVIP = localStorage.getItem('isVIP') === 'true';
+    init() {
+        this.checkReturn();
+    }
     
-    // Création de l'overlay de transition
-    const overlay = document.createElement('div');
-    overlay.id = 'laundryOverlay';
-    overlay.style.cssText = `
-        position: fixed; 
-        top: 0; 
-        left: 0; 
-        right: 0; 
-        bottom: 0; 
-        z-index: 9999; 
-        display: flex; 
-        align-items: center; 
-        justify-content: center; 
-        background: rgba(0, 0, 0, 0.95);
-        backdrop-filter: blur(10px);
-        animation: fadeIn 0.3s ease;
-    `;
+    // Aller vers Laundry
+    goToLaundry() {
+        const room = document.getElementById('displayRoomNumber')?.textContent || 
+                     localStorage.getItem('roomNumber');
+        const name = document.getElementById('welcomeGuestName')?.textContent || 
+                     localStorage.getItem('guestName');
+        
+        if (!room || room === '---') {
+            this.toast('Veuillez vérifier votre chambre', 'error');
+            return;
+        }
+        
+        // Créer session
+        const session = laundrySession.create(room, name);
+        
+        // Transition
+        this.transition('going', name, room);
+        
+        // Redirection
+        setTimeout(() => {
+            const params = new URLSearchParams({
+                room: room,
+                name: name,
+                token: session.token,
+                return_url: window.location.origin + window.location.pathname
+            });
+            window.location.href = `${this.laundryURL}?${params.toString()}`;
+        }, 2000);
+    }
     
-    overlay.innerHTML = `
-        <div style="text-align: center; padding: 20px;">
-            <div style="font-size: 60px; margin-bottom: 20px; animation: bounce 1s infinite;">🧺</div>
-            <h2 style="font-size: 22px; color: #DCA773; font-weight: bold; margin-bottom: 10px; font-family: 'Cinzel', serif;">
-                Laundry Service
-            </h2>
-            <p style="font-size: 11px; color: #a8a29e; margin-bottom: 20px;">
-                Opening your laundry space...
-            </p>
-            <div style="display: flex; justify-content: center; gap: 6px; margin-bottom: 20px;">
-                <span style="width: 8px; height: 8px; background: #DCA773; border-radius: 50%; animation: pulse 0.6s infinite;"></span>
-                <span style="width: 8px; height: 8px; background: #DCA773; border-radius: 50%; animation: pulse 0.6s 0.2s infinite;"></span>
-                <span style="width: 8px; height: 8px; background: #DCA773; border-radius: 50%; animation: pulse 0.6s 0.4s infinite;"></span>
-            </div>
-            <p style="font-size: 10px; color: #DCA773; font-weight: bold;">
-                ${isVIP ? '👑 VIP Priority Service' : ''}
-            </p>
-            <p style="font-size: 9px; color: #57534e; margin-top: 16px;">
-                ${guestName} • Room ${room}
-            </p>
-            ${isVIP ? '<p style="font-size: 8px; color: #DCA773; margin-top: 8px;">⚡ Express Laundry Service Activé</p>' : ''}
-        </div>
-    `;
+    // Vérifier retour
+    checkReturn() {
+        const params = new URLSearchParams(window.location.search);
+        const token = params.get('token');
+        const room = params.get('room');
+        const name = params.get('name');
+        
+        if (token && room && name) {
+            if (laundrySession.validate(token, room, name)) {
+                // Session valide - retour auto
+                this.autoLogin(room, name);
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        }
+    }
     
-    // Ajout des animations si elles n'existent pas déjà
-    if (!document.getElementById('laundryAnimations')) {
-        const style = document.createElement('style');
-        style.id = 'laundryAnimations';
-        style.textContent = `
-            @keyframes bounce {
-                0%, 100% { transform: translateY(0); }
-                50% { transform: translateY(-15px); }
+    // Auto-login au retour
+    autoLogin(room, name) {
+        this.transition('returning', name, room);
+        
+        setTimeout(() => {
+            // Remplir et connecter
+            document.getElementById('lockRoomInput').value = room;
+            document.getElementById('lockNameInput').value = name;
+            
+            if (typeof verifierIdentiteClient === 'function') {
+                verifierIdentiteClient();
             }
-            @keyframes pulse {
-                0%, 100% { opacity: 1; transform: scale(1); }
-                50% { opacity: 0.5; transform: scale(1.3); }
-            }
-            @keyframes fadeIn {
-                from { opacity: 0; }
-                to { opacity: 1; }
-            }
+            
+            // Nettoyer
+            const overlay = document.getElementById('laundryOverlay');
+            if (overlay) overlay.remove();
+            
+            this.toast(`Bienvenue ${name} !`, 'success');
+            laundrySession.clear();
+        }, 2000);
+    }
+    
+    // Transition animée
+    transition(direction, name, room) {
+        const overlay = document.createElement('div');
+        overlay.id = 'laundryOverlay';
+        overlay.style.cssText = `
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 9999; display: flex; align-items: center; justify-content: center;
+            background: rgba(0,0,0,0.95); animation: fadeIn 0.3s ease;
         `;
-        document.head.appendChild(style);
+        
+        const going = direction === 'going';
+        
+        overlay.innerHTML = `
+            <div style="text-align: center;">
+                <div style="font-size: 60px; animation: bounce 1s infinite;">
+                    ${going ? '🧺' : '🏨'}
+                </div>
+                <h2 style="color: #DCA773; font-size: 22px; margin-top: 20px; font-weight: bold;">
+                    ${going ? 'Laundry Service' : 'Guest Hub'}
+                </h2>
+                <p style="color: #a8a29e; font-size: 11px; margin-top: 10px;">
+                    ${going ? 'Ouverture...' : 'Retour...'}
+                </p>
+                <div style="margin-top: 20px;">
+                    <span style="display: inline-block; width: 8px; height: 8px; background: #DCA773; border-radius: 50%; animation: pulse 0.6s infinite; margin: 0 3px;"></span>
+                    <span style="display: inline-block; width: 8px; height: 8px; background: #DCA773; border-radius: 50%; animation: pulse 0.6s 0.2s infinite; margin: 0 3px;"></span>
+                    <span style="display: inline-block; width: 8px; height: 8px; background: #DCA773; border-radius: 50%; animation: pulse 0.6s 0.4s infinite; margin: 0 3px;"></span>
+                </div>
+                <p style="color: #57534e; font-size: 10px; margin-top: 20px;">
+                    ${name} • Chambre ${room}
+                </p>
+            </div>
+        `;
+        
+        document.body.appendChild(overlay);
     }
     
-    document.body.appendChild(overlay);
-    
-    // Construction de l'URL avec les paramètres
-    const laundryBaseURL = 'https://laundry-requirements.vercel.app/';
-    const params = new URLSearchParams({
-        room: room,
-        name: guestName
-    });
-    
-    // Ajout des paramètres VIP si nécessaire
-    if (isVIP) {
-        params.append('vip', 'true');
-        params.append('priority', 'express');
+    // Toast
+    toast(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.style.cssText = `
+            position: fixed; top: 20px; right: 20px; z-index: 10000;
+            background: ${type === 'error' ? '#ef4444' : '#1c1917'};
+            color: white; padding: 12px 20px; border-radius: 12px;
+            font-size: 12px; font-weight: bold;
+            border: 1px solid ${type === 'error' ? '#ef4444' : '#DCA773'};
+            animation: toastIn 0.4s ease;
+        `;
+        toast.textContent = `${type === 'error' ? '❌' : '✅'} ${message}`;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => toast.remove(), 3000);
     }
-    
-    const laundryURL = `${laundryBaseURL}?${params.toString()}`;
-    
-    // Redirection après l'animation
-    setTimeout(() => {
-        window.location.href = laundryURL;
-    }, 2500);
 }
 
-// Fonction toast si elle n'existe pas déjà
-function showToast(message, type = 'info') {
-    // Vérifier si un toast existe déjà
-    const existingToast = document.querySelector('.toast-notification');
-    if (existingToast) {
-        existingToast.remove();
-    }
-    
-    const toast = document.createElement('div');
-    toast.className = 'toast-notification toast-in';
-    toast.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        z-index: 10000;
-        background: ${type === 'error' ? '#ef4444' : '#1c1917'};
-        color: white;
-        padding: 12px 20px;
-        border-radius: 12px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 12px;
-        font-weight: bold;
-        border: 1px solid ${type === 'error' ? '#ef4444' : '#DCA773'};
-    `;
-    
-    const icon = type === 'error' ? '❌' : type === 'success' ? '✅' : 'ℹ️';
-    toast.innerHTML = `${icon} ${message}`;
-    
-    document.body.appendChild(toast);
-    
-    // Animation d'entrée
-    requestAnimationFrame(() => {
-        toast.style.transform = 'translateX(0)';
-        toast.style.opacity = '1';
-    });
-    
-    // Suppression après 3 secondes
-    setTimeout(() => {
-        toast.style.transform = 'translateX(100px)';
-        toast.style.opacity = '0';
-        toast.style.transition = 'all 0.3s ease';
-        setTimeout(() => toast.remove(), 300);
-    }, 3000);
-}
-
-// Exposer la fonction globalement
-window.openLaundryApp = openLaundryApp;
-window.showToast = showToast;
+// Init
+document.addEventListener('DOMContentLoaded', () => {
+    window.laundryLink = new LaundryLink();
+    window.openLaundryApp = () => window.laundryLink.goToLaundry();
+});
