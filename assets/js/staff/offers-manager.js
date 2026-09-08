@@ -1,6 +1,11 @@
 // ==================== OFFERS MANAGER ====================
 // Gestion des offres publicitaires
 
+// S'assurer que supabase est défini
+if (typeof supabase === 'undefined' && typeof supabaseClient !== 'undefined') {
+    window.supabase = supabaseClient;
+}
+
 class OffersManager {
     constructor() {
         this.offers = [];
@@ -28,7 +33,6 @@ class OffersManager {
             .offer-action-btn { padding: 7px 12px; border-radius: 10px; font-size: 9px; font-weight: bold; cursor: pointer; border: 1px solid; }
             .offer-form-input { width: 100%; background: #0a0908; border: 1px solid rgba(220,167,115,0.3); border-radius: 10px; padding: 12px; color: #fff; margin-top: 5px; font-size: 12px; }
             .offer-form-input::placeholder { color: #57534e; }
-            .offer-form-label { color: #DCA773; font-size: 9px; font-weight: bold; text-transform: uppercase; }
         `;
         document.head.appendChild(style);
     }
@@ -39,8 +43,15 @@ class OffersManager {
                 .from('experiences_offers')
                 .select('*')
                 .order('created_at', { ascending: false });
-            this.offers = data || [];
+            
+            if (error) {
+                console.warn('Supabase error:', error.message);
+                this.offers = [];
+            } else {
+                this.offers = data || [];
+            }
         } catch (e) {
+            console.warn('Load offers failed:', e.message);
             this.offers = [];
         }
         this.renderOffers();
@@ -119,7 +130,6 @@ class OffersManager {
                     <button onclick="document.getElementById('offerFormModal').remove()" style="background: none; border: none; color: #a8a29e; font-size: 20px; cursor: pointer;">✕</button>
                 </div>
                 
-                <!-- Upload d'image -->
                 <div onclick="document.getElementById('offerImageInput').click()" style="
                     border: 2px dashed #DCA773;
                     border-radius: 1rem;
@@ -135,20 +145,13 @@ class OffersManager {
                 </div>
                 <input type="file" id="offerImageInput" accept="image/*" class="hidden" onchange="offersManager.handleImageSelect(event)">
                 
-                <!-- Champs -->
                 <div style="display: grid; gap: 12px;">
                     <input type="text" id="formTitle" class="offer-form-input" value="${offer?.title || ''}" placeholder="Title *">
-                    
                     <input type="text" id="formPrice" class="offer-form-input" value="${offer?.price || ''}" placeholder="Price (e.g., AED 75)">
-                    
                     <input type="text" id="formVenue" class="offer-form-input" value="${offer?.venue || ''}" placeholder="Venue (e.g., Falaj Restaurant)">
-                    
                     <input type="text" id="formBadge" class="offer-form-input" value="${offer?.badge || ''}" placeholder="Badge (e.g., Popular, New, Exclusive)">
-                    
                     <textarea id="formDescription" class="offer-form-input" rows="2" placeholder="Short Description">${offer?.description || ''}</textarea>
-                    
                     <textarea id="formDetails" class="offer-form-input" rows="3" placeholder="Full Details...">${offer?.details || ''}</textarea>
-                    
                     <select id="formCategory" class="offer-form-input">
                         <option value="falaj" ${offer?.category === 'falaj' ? 'selected' : ''}>🍽️ Falaj Restaurant</option>
                         <option value="sarab" ${offer?.category === 'sarab' ? 'selected' : ''}>🍸 Sarab Bar Lounge</option>
@@ -174,7 +177,6 @@ class OffersManager {
         document.body.appendChild(formModal);
         formModal.addEventListener('click', (e) => { if (e.target === formModal) formModal.remove(); });
         
-        // Si édition et image existante, afficher l'aperçu
         if (isEdit && offer?.image_url) {
             const preview = document.getElementById('offerImagePreview');
             const placeholder = document.getElementById('uploadPlaceholder');
@@ -186,7 +188,6 @@ class OffersManager {
         }
     }
     
-    // Gestion de l'image uploadée
     handleImageSelect(event) {
         const file = event.target.files[0];
         if (!file) return;
@@ -225,11 +226,18 @@ class OffersManager {
         };
         
         try {
+            let result;
             if (id) {
-                await supabase.from('experiences_offers').update(payload).eq('id', id);
+                result = await supabase.from('experiences_offers').update(payload).eq('id', id);
             } else {
-                await supabase.from('experiences_offers').insert(payload);
+                result = await supabase.from('experiences_offers').insert(payload);
             }
+            
+            if (result.error) {
+                alert('❌ Error: ' + result.error.message);
+                return;
+            }
+            
             document.getElementById('offerFormModal').remove();
             window.offerImageData = null;
             await this.loadOffers();
