@@ -1,27 +1,102 @@
-// ==================== OFFERS MANAGER ====================
-// Gestion des offres publicitaires
-
-class OffersManager {
-    constructor() {
-        this.offers = [];
-        this.currentFilter = 'all';
-        this.init();
-    }
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Remal Hotel - Guest Hub Staff Dashboard</title>
     
-    async init() {
-        this.setupUI();
-        await this.loadOffers();
-    }
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="assets/css/style.css">
     
-    setupUI() {
-        if (document.getElementById('offersManagementSection')) return;
+    <style>
+        @keyframes slideInRight { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes pulse-ring { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+        .pulse-ring { animation: pulse-ring 2s infinite; }
+        @keyframes shake-alert { 0%, 100% { transform: translateX(0); } 10%, 30%, 50%, 70%, 90% { transform: translateX(-3px); } 20%, 40%, 60%, 80% { transform: translateX(3px); } }
+        .shake-alert { animation: shake-alert 0.5s ease; }
         
-        const container = document.createElement('div');
-        container.id = 'offersManagementSection';
-        container.className = 'hidden';
-        container.style.cssText = 'padding: 20px; max-width: 800px; margin: 0 auto;';
-        container.innerHTML = `
-            <div style="padding: 20px;">
+        .staff-tab-btn { transition: all 0.3s ease; cursor: pointer; }
+        .staff-tab-btn.active { background: var(--text-gold); color: #1c1917; font-weight: 900; }
+        .staff-tab-btn:not(.active) { background: var(--bg-card-hover); color: var(--text-muted); border: 1px solid var(--border-gold); }
+        
+        .tab-notification-badge { display: inline-block; background: #ef4444; color: white; font-size: 8px; font-weight: 900; padding: 2px 6px; border-radius: 9999px; margin-left: 4px; }
+        
+        .notification-popup { position: fixed; top: 70px; right: 20px; z-index: 200; background: #1c1917; border: 2px solid #ef4444; border-radius: 16px; padding: 15px 20px; max-width: 350px; display: flex; align-items: center; gap: 12px; }
+        .notification-popup .icon { width: 40px; height: 40px; border-radius: 50%; background: #ef4444; color: white; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        
+        .mini-stat-card { background: var(--bg-card); border: 1px solid var(--border-gold); border-radius: 1rem; padding: 0.75rem; text-align: center; }
+        
+        body.light-mode { background-color: #f8fafc !important; color: #0f172a !important; }
+        body.light-mode .remal-card, body.light-mode .mini-stat-card { background-color: #ffffff !important; border-color: rgba(217, 119, 6, 0.2) !important; }
+        
+        .chat-message { padding: 8px 12px; border-radius: 12px; margin-bottom: 6px; max-width: 80%; font-size: 11px; }
+        .chat-message.staff { background: var(--text-gold); color: #1c1917; margin-left: auto; }
+        .chat-message.guest { background: var(--bg-card-hover); color: var(--text-main); margin-right: auto; }
+    </style>
+</head>
+<body class="min-h-screen p-3 sm:p-6">
+
+    <div class="max-w-7xl mx-auto space-y-6">
+        
+        <!-- HEADER -->
+        <div class="flex justify-between items-center remal-card p-4 rounded-2xl shadow-lg">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-2xl bg-[var(--text-gold)] text-stone-950 flex items-center justify-center text-xl">
+                    <i class="fas fa-concierge-bell"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-serif-luxury font-bold text-[var(--text-gold)]">GUEST HUB DASHBOARD</h1>
+                    <p class="text-[10px] text-stone-400 uppercase">Remal Hotel & Villas • All Services</p>
+                    <p class="text-[10px] text-stone-400 font-mono" id="currentDateTimeDisplay"></p>
+                    <p class="text-[10px] font-mono" id="tabTitleNotification">Guest Hub Dashboard</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <span class="text-[10px] text-emerald-400 font-bold flex items-center gap-1">
+                    <span class="w-2 h-2 bg-emerald-400 rounded-full"></span> LIVE
+                </span>
+                <button onclick="enableSoundAlerts()" id="btnSoundToggle" class="text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-3 py-2 rounded-xl font-bold">
+                    🔊 Sound ON
+                </button>
+                <button onclick="toggleTheme()" class="theme-toggle-btn">
+                    <i class="fas fa-sun text-sm" id="themeIconStaff"></i>
+                </button>
+                <button onclick="logoutStaff()" class="bg-red-500/20 text-red-400 border border-red-500/30 px-4 py-2 rounded-xl text-xs font-bold">
+                    <i class="fas fa-sign-out-alt"></i> Exit
+                </button>
+            </div>
+        </div>
+
+        <!-- TABS -->
+        <div class="grid grid-cols-2 md:grid-cols-6 gap-2">
+            <button onclick="switchStaffTab('front_desk')" id="staffTabFrontDesk" class="staff-tab-btn active px-4 py-3 rounded-xl text-xs font-bold">
+                🛎️ Front Desk <span id="badgeFrontDesk" class="tab-notification-badge hidden">0</span>
+            </button>
+            <button onclick="switchStaffTab('food_beverage')" id="staffTabFoodBeverage" class="staff-tab-btn px-4 py-3 rounded-xl text-xs font-bold">
+                🍽️ F&B <span id="badgeFoodBeverage" class="tab-notification-badge hidden">0</span>
+            </button>
+            <button onclick="switchStaffTab('housekeeping')" id="staffTabHousekeeping" class="staff-tab-btn px-4 py-3 rounded-xl text-xs font-bold">
+                🧹 Housekeeping <span id="badgeHousekeeping" class="tab-notification-badge hidden">0</span>
+            </button>
+            <button onclick="switchStaffTab('maintenance')" id="staffTabMaintenance" class="staff-tab-btn px-4 py-3 rounded-xl text-xs font-bold">
+                🔧 Maintenance <span id="badgeMaintenance" class="tab-notification-badge hidden">0</span>
+            </button>
+            <button onclick="showOffersManagement()" id="navBtnOffers" class="staff-tab-btn px-4 py-3 rounded-xl text-xs font-bold">
+                📢 Offers
+            </button>
+            <button onclick="switchStaffTab('analytics')" id="staffTabAnalytics" class="staff-tab-btn px-4 py-3 rounded-xl text-xs font-bold">
+                📊 Analytics
+            </button>
+        </div>
+
+        <!-- OFFERS MANAGEMENT SECTION -->
+        <div id="offersManagementSection" class="hidden space-y-6">
+            <div style="padding: 20px; max-width: 800px; margin: 0 auto;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                     <h2 style="color: #DCA773; font-size: 20px; font-weight: bold; margin: 0;">📢 Offers Management</h2>
                     <button onclick="offersManager.showAddForm()" style="background: #DCA773; color: #000; border: none; padding: 12px 25px; border-radius: 25px; font-weight: bold; font-size: 12px; cursor: pointer;">+ Add New Offer</button>
@@ -35,189 +110,98 @@ class OffersManager {
                 </div>
                 <div id="offersList" style="display: grid; gap: 12px;"></div>
             </div>
-        `;
-        
-        document.body.appendChild(container);
-        
-        if (!document.getElementById('offersManagerStyles')) {
-            const style = document.createElement('style');
-            style.id = 'offersManagerStyles';
-            style.textContent = `
-                .offer-filter-btn { padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(220,167,115,0.3); background: rgba(28,25,23,0.8); color: #a8a29e; font-weight: bold; font-size: 10px; cursor: pointer; }
-                .offer-filter-btn.active { background: #DCA773; color: #000; border-color: #DCA773; }
-                .offer-manage-card { background: rgba(28,25,23,0.9); border: 1px solid rgba(220,167,115,0.3); border-radius: 15px; padding: 15px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-                .offer-status { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 8px; font-weight: bold; text-transform: uppercase; }
-                .offer-status.active { background: rgba(16,185,129,0.2); color: #10b981; border: 1px solid #10b981; }
-                .offer-status.inactive { background: rgba(239,68,68,0.2); color: #ef4444; border: 1px solid #ef4444; }
-                .offer-action-btn { padding: 7px 12px; border-radius: 10px; font-size: 9px; font-weight: bold; cursor: pointer; border: 1px solid; }
-                .offer-form-input { width: 100%; background: #0a0908; border: 1px solid rgba(220,167,115,0.3); border-radius: 10px; padding: 12px; color: #fff; margin-top: 5px; font-size: 12px; }
-                .offer-form-label { color: #DCA773; font-size: 9px; font-weight: bold; text-transform: uppercase; }
-            `;
-            document.head.appendChild(style);
-        }
-    }
-    
-    async loadOffers() {
-        try {
-            const { data, error } = await supabase
-                .from('experiences_offers')
-                .select('*')
-                .order('created_at', { ascending: false });
-            this.offers = data || [];
-        } catch (e) {
-            this.offers = [];
-        }
-        this.renderOffers();
-    }
-    
-    renderOffers() {
-        const list = document.getElementById('offersList');
-        if (!list) return;
-        
-        const filtered = this.currentFilter === 'all' 
-            ? this.offers 
-            : this.offers.filter(o => o.category === this.currentFilter);
-        
-        if (filtered.length === 0) {
-            list.innerHTML = '<p style="text-align: center; color: #a8a29e; padding: 30px; font-size: 12px;">No offers found. Click "+ Add New Offer" to create one.</p>';
-            return;
-        }
-        
-        list.innerHTML = filtered.map(offer => `
-            <div class="offer-manage-card">
-                <div style="flex: 1; min-width: 0;">
-                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                        <h3 style="color: #DCA773; font-size: 13px; font-weight: bold; margin: 0;">${offer.title || 'Untitled'}</h3>
-                        <span class="offer-status ${offer.is_active ? 'active' : 'inactive'}">${offer.is_active ? 'Active' : 'Inactive'}</span>
-                    </div>
-                    <p style="color: #a8a29e; font-size: 10px; margin: 4px 0 0;">${offer.venue || 'Unknown'} • ${offer.price || 'N/A'}</p>
+        </div>
+
+        <!-- ANALYTICS SECTION -->
+        <div id="analyticsSection" class="hidden space-y-6">
+            <div class="flex gap-2">
+                <button onclick="setAnalyticsPeriod('today')" id="periodToday" class="px-4 py-2 rounded-xl bg-[var(--text-gold)] text-stone-950 text-xs font-bold">Today</button>
+                <button onclick="setAnalyticsPeriod('week')" id="periodWeek" class="px-4 py-2 rounded-xl remal-card text-stone-400 text-xs font-bold">This Week</button>
+                <button onclick="setAnalyticsPeriod('month')" id="periodMonth" class="px-4 py-2 rounded-xl remal-card text-stone-400 text-xs font-bold">This Month</button>
+                <button onclick="setAnalyticsPeriod('all')" id="periodAll" class="px-4 py-2 rounded-xl remal-card text-stone-400 text-xs font-bold">All</button>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="mini-stat-card"><div class="text-2xl font-bold text-[var(--text-gold)]" id="analyticsTotalOrders">0</div><p class="text-[9px] text-stone-400">Total Requests</p></div>
+                <div class="mini-stat-card"><div class="text-2xl font-bold text-green-400" id="analyticsTotalRevenue">AED 0</div><p class="text-[9px] text-stone-400">Revenue</p></div>
+                <div class="mini-stat-card"><div class="text-2xl font-bold text-blue-400" id="analyticsAvgTime">0 min</div><p class="text-[9px] text-stone-400">Avg Time</p></div>
+                <div class="mini-stat-card"><div class="text-2xl font-bold text-purple-400" id="analyticsResolutionRate">0%</div><p class="text-[9px] text-stone-400">Resolution</p></div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="remal-card rounded-2xl p-4"><canvas id="chartOrdersByHour"></canvas></div>
+                <div class="remal-card rounded-2xl p-4"><canvas id="chartServiceBreakdown"></canvas></div>
+            </div>
+            
+            <div class="flex gap-2">
+                <button onclick="exportAnalyticsCSV()" class="flex-1 bg-emerald-500/20 text-emerald-400 py-3 rounded-xl text-xs font-bold">📥 Export CSV</button>
+                <button onclick="exportAnalyticsPDF()" class="flex-1 bg-blue-500/20 text-blue-400 py-3 rounded-xl text-xs font-bold">📄 Export PDF</button>
+            </div>
+        </div>
+
+        <!-- REQUESTS SECTION -->
+        <div id="requestsSection" class="space-y-6">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="remal-card rounded-2xl p-4 text-center"><div class="text-3xl font-bold text-[var(--text-gold)]" id="statTotalOrders">0</div><p class="text-[10px] text-stone-400">Total</p></div>
+                <div class="remal-card rounded-2xl p-4 text-center"><div class="text-3xl font-bold text-amber-400" id="statPendingOrders">0</div><p class="text-[10px] text-stone-400">Pending</p></div>
+                <div class="remal-card rounded-2xl p-4 text-center"><div class="text-3xl font-bold text-blue-400" id="statPreparingOrders">0</div><p class="text-[10px] text-stone-400">In Progress</p></div>
+                <div class="remal-card rounded-2xl p-4 text-center"><div class="text-3xl font-bold text-emerald-400" id="statCompletedOrders">0</div><p class="text-[10px] text-stone-400">Completed</p></div>
+            </div>
+
+            <div id="foodBeverageStats" class="hidden grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div class="mini-stat-card"><div class="text-lg font-bold text-[var(--text-gold)]" id="fbStatTotalOrders">0</div><p class="text-[8px] text-stone-400">F&B Orders</p></div>
+                <div class="mini-stat-card"><div class="text-lg font-bold text-green-400" id="fbStatRevenue">AED 0</div><p class="text-[8px] text-stone-400">Revenue</p></div>
+                <div class="mini-stat-card"><div class="text-lg font-bold text-purple-400" id="fbStatAvgOrder">AED 0</div><p class="text-[8px] text-stone-400">Avg Order</p></div>
+            </div>
+
+            <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Search by room, name, service..." class="w-full remal-input rounded-xl p-3 text-xs">
+
+            <div class="flex gap-2 overflow-x-auto">
+                <button onclick="filterStaffOrders('all')" id="filterAll" class="px-4 py-2 rounded-xl bg-[var(--text-gold)] text-stone-950 text-xs font-bold">All</button>
+                <button onclick="filterStaffOrders('Pending')" id="filterPending" class="px-4 py-2 rounded-xl remal-card text-stone-400 text-xs font-bold">🕐 Pending</button>
+                <button onclick="filterStaffOrders('Preparing')" id="filterPreparing" class="px-4 py-2 rounded-xl remal-card text-stone-400 text-xs font-bold">👨‍🍳 Preparing</button>
+                <button onclick="filterStaffOrders('Ready')" id="filterReady" class="px-4 py-2 rounded-xl remal-card text-stone-400 text-xs font-bold">✅ Ready</button>
+                <button onclick="filterStaffOrders('Delivered')" id="filterDelivered" class="px-4 py-2 rounded-xl remal-card text-stone-400 text-xs font-bold">🚚 Delivered</button>
+                <button onclick="filterStaffOrders('Completed')" id="filterCompleted" class="px-4 py-2 rounded-xl remal-card text-stone-400 text-xs font-bold">✔️ Completed</button>
+                <button onclick="filterStaffOrders('In Progress')" id="filterInProgress" class="px-4 py-2 rounded-xl remal-card text-stone-400 text-xs font-bold">👨‍💼 In Progress</button>
+            </div>
+
+            <div id="staffOrdersContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        </div>
+
+        <!-- CHAT MODAL -->
+        <div id="chatModal" class="hidden fixed inset-0 bg-black/90 z-[300] flex items-center justify-center p-4">
+            <div class="bg-stone-900 border border-amber-500/30 w-full max-w-md rounded-3xl p-6 space-y-4 max-h-[80vh] flex flex-col">
+                <div class="flex justify-between border-b border-stone-800 pb-3">
+                    <h3 class="text-sm font-bold text-[var(--text-gold)]">💬 Chat with <span id="chatGuestName">---</span></h3>
+                    <button onclick="closeChatModal()" class="text-stone-400">✕</button>
                 </div>
-                <div style="display: flex; gap: 6px; flex-shrink: 0;">
-                    <button onclick="offersManager.editOffer('${offer.id}')" class="offer-action-btn" style="background: rgba(220,167,115,0.15); color: #DCA773; border-color: #DCA773;">✏️</button>
-                    <button onclick="offersManager.toggleActive('${offer.id}')" class="offer-action-btn" style="background: rgba(16,185,129,0.15); color: #10b981; border-color: #10b981;">${offer.is_active ? '⏸' : '▶'}</button>
-                    <button onclick="offersManager.deleteOffer('${offer.id}')" class="offer-action-btn" style="background: rgba(239,68,68,0.15); color: #ef4444; border-color: #ef4444;">🗑</button>
+                <div id="chatMessagesContainer" class="flex-1 overflow-y-auto space-y-2"></div>
+                <div class="flex gap-2 border-t border-stone-800 pt-2">
+                    <input type="text" id="chatInput" placeholder="Write a message..." class="flex-1 bg-stone-950 border border-stone-800 rounded-xl px-3 py-2 text-xs text-stone-100" onkeypress="if(event.key==='Enter') sendChatMessage()">
+                    <button onclick="sendChatMessage()" class="bg-[#DCA773] text-stone-950 font-bold px-4 py-2 rounded-xl text-xs">Send</button>
                 </div>
             </div>
-        `).join('');
-    }
-    
-    filterOffers(category) {
-        this.currentFilter = category;
-        document.querySelectorAll('.offer-filter-btn').forEach(btn => {
-            btn.classList.remove('active');
-            if (btn.dataset.filter === category) btn.classList.add('active');
-        });
-        this.renderOffers();
-    }
-    
-    showAddForm() { this.showForm(null); }
-    
-    editOffer(id) {
-        const offer = this.offers.find(o => o.id === id);
-        if (offer) this.showForm(offer);
-    }
-    
-    showForm(offer) {
-        const isEdit = !!offer;
-        const existingForm = document.getElementById('offerFormModal');
-        if (existingForm) existingForm.remove();
-        
-        const formModal = document.createElement('div');
-        formModal.id = 'offerFormModal';
-        formModal.style.cssText = 'position: fixed; inset: 0; z-index: 99999; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.9); padding: 20px;';
-        formModal.innerHTML = `
-            <div style="background: #1c1917; border: 2px solid #DCA773; border-radius: 20px; padding: 25px; max-width: 500px; width: 100%; max-height: 85vh; overflow-y: auto;">
-                <h2 style="color: #DCA773; font-size: 16px; font-weight: bold; margin-bottom: 20px;">${isEdit ? '✏️ Edit Offer' : '➕ Add New Offer'}</h2>
-                <div style="display: grid; gap: 12px;">
-                    <div><label class="offer-form-label">Title *</label><input id="formTitle" class="offer-form-input" value="${offer?.title || ''}" placeholder="e.g., Sunset Dinner"></div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                        <div>
-                            <label class="offer-form-label">Category</label>
-                            <select id="formCategory" class="offer-form-input">
-                                <option value="falaj" ${offer?.category === 'falaj' ? 'selected' : ''}>🍽️ Falaj</option>
-                                <option value="sarab" ${offer?.category === 'sarab' ? 'selected' : ''}>🍸 Sarab</option>
-                                <option value="alrodah" ${offer?.category === 'alrodah' ? 'selected' : ''}>🕌 Al Rodah</option>
-                                <option value="spa" ${offer?.category === 'spa' ? 'selected' : ''}>💆 Spa</option>
-                            </select>
-                        </div>
-                        <div><label class="offer-form-label">Price</label><input id="formPrice" class="offer-form-input" value="${offer?.price || ''}" placeholder="e.g., 150 AED"></div>
-                    </div>
-                    <div><label class="offer-form-label">Venue *</label><input id="formVenue" class="offer-form-input" value="${offer?.venue || ''}" placeholder="e.g., Falaj Restaurant"></div>
-                    <div><label class="offer-form-label">Short Description</label><input id="formDescription" class="offer-form-input" value="${offer?.description || ''}" placeholder="e.g., Romantic dinner"></div>
-                    <div><label class="offer-form-label">Full Details</label><textarea id="formDetails" class="offer-form-input" rows="3">${offer?.details || ''}</textarea></div>
-                    <div><label class="offer-form-label">Badge</label><input id="formBadge" class="offer-form-input" value="${offer?.badge || ''}" placeholder="e.g., Popular"></div>
-                    <div><label class="offer-form-label">Image URL</label><input id="formImage" class="offer-form-input" value="${offer?.image_url || ''}" placeholder="https://..."></div>
-                </div>
-                <div style="display: flex; gap: 10px; margin-top: 20px;">
-                    <button onclick="offersManager.saveOffer('${offer?.id || ''}')" style="flex: 1; background: #DCA773; color: #000; border: none; padding: 14px; border-radius: 15px; font-weight: bold; font-size: 12px; cursor: pointer;">${isEdit ? 'Update' : 'Create'}</button>
-                    <button onclick="document.getElementById('offerFormModal').remove()" style="background: rgba(239,68,68,0.2); color: #ef4444; border: 1px solid #ef4444; padding: 14px 20px; border-radius: 15px; font-size: 12px; cursor: pointer;">Cancel</button>
-                </div>
-            </div>
-        `;
-        document.body.appendChild(formModal);
-        formModal.addEventListener('click', (e) => { if (e.target === formModal) formModal.remove(); });
-    }
-    
-    async saveOffer(id) {
-        const title = document.getElementById('formTitle').value.trim();
-        const venue = document.getElementById('formVenue').value.trim();
-        if (!title || !venue) { alert('Title and Venue required'); return; }
-        
-        const payload = {
-            title, venue,
-            category: document.getElementById('formCategory').value,
-            price: document.getElementById('formPrice').value.trim(),
-            description: document.getElementById('formDescription').value.trim(),
-            details: document.getElementById('formDetails').value.trim(),
-            badge: document.getElementById('formBadge').value.trim(),
-            image_url: document.getElementById('formImage').value.trim(),
-            is_active: true,
-            updated_at: new Date()
-        };
-        
-        try {
-            if (id) {
-                await supabase.from('experiences_offers').update(payload).eq('id', id);
-            } else {
-                await supabase.from('experiences_offers').insert(payload);
-            }
-            document.getElementById('offerFormModal').remove();
-            await this.loadOffers();
-            alert('✅ Offer saved!');
-        } catch (e) {
-            alert('❌ Error: ' + e.message);
-        }
-    }
-    
-    async toggleActive(id) {
-        const offer = this.offers.find(o => o.id === id);
-        if (!offer) return;
-        try {
-            await supabase.from('experiences_offers').update({ is_active: !offer.is_active }).eq('id', id);
-            await this.loadOffers();
-        } catch (e) {}
-    }
-    
-    async deleteOffer(id) {
-        if (!confirm('Delete this offer?')) return;
-        try {
-            await supabase.from('experiences_offers').delete().eq('id', id);
-            await this.loadOffers();
-        } catch (e) {}
-    }
-}
+        </div>
+    </div>
 
-document.addEventListener('DOMContentLoaded', () => {
-    window.offersManager = new OffersManager();
-});
-
-function showOffersManagement() {
-    document.querySelectorAll('.section, [id$="Section"]').forEach(s => {
-        if (s.id !== 'offersManagementSection') s.classList.add('hidden');
-    });
-    const section = document.getElementById('offersManagementSection');
-    if (section) section.classList.remove('hidden');
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    const navBtn = document.getElementById('navBtnOffers');
-    if (navBtn) navBtn.classList.add('active');
-}
+    <!-- Scripts existants -->
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/staff/staff-state.js"></script>
+    <script src="assets/js/staff/staff-helpers.js"></script>
+    <script src="assets/js/staff/staff-notifications.js"></script>
+    <script src="assets/js/staff/staff-chat.js"></script>
+    <script src="assets/js/staff/staff-data.js"></script>
+    <script src="assets/js/staff/staff-render.js"></script>
+    <script src="assets/js/staff/staff-navigation.js"></script>
+    <script src="assets/js/staff/staff-offers.js"></script>
+    <script src="assets/js/staff/staff-analytics.js"></script>
+    <script src="assets/js/staff/staff-theme.js"></script>
+    <script src="assets/js/staff/staff-app.js"></script>
+    
+    <!-- NOUVEAU : Offers Manager -->
+    <script src="assets/js/staff/offers-manager.js"></script>
+    
+    <script src="security-guard.js"></script>
+</body>
+</html>
