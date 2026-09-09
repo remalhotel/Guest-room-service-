@@ -10,11 +10,19 @@ function showToast(msg, type = 'info') {
 
 function getTimeAgo(timestamp) {
     if (!timestamp) return 'Just now';
-    const diffMins = Math.floor((new Date() - new Date(timestamp)) / 60000);
+    
+    const time = new Date(timestamp);
+    if (isNaN(time.getTime())) return 'Just now';
+    
+    const diffMins = Math.floor((new Date().getTime() - time.getTime()) / 60000);
+    
+    if (diffMins < 0) return 'Just now';
     if (diffMins < 1) return 'Just now';
     if (diffMins < 60) return `${diffMins} min ago`;
+    
     const diffHours = Math.floor(diffMins / 60);
     if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+    
     return `${Math.floor(diffHours / 24)} day${Math.floor(diffHours / 24) > 1 ? 's' : ''} ago`;
 }
 
