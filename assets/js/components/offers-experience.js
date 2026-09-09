@@ -1,6 +1,6 @@
 // ==================== OFFERS EXPERIENCE ====================
-// Transforme l'onglet Offers en expérience luxueuse
-// Même style que Remal Experiences
+// Affiche les offres de l'admin dans un style luxueux
+// SANS offres par défaut
 
 class OffersExperience {
     constructor() {
@@ -145,59 +145,7 @@ class OffersExperience {
         } catch (e) {
             this.offers = [];
         }
-        
-        if (this.offers.length === 0) {
-            this.offers = this.getDefaultOffers();
-        }
-    }
-    
-    getDefaultOffers() {
-        return [
-            {
-                id: '1',
-                category: 'falaj',
-                venue: 'Falaj Restaurant',
-                title: 'International Breakfast Buffet',
-                description: 'Start your day with a lavish spread',
-                price: '120 AED',
-                image_url: 'https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?w=600',
-                badge: 'Morning',
-                details: 'Enjoy a sumptuous breakfast buffet featuring international and Arabic specialties.'
-            },
-            {
-                id: '2',
-                category: 'sarab',
-                venue: 'Sarab Bar Lounge',
-                title: 'Sunset Happy Hour',
-                description: 'Cocktails with stunning views',
-                price: '90 AED',
-                image_url: 'https://images.unsplash.com/photo-1470337458703-46ad1756a187?w=600',
-                badge: 'Sunset',
-                details: 'Sip on expertly crafted cocktails while enjoying breathtaking sunset views.'
-            },
-            {
-                id: '3',
-                category: 'spa',
-                venue: 'Remal Spa',
-                title: 'Royal Spa Ritual',
-                description: 'Full body massage and facial',
-                price: '450 AED',
-                image_url: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=600',
-                badge: 'Signature',
-                details: 'Our signature Royal Spa Ritual features a 90-minute therapeutic massage.'
-            },
-            {
-                id: '4',
-                category: 'alrodah',
-                venue: 'Al Rodah',
-                title: 'Afternoon High Tea',
-                description: 'Traditional tea experience',
-                price: '110 AED',
-                image_url: 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=600',
-                badge: 'Elegant',
-                details: 'Indulge in a refined afternoon tea with delicate sandwiches and pastries.'
-            }
-        ];
+        // PAS D'OFFRES PAR DÉFAUT
     }
     
     enhanceOffersContainer() {
@@ -205,8 +153,6 @@ class OffersExperience {
         if (!container) return;
         
         container.classList.add('offers-experience-container');
-        
-        // Vider le conteneur
         container.innerHTML = '';
         
         // Ajouter les filtres
@@ -229,7 +175,6 @@ class OffersExperience {
         const container = document.getElementById('offersContainer');
         if (!container) return;
         
-        // Supprimer les anciennes cartes mais garder les filtres
         const filters = container.querySelector('.offer-experience-filters');
         container.innerHTML = '';
         if (filters) container.appendChild(filters);
@@ -237,6 +182,20 @@ class OffersExperience {
         const filtered = this.currentFilter === 'all' 
             ? this.offers 
             : this.offers.filter(o => o.category === this.currentFilter);
+        
+        // Si PAS d'offres, afficher un message
+        if (filtered.length === 0) {
+            const emptyMsg = document.createElement('p');
+            emptyMsg.style.cssText = `
+                text-align: center;
+                color: #a8a29e;
+                padding: 30px;
+                font-size: 12px;
+            `;
+            emptyMsg.textContent = 'No exclusive offers available at the moment.';
+            container.appendChild(emptyMsg);
+            return;
+        }
         
         filtered.forEach((offer, index) => {
             const card = document.createElement('div');
@@ -287,16 +246,9 @@ class OffersExperience {
             btn.classList.remove('active');
         });
         
-        // Activer le bon bouton
-        const buttons = document.querySelectorAll('.offer-experience-filter-btn');
-        const categoryMap = {
-            'all': 0,
-            'falaj': 1,
-            'sarab': 2,
-            'alrodah': 3,
-            'spa': 4
-        };
+        const categoryMap = { 'all': 0, 'falaj': 1, 'sarab': 2, 'alrodah': 3, 'spa': 4 };
         const index = categoryMap[category] || 0;
+        const buttons = document.querySelectorAll('.offer-experience-filter-btn');
         if (buttons[index]) buttons[index].classList.add('active');
         
         this.renderOffers();
@@ -370,21 +322,18 @@ class OffersExperience {
     }
 }
 
-// ==================== INITIALISATION ET INTÉGRATION FORCÉE ====================
+// ==================== INITIALISATION ====================
 document.addEventListener('DOMContentLoaded', () => {
     window.offersExperience = new OffersExperience();
     
-    // Écraser la fonction fetchOffers existante
     window.fetchOffers = function() {
         if (window.offersExperience) {
             window.offersExperience.enhanceOffersContainer();
         }
     };
     
-    // Attendre que tout soit chargé puis forcer l'affichage
     setTimeout(() => {
         if (window.offersExperience) {
-            console.log('🔄 Intégration OffersExperience forcée');
             window.offersExperience.enhanceOffersContainer();
         }
     }, 3000);
