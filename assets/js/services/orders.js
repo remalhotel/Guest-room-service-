@@ -22,7 +22,6 @@ async function submitRoomServiceOrder(method) {
         special_instructions: instructions,
         total_amount: totalAmount,
         status: 'Pending',
-        // CORRECTION : Utiliser ISO string au lieu de toLocaleString
         created_at: new Date().toISOString()
     };
 
@@ -134,15 +133,16 @@ async function fetchOrderHistory() {
         let itemsList = '';
         try { itemsList = (typeof order.items === 'string' ? JSON.parse(order.items) : order.items).map(i => `${i.quantity}x ${i.name}`).join(', '); } catch(e) {}
         
-        // CORRECTION : Formater l'heure correctement
-        let timeDisplay = '';
+        // ✅ SEULE MODIFICATION ICI - Heure corrigée
+        let timeDisplay = 'Just now';
         if (order.created_at) {
             const orderTime = new Date(order.created_at);
             const now = new Date();
-            const diffMs = now.getTime() - orderTime.getTime();
-            const diffMins = Math.floor(diffMs / 60000);
+            const diffMins = Math.floor((now.getTime() - orderTime.getTime()) / 60000);
             
-            if (diffMins < 1) {
+            if (diffMins < 0) {
+                timeDisplay = 'Just now';
+            } else if (diffMins < 1) {
                 timeDisplay = 'Just now';
             } else if (diffMins < 60) {
                 timeDisplay = `${diffMins} min ago`;
@@ -150,9 +150,10 @@ async function fetchOrderHistory() {
                 const hours = Math.floor(diffMins / 60);
                 timeDisplay = `${hours} hour${hours > 1 ? 's' : ''} ago`;
             } else {
-                timeDisplay = orderTime.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+                timeDisplay = orderTime.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
             }
         }
+        // ✅ FIN DE LA MODIFICATION
         
         return `
             <div class="p-3 bg-stone-950/60 border border-stone-800 rounded-xl">
