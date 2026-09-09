@@ -22,7 +22,8 @@ async function submitRoomServiceOrder(method) {
         special_instructions: instructions,
         total_amount: totalAmount,
         status: 'Pending',
-        created_at: new Date().toLocaleString('en-US', { timeZone: 'Asia/Dubai' })
+        // CORRECTION : Utiliser ISO string au lieu de toLocaleString
+        created_at: new Date().toISOString()
     };
 
     try {
@@ -115,6 +116,7 @@ async function verifierEtRestaurerCommandeEnCours() {
         updateOrderTracking(data.status || 'Pending');
     } catch (err) {}
 }
+
 // ==================== ORDER HISTORY ====================
 async function fetchOrderHistory() {
     const room = cachedGuestData?.room || localStorage.getItem('remal_guest_room');
@@ -131,6 +133,27 @@ async function fetchOrderHistory() {
     container.innerHTML = data.map(order => {
         let itemsList = '';
         try { itemsList = (typeof order.items === 'string' ? JSON.parse(order.items) : order.items).map(i => `${i.quantity}x ${i.name}`).join(', '); } catch(e) {}
+        
+        // CORRECTION : Formater l'heure correctement
+        let timeDisplay = '';
+        if (order.created_at) {
+            const orderTime = new Date(order.created_at);
+            const now = new Date();
+            const diffMs = now.getTime() - orderTime.getTime();
+            const diffMins = Math.floor(diffMs / 60000);
+            
+            if (diffMins < 1) {
+                timeDisplay = 'Just now';
+            } else if (diffMins < 60) {
+                timeDisplay = `${diffMins} min ago`;
+            } else if (diffMins < 1440) {
+                const hours = Math.floor(diffMins / 60);
+                timeDisplay = `${hours} hour${hours > 1 ? 's' : ''} ago`;
+            } else {
+                timeDisplay = orderTime.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+            }
+        }
+        
         return `
             <div class="p-3 bg-stone-950/60 border border-stone-800 rounded-xl">
                 <div class="flex justify-between">
@@ -139,6 +162,7 @@ async function fetchOrderHistory() {
                 </div>
                 <p class="text-[9px] text-stone-400 mt-1">${itemsList}</p>
                 <p class="text-[10px] font-bold text-[var(--text-gold,#DCA773)] mt-2">AED ${(order.total_amount || 0).toFixed(2)}</p>
+                <p class="text-[8px] text-stone-500 mt-1">${timeDisplay}</p>
             </div>
         `;
     }).join('');
@@ -160,7 +184,6 @@ function showOrderHistory() {
 
 window.fetchOrderHistory = fetchOrderHistory;
 window.showOrderHistory = showOrderHistory;
-// Exposer
 window.submitRoomServiceOrder = submitRoomServiceOrder;
 window.updateOrderTracking = updateOrderTracking;
 window.verifierEtRestaurerCommandeEnCours = verifierEtRestaurerCommandeEnCours;
