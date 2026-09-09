@@ -76,52 +76,12 @@
             body.light-mode .order-progress-dot.active {
                 box-shadow: 0 0 10px rgba(180, 122, 62, 0.4);
             }
-            
-            body.light-mode .order-progress-line.completed {
-                box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
-            }
-        `;
-        document.head.appendChild(style);
-    }
-    
-    function observeTrackingChanges() {
-        const trackingSection = document.getElementById('orderTrackingSection');
-        if (!trackingSection) return;
-        
-        const observer = new MutationObserver(() => {
-            // Ajouter une animation de transition quand le statut change
-            const statusText = document.getElementById('orderStatusText');
-            if (statusText && !statusText.dataset.animated) {
-                statusText.dataset.animated = 'true';
-                statusText.style.animation = 'statusChangeIn 0.5s ease';
-                setTimeout(() => {
-                    statusText.style.animation = '';
-                    statusText.dataset.animated = '';
-                }, 500);
-            }
-        });
-        
-        observer.observe(trackingSection, {
-            childList: true,
-            subtree: true,
-            attributes: true,
-            attributeFilter: ['class']
-        });
-        
-        // Ajouter l'animation du texte de statut
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes statusChangeIn {
-                from { opacity: 0; transform: translateY(-10px); }
-                to { opacity: 1; transform: translateY(0); }
-            }
         `;
         document.head.appendChild(style);
     }
     
     document.addEventListener('DOMContentLoaded', () => {
         injectStyles();
-        observeTrackingChanges();
     });
     
 })();
