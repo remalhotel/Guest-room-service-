@@ -21,7 +21,6 @@ class OffersExperience {
         const style = document.createElement('style');
         style.id = 'offersExperienceStyles';
         style.textContent = `
-            /* Style luxueux pour les offres */
             .offers-experience-container {
                 display: grid;
                 gap: 15px;
@@ -126,7 +125,6 @@ class OffersExperience {
                 50% { box-shadow: 0 0 30px rgba(255, 215, 0, 0.6); }
             }
             
-            /* Mode clair */
             body.light-mode .offer-experience-card {
                 background: #ffffff;
                 border-color: rgba(180, 122, 62, 0.3);
@@ -145,7 +143,7 @@ class OffersExperience {
             
             this.offers = data || [];
         } catch (e) {
-            this.offers = this.getDefaultOffers();
+            this.offers = [];
         }
         
         if (this.offers.length === 0) {
@@ -164,7 +162,7 @@ class OffersExperience {
                 price: '120 AED',
                 image_url: 'https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?w=600',
                 badge: 'Morning',
-                details: 'Enjoy a sumptuous breakfast buffet.'
+                details: 'Enjoy a sumptuous breakfast buffet featuring international and Arabic specialties.'
             },
             {
                 id: '2',
@@ -175,7 +173,7 @@ class OffersExperience {
                 price: '90 AED',
                 image_url: 'https://images.unsplash.com/photo-1470337458703-46ad1756a187?w=600',
                 badge: 'Sunset',
-                details: 'Sip on expertly crafted cocktails.'
+                details: 'Sip on expertly crafted cocktails while enjoying breathtaking sunset views.'
             },
             {
                 id: '3',
@@ -186,7 +184,7 @@ class OffersExperience {
                 price: '450 AED',
                 image_url: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=600',
                 badge: 'Signature',
-                details: 'Our signature Royal Spa Ritual.'
+                details: 'Our signature Royal Spa Ritual features a 90-minute therapeutic massage.'
             },
             {
                 id: '4',
@@ -197,7 +195,7 @@ class OffersExperience {
                 price: '110 AED',
                 image_url: 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=600',
                 badge: 'Elegant',
-                details: 'Indulge in a refined afternoon tea.'
+                details: 'Indulge in a refined afternoon tea with delicate sandwiches and pastries.'
             }
         ];
     }
@@ -207,6 +205,9 @@ class OffersExperience {
         if (!container) return;
         
         container.classList.add('offers-experience-container');
+        
+        // Vider le conteneur
+        container.innerHTML = '';
         
         // Ajouter les filtres
         const filtersDiv = document.createElement('div');
@@ -219,7 +220,7 @@ class OffersExperience {
             <button class="offer-experience-filter-btn" onclick="offersExperience.filterOffers('spa')">💆 Spa</button>
         `;
         
-        container.prepend(filtersDiv);
+        container.appendChild(filtersDiv);
         
         this.renderOffers();
     }
@@ -284,10 +285,19 @@ class OffersExperience {
         
         document.querySelectorAll('.offer-experience-filter-btn').forEach(btn => {
             btn.classList.remove('active');
-            if (btn.textContent.includes(category === 'all' ? 'All' : category)) {
-                btn.classList.add('active');
-            }
         });
+        
+        // Activer le bon bouton
+        const buttons = document.querySelectorAll('.offer-experience-filter-btn');
+        const categoryMap = {
+            'all': 0,
+            'falaj': 1,
+            'sarab': 2,
+            'alrodah': 3,
+            'spa': 4
+        };
+        const index = categoryMap[category] || 0;
+        if (buttons[index]) buttons[index].classList.add('active');
         
         this.renderOffers();
     }
@@ -360,7 +370,22 @@ class OffersExperience {
     }
 }
 
-// Initialisation
+// ==================== INITIALISATION ET INTÉGRATION FORCÉE ====================
 document.addEventListener('DOMContentLoaded', () => {
     window.offersExperience = new OffersExperience();
+    
+    // Écraser la fonction fetchOffers existante
+    window.fetchOffers = function() {
+        if (window.offersExperience) {
+            window.offersExperience.enhanceOffersContainer();
+        }
+    };
+    
+    // Attendre que tout soit chargé puis forcer l'affichage
+    setTimeout(() => {
+        if (window.offersExperience) {
+            console.log('🔄 Intégration OffersExperience forcée');
+            window.offersExperience.enhanceOffersContainer();
+        }
+    }, 3000);
 });
