@@ -622,6 +622,7 @@
     <script src="assets/js/components/banner-zoom-effect.js"></script>
     <script src="assets/js/components/card-breathe.js"></script>
     <script src="assets/js/components/push-notifications.js"></script>
+    <script src="assets/js/components/multilingual-complete.js"></script>
     
     <!-- ==================== INITIALISATION ==================== -->
     <script>
@@ -636,7 +637,9 @@
         initAutoTheme();
         initOfflineMode();
         initOfferNotifications();
-        setLanguage(currentLanguage);
+        // Remplacer setLanguage(currentLanguage) par :
+const detectedLang = localStorage.getItem('remal_lang') || 'en';
+setLanguage(detectedLang);
         renderMenuItems();
         renderFaqList();
         renderOneTapServices();
