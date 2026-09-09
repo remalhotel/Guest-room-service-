@@ -1,0 +1,324 @@
+// ==================== AUTO THEME PREMIUM ====================
+// Mode automatique intelligent avec transitions élégantes
+// Change selon l'heure : Matin, Midi, Après-midi, Soir, Nuit
+
+(function() {
+    'use strict';
+    
+    console.log('🌅 Auto Theme Premium activé');
+    
+    class AutoThemePremium {
+        constructor() {
+            this.currentPeriod = null;
+            this.init();
+        }
+        
+        init() {
+            this.injectStyles();
+            this.detectPeriod();
+            this.startMonitoring();
+            this.setupManualOverride();
+        }
+        
+        injectStyles() {
+            const style = document.createElement('style');
+            style.id = 'autoThemePremiumStyles';
+            style.textContent = `
+                /* Transition élégante entre les thèmes */
+                body {
+                    transition: background-color 1.5s ease, color 1.5s ease;
+                }
+                
+                .remal-card, .lock-card, .service-card, .offer-card {
+                    transition: background-color 1.5s ease, border-color 1.5s ease, box-shadow 1.5s ease !important;
+                }
+                
+                /* Animation de transition du thème */
+                @keyframes themeTransition {
+                    0% { opacity: 0.7; }
+                    50% { opacity: 1; }
+                    100% { opacity: 1; }
+                }
+                
+                .theme-transitioning {
+                    animation: themeTransition 1.5s ease;
+                }
+                
+                /* Icône du thème animée */
+                @keyframes themeIconRotate {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+                
+                .theme-icon-animated {
+                    animation: themeIconRotate 0.8s ease;
+                }
+                
+                /* Indicateur de période */
+                .period-indicator {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 6px;
+                    padding: 4px 12px;
+                    border-radius: 15px;
+                    font-size: 9px;
+                    font-weight: bold;
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
+                    transition: all 1.5s ease;
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        detectPeriod() {
+            const hour = new Date().getHours();
+            let period;
+            
+            if (hour >= 5 && hour < 9) {
+                period = 'sunrise'; // Aube
+            } else if (hour >= 9 && hour < 12) {
+                period = 'morning'; // Matin
+            } else if (hour >= 12 && hour < 15) {
+                period = 'noon'; // Midi
+            } else if (hour >= 15 && hour < 17) {
+                period = 'afternoon'; // Après-midi
+            } else if (hour >= 17 && hour < 19) {
+                period = 'sunset'; // Coucher du soleil
+            } else if (hour >= 19 && hour < 22) {
+                period = 'evening'; // Soir
+            } else {
+                period = 'night'; // Nuit
+            }
+            
+            if (period !== this.currentPeriod) {
+                this.currentPeriod = period;
+                this.applyPeriodTheme(period);
+            }
+        }
+        
+        applyPeriodTheme(period) {
+            const themes = {
+                sunrise: {
+                    type: 'light',
+                    icon: '🌅',
+                    label: 'Sunrise',
+                    gradient: 'linear-gradient(135deg, #fdf2e9 0%, #f8fafc 50%, #fef9e7 100%)',
+                    accent: '#DCA773',
+                    cardBg: 'rgba(255, 255, 255, 0.95)',
+                    textColor: '#1e293b',
+                    mutedColor: '#64748b'
+                },
+                morning: {
+                    type: 'light',
+                    icon: '☀️',
+                    label: 'Morning',
+                    gradient: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #f8fafc 100%)',
+                    accent: '#DCA773',
+                    cardBg: 'rgba(255, 255, 255, 0.95)',
+                    textColor: '#0f172a',
+                    mutedColor: '#64748b'
+                },
+                noon: {
+                    type: 'light',
+                    icon: '🌤️',
+                    label: 'Noon',
+                    gradient: 'linear-gradient(135deg, #fefce8 0%, #f8fafc 50%, #fef9c3 100%)',
+                    accent: '#b47a3e',
+                    cardBg: 'rgba(255, 255, 255, 0.95)',
+                    textColor: '#1e293b',
+                    mutedColor: '#57534e'
+                },
+                afternoon: {
+                    type: 'light',
+                    icon: '🌤️',
+                    label: 'Afternoon',
+                    gradient: 'linear-gradient(135deg, #fef3c7 0%, #f8fafc 50%, #fde68a 100%)',
+                    accent: '#b47a3e',
+                    cardBg: 'rgba(255, 255, 255, 0.95)',
+                    textColor: '#1e293b',
+                    mutedColor: '#57534e'
+                },
+                sunset: {
+                    type: 'dark',
+                    icon: '🌅',
+                    label: 'Sunset',
+                    gradient: 'linear-gradient(135deg, #1c1917 0%, #292524 30%, #44403c 50%, #1c1917 100%)',
+                    accent: '#DCA773',
+                    cardBg: 'rgba(28, 25, 23, 0.9)',
+                    textColor: '#ffffff',
+                    mutedColor: '#a8a29e'
+                },
+                evening: {
+                    type: 'dark',
+                    icon: '🌆',
+                    label: 'Evening',
+                    gradient: 'linear-gradient(135deg, #0c0a09 0%, #1c1917 50%, #292524 100%)',
+                    accent: '#DCA773',
+                    cardBg: 'rgba(22, 20, 18, 0.92)',
+                    textColor: '#ffffff',
+                    mutedColor: '#a8a29e'
+                },
+                night: {
+                    type: 'dark',
+                    icon: '🌙',
+                    label: 'Night',
+                    gradient: 'linear-gradient(135deg, #0a0908 0%, #1a1714 50%, #0a0908 100%)',
+                    accent: '#DCA773',
+                    cardBg: 'rgba(22, 20, 18, 0.92)',
+                    textColor: '#ffffff',
+                    mutedColor: '#a8a29e'
+                }
+            };
+            
+            const theme = themes[period];
+            
+            // Ajouter la classe de transition
+            document.body.classList.add('theme-transitioning');
+            
+            // Appliquer le thème
+            setTimeout(() => {
+                if (theme.type === 'light') {
+                    document.body.classList.add('light-mode');
+                } else {
+                    document.body.classList.remove('light-mode');
+                }
+                
+                // Appliquer le gradient
+                document.body.style.background = theme.gradient;
+                
+                // Mettre à jour l'icône
+                this.updateThemeIcon(theme.icon);
+                
+                // Mettre à jour l'indicateur
+                this.updatePeriodIndicator(theme);
+                
+                // Notification
+                this.showThemeNotification(theme);
+                
+                // Retirer la classe de transition
+                setTimeout(() => {
+                    document.body.classList.remove('theme-transitioning');
+                }, 1500);
+            }, 100);
+        }
+        
+        updateThemeIcon(icon) {
+            const icons = [
+                document.getElementById('themeIconLock'),
+                document.getElementById('themeIconMain')
+            ];
+            
+            icons.forEach(el => {
+                if (el) {
+                    el.className = 'theme-icon-animated';
+                    setTimeout(() => {
+                        el.className = '';
+                    }, 800);
+                }
+            });
+        }
+        
+        updatePeriodIndicator(theme) {
+            // Créer ou mettre à jour l'indicateur
+            let indicator = document.getElementById('periodIndicator');
+            
+            if (!indicator) {
+                indicator = document.createElement('span');
+                indicator.id = 'periodIndicator';
+                indicator.className = 'period-indicator';
+                
+                // Ajouter à côté du titre
+                const title = document.querySelector('.remal-banner h1');
+                if (title) {
+                    title.parentElement.appendChild(indicator);
+                }
+            }
+            
+            indicator.textContent = `${theme.icon} ${theme.label}`;
+            indicator.style.color = theme.accent;
+        }
+        
+        showThemeNotification(theme) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 100px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(28, 25, 23, 0.95);
+                border: 1px solid ${theme.accent};
+                border-radius: 20px;
+                padding: 10px 20px;
+                color: ${theme.accent};
+                font-weight: bold;
+                font-size: 11px;
+                z-index: 9999;
+                animation: fadeInUp 0.5s ease;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            `;
+            toast.textContent = `${theme.icon} ${theme.label} mode activated`;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.transition = 'all 0.5s ease';
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(-50%) translateY(20px)';
+                setTimeout(() => toast.remove(), 500);
+            }, 2500);
+        }
+        
+        startMonitoring() {
+            // Vérifier toutes les 5 minutes
+            setInterval(() => {
+                this.detectPeriod();
+            }, 5 * 60 * 1000);
+        }
+        
+        setupManualOverride() {
+            // Si l'utilisateur change manuellement, respecter son choix
+            const originalToggle = window.toggleTheme;
+            
+            window.toggleTheme = function() {
+                const isLight = document.body.classList.contains('light-mode');
+                const newTheme = isLight ? 'dark' : 'light';
+                
+                if (newTheme === 'light') {
+                    document.body.classList.add('light-mode');
+                    document.body.style.background = 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #f8fafc 100%)';
+                } else {
+                    document.body.classList.remove('light-mode');
+                    document.body.style.background = 'linear-gradient(135deg, #0a0908 0%, #1a1714 50%, #0a0908 100%)';
+                }
+                
+                localStorage.setItem('remal_theme', newTheme);
+                
+                const icon = document.getElementById('themeIconLock') || document.getElementById('themeIconMain');
+                if (icon) {
+                    icon.className = newTheme === 'light' ? 'fas fa-sun text-sm' : 'fas fa-moon text-sm';
+                }
+                
+                // Désactiver l'auto pendant 1 heure
+                localStorage.setItem('theme_manual_override', Date.now() + 3600000);
+            };
+        }
+        
+        shouldAutoRun() {
+            const override = localStorage.getItem('theme_manual_override');
+            if (override && Date.now() < parseInt(override)) {
+                return false;
+            }
+            
+            const savedTheme = localStorage.getItem('remal_theme');
+            return savedTheme === 'auto' || !savedTheme;
+        }
+    }
+    
+    // Initialisation
+    document.addEventListener('DOMContentLoaded', () => {
+        window.autoThemePremium = new AutoThemePremium();
+    });
+    
+})();
