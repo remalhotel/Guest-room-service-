@@ -1,5 +1,6 @@
 // ==================== REALTIME STATUS ====================
 // Mise à jour instantanée des statuts pour le client
+// Avec notifications push intégrées
 
 (function() {
     'use strict';
@@ -19,7 +20,6 @@
                 this.setupSubscriptions();
             }
             
-            // Réessayer après connexion
             setTimeout(() => {
                 if (!this.roomNumber) {
                     this.roomNumber = this.getRoomNumber();
@@ -40,7 +40,6 @@
             
             const room = String(this.roomNumber).trim();
             
-            // Fermer l'ancien canal
             if (this.channel) {
                 window.supabaseClient.removeChannel(this.channel);
             }
@@ -49,8 +48,6 @@
             
             this.channel = window.supabaseClient
                 .channel(`guest-realtime-${room}`)
-                
-                // Écouter les changements de statut food_orders
                 .on('postgres_changes', {
                     event: 'UPDATE',
                     schema: 'public',
@@ -60,8 +57,6 @@
                     console.log('🍽️ Food order update:', payload.new?.status);
                     this.handleFoodStatusUpdate(payload.new);
                 })
-                
-                // Écouter les changements de statut guest_requests
                 .on('postgres_changes', {
                     event: 'UPDATE',
                     schema: 'public',
@@ -71,8 +66,6 @@
                     console.log('📋 Request update:', payload.new?.status);
                     this.handleRequestStatusUpdate(payload.new);
                 })
-                
-                // Écouter les changements laundry
                 .on('postgres_changes', {
                     event: 'UPDATE',
                     schema: 'public',
@@ -82,7 +75,6 @@
                     console.log('🧺 Laundry update:', payload.new?.status);
                     this.handleLaundryUpdate(payload.new);
                 })
-                
                 .subscribe((status) => {
                     console.log('📡 Realtime channel status:', status);
                 });
@@ -101,15 +93,15 @@
             
             const config = statusMessages[order.status] || { icon: '🔄', message: `Status: ${order.status}`, color: '#DCA773' };
             
-            // Mettre à jour le tracking
             if (typeof updateOrderTracking === 'function') {
                 updateOrderTracking(order.status);
             }
             
-            // Afficher notification
             this.showNotification(config.icon, config.message, config.color);
             
-            // Vibration
+            // ✅ Notification push système
+            this.sendPushNotification('🍽️ ' + config.message);
+            
             if ('vibrate' in navigator) navigator.vibrate(200);
         }
         
@@ -125,6 +117,9 @@
             const config = statusMessages[request.status] || { icon: '🔄', message: `Request status: ${request.status}`, color: '#DCA773' };
             
             this.showNotification(config.icon, config.message, config.color);
+            
+            // ✅ Notification push système
+            this.sendPushNotification('📋 ' + config.message);
             
             if ('vibrate' in navigator) navigator.vibrate(200);
         }
@@ -142,10 +137,26 @@
             const config = statusMessages[laundry.status] || { icon: '🧺', message: `Laundry: ${laundry.status}`, color: '#DCA773' };
             
             this.showNotification(config.icon, config.message, config.color);
+            
+            // ✅ Notification push système
+            this.sendPushNotification('🧺 ' + config.message);
+        }
+        
+        // ✅ Nouvelle méthode : Notification push système
+        sendPushNotification(message) {
+            if ('Notification' in window && Notification.permission === 'granted') {
+                try {
+                    new Notification('Remal Hotel & Villas', {
+                        body: message,
+                        icon: 'assets/images/icon-192.png'
+                    });
+                } catch (e) {
+                    console.log('Push notification failed:', e);
+                }
+            }
         }
         
         showNotification(icon, message, borderColor) {
-            // Supprimer les anciennes notifications
             const existing = document.querySelector('.toast-notification');
             if (existing) existing.remove();
             
@@ -170,9 +181,17 @@
         }
     }
     
-    // Initialisation
     document.addEventListener('DOMContentLoaded', () => {
         window.realtimeStatus = new RealtimeStatus();
+        
+        // ✅ Demander la permission pour les notifications push
+        if ('Notification' in window && Notification.permission === 'default') {
+            setTimeout(() => {
+                Notification.requestPermission().then(permission => {
+                    console.log('🔔 Permission notification:', permission);
+                });
+            }, 5000);
+        }
     });
     
 })();
