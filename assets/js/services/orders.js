@@ -133,27 +133,16 @@ async function fetchOrderHistory() {
         let itemsList = '';
         try { itemsList = (typeof order.items === 'string' ? JSON.parse(order.items) : order.items).map(i => `${i.quantity}x ${i.name}`).join(', '); } catch(e) {}
         
-        // ✅ SEULE MODIFICATION ICI - Heure corrigée
-        let timeDisplay = 'Just now';
+        // ✅ TEMPS CORRIGÉ - Heure exacte au lieu de "ago"
+        let timeDisplay = '';
         if (order.created_at) {
             const orderTime = new Date(order.created_at);
-            const now = new Date();
-            const diffMins = Math.floor((now.getTime() - orderTime.getTime()) / 60000);
-            
-            if (diffMins < 0) {
-                timeDisplay = 'Just now';
-            } else if (diffMins < 1) {
-                timeDisplay = 'Just now';
-            } else if (diffMins < 60) {
-                timeDisplay = `${diffMins} min ago`;
-            } else if (diffMins < 1440) {
-                const hours = Math.floor(diffMins / 60);
-                timeDisplay = `${hours} hour${hours > 1 ? 's' : ''} ago`;
-            } else {
-                timeDisplay = orderTime.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
-            }
+            timeDisplay = orderTime.toLocaleTimeString('en-GB', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                hour12: false 
+            });
         }
-        // ✅ FIN DE LA MODIFICATION
         
         return `
             <div class="p-3 bg-stone-950/60 border border-stone-800 rounded-xl">
@@ -163,7 +152,7 @@ async function fetchOrderHistory() {
                 </div>
                 <p class="text-[9px] text-stone-400 mt-1">${itemsList}</p>
                 <p class="text-[10px] font-bold text-[var(--text-gold,#DCA773)] mt-2">AED ${(order.total_amount || 0).toFixed(2)}</p>
-                <p class="text-[8px] text-stone-500 mt-1">${timeDisplay}</p>
+                <p class="text-[8px] text-stone-500 mt-1">🕐 ${timeDisplay}</p>
             </div>
         `;
     }).join('');
