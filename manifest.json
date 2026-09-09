@@ -1,0 +1,38 @@
+{
+    "name": "Remal Hotel & Villas - Guest Hub",
+    "short_name": "Guest Hub",
+    "description": "Remal Hotel & Villas Guest Services - Room Service, Laundry, Offers and more",
+    "start_url": "/",
+    "display": "standalone",
+    "orientation": "portrait",
+    "background_color": "#0a0908",
+    "theme_color": "#DCA773",
+    "lang": "en",
+    "categories": ["travel", "hotel", "lifestyle"],
+    "icons": [
+        {
+            "src": "assets/images/icon-72.png",
+            "sizes": "72x72",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "assets/images/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "assets/images/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "assets/images/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ]
+}
