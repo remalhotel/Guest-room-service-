@@ -1,6 +1,5 @@
 // ==================== REALTIME STATUS ====================
-// Mise à jour instantanée des statuts de commande
-// Le client voit le changement dès que le staff le modifie
+// Mise à jour instantanée des statuts pour le client
 
 (function() {
     'use strict';
@@ -10,124 +9,157 @@
     class RealtimeStatus {
         constructor() {
             this.channel = null;
+            this.roomNumber = null;
             this.init();
         }
         
         init() {
-            this.setupSubscription();
-            this.listenForLocalChanges();
+            this.roomNumber = this.getRoomNumber();
+            if (this.roomNumber) {
+                this.setupSubscriptions();
+            }
+            
+            // Réessayer après connexion
+            setTimeout(() => {
+                if (!this.roomNumber) {
+                    this.roomNumber = this.getRoomNumber();
+                    if (this.roomNumber) this.setupSubscriptions();
+                }
+            }, 3000);
         }
         
-        setupSubscription() {
-            const room = this.getRoomNumber();
-            if (!room || !window.supabaseClient) return;
+        getRoomNumber() {
+            return localStorage.getItem('remal_guest_room') || 
+                   localStorage.getItem('roomNumber') ||
+                   (cachedGuestData && cachedGuestData.room) ||
+                   document.getElementById('displayRoomNumber')?.textContent?.trim();
+        }
+        
+        setupSubscriptions() {
+            if (!window.supabaseClient || !this.roomNumber) return;
+            
+            const room = String(this.roomNumber).trim();
             
             // Fermer l'ancien canal
             if (this.channel) {
                 window.supabaseClient.removeChannel(this.channel);
             }
             
-            console.log(`📡 Écoute des changements pour la chambre ${room}`);
+            console.log(`📡 Écoute temps réel pour chambre ${room}`);
             
-            // Écouter les changements sur food_orders
             this.channel = window.supabaseClient
-                .channel(`realtime-orders-${room}`)
+                .channel(`guest-realtime-${room}`)
+                
+                // Écouter les changements de statut food_orders
                 .on('postgres_changes', {
                     event: 'UPDATE',
                     schema: 'public',
                     table: 'food_orders',
                     filter: `room_number=eq.${room}`
                 }, (payload) => {
-                    console.log('🔄 Statut mis à jour:', payload.new?.status);
-                    this.handleStatusUpdate(payload.new);
+                    console.log('🍽️ Food order update:', payload.new?.status);
+                    this.handleFoodStatusUpdate(payload.new);
                 })
+                
+                // Écouter les changements de statut guest_requests
+                .on('postgres_changes', {
+                    event: 'UPDATE',
+                    schema: 'public',
+                    table: 'guest_requests',
+                    filter: `room_number=eq.${room}`
+                }, (payload) => {
+                    console.log('📋 Request update:', payload.new?.status);
+                    this.handleRequestStatusUpdate(payload.new);
+                })
+                
+                // Écouter les changements laundry
                 .on('postgres_changes', {
                     event: 'UPDATE',
                     schema: 'public',
                     table: 'guest_laundry_requests',
                     filter: `room_number=eq.${room}`
                 }, (payload) => {
-                    console.log('🧺 Laundry mis à jour:', payload.new?.status);
+                    console.log('🧺 Laundry update:', payload.new?.status);
                     this.handleLaundryUpdate(payload.new);
                 })
-                .subscribe();
+                
+                .subscribe((status) => {
+                    console.log('📡 Realtime channel status:', status);
+                });
         }
         
-        getRoomNumber() {
-            return localStorage.getItem('remal_guest_room') || 
-                   localStorage.getItem('roomNumber') ||
-                   document.getElementById('displayRoomNumber')?.textContent;
-        }
-        
-        handleStatusUpdate(order) {
+        handleFoodStatusUpdate(order) {
             if (!order) return;
             
-            // Mettre à jour le tracking si visible
+            const statusMessages = {
+                'Pending': { icon: '🕐', message: 'Your order has been received', color: '#f59e0b' },
+                'Preparing': { icon: '👨‍🍳', message: 'Your food is being prepared', color: '#3b82f6' },
+                'Ready': { icon: '✅', message: 'Your order is ready!', color: '#10b981' },
+                'Delivered': { icon: '🚚', message: 'Your order has been delivered. Enjoy!', color: '#8b5cf6' },
+                'Completed': { icon: '✔️', message: 'Order completed. Bon appétit!', color: '#10b981' }
+            };
+            
+            const config = statusMessages[order.status] || { icon: '🔄', message: `Status: ${order.status}`, color: '#DCA773' };
+            
+            // Mettre à jour le tracking
             if (typeof updateOrderTracking === 'function') {
                 updateOrderTracking(order.status);
             }
             
-            // Afficher une notification élégante
-            this.showStatusNotification(order.status);
+            // Afficher notification
+            this.showNotification(config.icon, config.message, config.color);
             
-            // Jouer un son si activé
-            this.playNotificationSound();
+            // Vibration
+            if ('vibrate' in navigator) navigator.vibrate(200);
+        }
+        
+        handleRequestStatusUpdate(request) {
+            if (!request) return;
             
-            // Mettre à jour l'historique si visible
-            const historySection = document.getElementById('orderHistorySection');
-            if (historySection && !historySection.classList.contains('hidden')) {
-                if (typeof fetchOrderHistory === 'function') {
-                    fetchOrderHistory();
-                }
-            }
+            const statusMessages = {
+                'Pending': { icon: '🕐', message: 'Your request has been received', color: '#f59e0b' },
+                'In Progress': { icon: '👨‍💼', message: 'Your request is being handled', color: '#3b82f6' },
+                'Completed': { icon: '✅', message: 'Your request has been completed', color: '#10b981' }
+            };
+            
+            const config = statusMessages[request.status] || { icon: '🔄', message: `Request status: ${request.status}`, color: '#DCA773' };
+            
+            this.showNotification(config.icon, config.message, config.color);
+            
+            if ('vibrate' in navigator) navigator.vibrate(200);
         }
         
         handleLaundryUpdate(laundry) {
             if (!laundry) return;
             
-            // Notification pour le laundry
             const statusMessages = {
-                'Collected': '🧺 Laundry collected by staff',
-                'Washing': '🧼 Laundry is being washed',
-                'Ready': '✨ Laundry is ready',
-                'Delivered': '🚚 Laundry delivered to your room'
+                'Collected': { icon: '🧺', message: 'Laundry collected by staff', color: '#DCA773' },
+                'Washing': { icon: '🧼', message: 'Laundry is being washed', color: '#3b82f6' },
+                'Ready': { icon: '✨', message: 'Laundry is ready and pressed', color: '#10b981' },
+                'Delivered': { icon: '🚚', message: 'Laundry delivered to your room', color: '#8b5cf6' }
             };
             
-            const message = statusMessages[laundry.status] || `Laundry: ${laundry.status}`;
+            const config = statusMessages[laundry.status] || { icon: '🧺', message: `Laundry: ${laundry.status}`, color: '#DCA773' };
             
-            this.showToast(message, 'info');
+            this.showNotification(config.icon, config.message, config.color);
         }
         
-        showStatusNotification(status) {
-            const statusConfig = {
-                'Pending': { icon: '🕐', message: 'Order received and pending', color: '#f59e0b' },
-                'Preparing': { icon: '👨‍🍳', message: 'Your order is being prepared', color: '#3b82f6' },
-                'Ready': { icon: '✅', message: 'Your order is ready for delivery', color: '#10b981' },
-                'Delivered': { icon: '🚚', message: 'Your order has been delivered', color: '#8b5cf6' },
-                'Completed': { icon: '✔️', message: 'Order completed. Enjoy!', color: '#10b981' }
-            };
-            
-            const config = statusConfig[status] || { icon: '🔄', message: `Status: ${status}`, color: '#DCA773' };
-            
-            this.showToast(`${config.icon} ${config.message}`, 'success', config.color);
-        }
-        
-        showToast(message, type = 'info', borderColor = '#DCA773') {
-            const existingToast = document.querySelector('.toast-notification');
-            if (existingToast) existingToast.remove();
+        showNotification(icon, message, borderColor) {
+            // Supprimer les anciennes notifications
+            const existing = document.querySelector('.toast-notification');
+            if (existing) existing.remove();
             
             const toast = document.createElement('div');
             toast.className = 'toast-notification toast-in';
             toast.style.borderColor = borderColor;
             toast.innerHTML = `
-                <div class="flex items-center gap-3">
-                    <span class="text-xl">${message.split(' ')[0]}</span>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 24px;">${icon}</span>
                     <div>
-                        <p class="text-xs font-bold text-stone-100">${message}</p>
+                        <p style="font-size: 11px; font-weight: bold; color: #fff; margin: 0;">${message}</p>
                     </div>
                 </div>
             `;
-            
             document.body.appendChild(toast);
             
             setTimeout(() => {
@@ -135,60 +167,6 @@
                 toast.style.transition = 'opacity 0.3s ease';
                 setTimeout(() => toast.remove(), 300);
             }, 4000);
-        }
-        
-        playNotificationSound() {
-            try {
-                // Vibration si mobile
-                if ('vibrate' in navigator) {
-                    navigator.vibrate(200);
-                }
-                
-                // Son via Web Audio
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioCtx.createOscillator();
-                const gainNode = audioCtx.createGain();
-                
-                oscillator.type = 'sine';
-                oscillator.frequency.setValueAtTime(880, audioCtx.currentTime);
-                oscillator.frequency.exponentialRampToValueAtTime(1320, audioCtx.currentTime + 0.1);
-                
-                gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
-                
-                oscillator.start();
-                oscillator.stop(audioCtx.currentTime + 0.3);
-            } catch (e) {
-                // Silencieux
-            }
-        }
-        
-        listenForLocalChanges() {
-            // Fallback : vérifier périodiquement (si Realtime ne fonctionne pas)
-            setInterval(() => {
-                if (!window.supabaseClient) return;
-                
-                const savedOrderId = localStorage.getItem('remal_current_order_id');
-                if (!savedOrderId) return;
-                
-                window.supabaseClient
-                    .from('food_orders')
-                    .select('status')
-                    .eq('id', savedOrderId)
-                    .maybeSingle()
-                    .then(({ data, error }) => {
-                        if (!error && data) {
-                            const lastStatus = localStorage.getItem('remal_last_status');
-                            if (lastStatus !== data.status) {
-                                localStorage.setItem('remal_last_status', data.status);
-                                this.handleStatusUpdate({ status: data.status });
-                            }
-                        }
-                    });
-            }, 30000); // Vérifier toutes les 30 secondes
         }
     }
     
