@@ -5,15 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Remal Hotel & Villas - Guest Hub</title>
     
-    <!-- PWA -->
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#DCA773">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Guest Hub">
-    <link rel="apple-touch-icon" href="assets/images/icon-192.png">
-    
     <!-- Scripts CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -87,6 +78,7 @@
             color: #0f172a !important;
         }
 
+        /* Corriger toutes les zones sombres */
         body.light-mode .bg-stone-950,
         body.light-mode .bg-stone-900,
         body.light-mode .bg-stone-900\/80,
@@ -116,6 +108,7 @@
             background-color: #f1f5f9 !important; 
         }
 
+        /* Textes */
         body.light-mode .text-stone-100,
         body.light-mode .text-stone-200,
         body.light-mode .text-stone-300,
@@ -125,6 +118,7 @@
             color: #1e293b !important;
         }
 
+        /* Inputs */
         body.light-mode input, 
         body.light-mode select, 
         body.light-mode textarea { 
@@ -133,6 +127,7 @@
             color: #0f172a !important; 
         }
 
+        /* Cartes services */
         body.light-mode .service-card,
         body.light-mode .offer-card {
             background-color: #ffffff !important;
@@ -145,6 +140,7 @@
             border-color: #b47a3e !important;
         }
 
+        /* Chat */
         body.light-mode .chat-message.staff { 
             background-color: #e2e8f0 !important; 
             color: #0f172a !important; 
@@ -155,12 +151,14 @@
             color: #ffffff !important;
         }
 
+        /* Toast */
         body.light-mode .toast-notification { 
             background-color: #ffffff !important; 
             border-color: #d97706 !important; 
             color: #0f172a !important; 
         }
 
+        /* OneTap */
         body.light-mode #oneTapContainer button { 
             background-color: #e2e8f0 !important; 
             border-color: #cbd5e1 !important; 
@@ -170,6 +168,7 @@
             color: #0f172a !important; 
         }
 
+        /* Order History */
         body.light-mode #orderHistoryContainer .text-stone-100 { 
             color: #1e293b !important; 
         }
@@ -178,6 +177,7 @@
             color: #64748b !important; 
         }
 
+        /* Progress dots */
         body.light-mode .order-progress-dot {
             background-color: #ffffff !important;
             border-color: rgba(180, 122, 62, 0.4) !important;
@@ -188,6 +188,7 @@
             background-color: rgba(180, 122, 62, 0.2) !important;
         }
 
+        /* Tracking */
         body.light-mode .service-tracking-card {
             background-color: #ffffff !important;
             border-color: rgba(180, 122, 62, 0.25) !important;
@@ -203,18 +204,21 @@
             background-color: rgba(180, 122, 62, 0.2) !important;
         }
 
+        /* Boutons langue */
         body.light-mode .lang-btn:not(.active) {
             background-color: #ffffff !important;
             color: #64748b !important;
             border-color: rgba(180, 122, 62, 0.25) !important;
         }
 
+        /* Boutons tabs */
         body.light-mode .tab-btn:not(.active) {
             background-color: #ffffff !important;
             color: #64748b !important;
             border-color: rgba(180, 122, 62, 0.25) !important;
         }
 
+        /* Bordures */
         body.light-mode .border-stone-800 {
             border-color: rgba(180, 122, 62, 0.2) !important;
         }
@@ -224,11 +228,13 @@
             border-color: rgba(180, 122, 62, 0.25) !important;
         }
 
+        /* Badge room type */
         body.light-mode .bg-stone-900 {
             background-color: #f1f5f9 !important;
             color: #b47a3e !important;
         }
 
+        /* Modales */
         body.light-mode #menuModal,
         body.light-mode #guestChatModal {
             background: rgba(0,0,0,0.5) !important;
@@ -240,6 +246,7 @@
             color: #0f172a !important;
         }
 
+        /* Section room service */
         body.light-mode #roomServiceSection,
         body.light-mode #otherServiceSection,
         body.light-mode #orderTrackingSection {
@@ -614,36 +621,20 @@
     <script src="assets/js/components/auto-theme-premium.js"></script>
     <script src="assets/js/components/realtime-status.js"></script>
     <script src="assets/js/components/tracking-animation.js"></script>
+    <script src="assets/js/components/tracking-animation.js"></script>
     <script src="assets/js/components/floating-buttons-animation.js"></script>
     <script src="assets/js/components/service-cards-shine.js"></script>
     <script src="assets/js/components/auto-theme-photos.js"></script>
     <script src="assets/js/components/banner-auto-photo.js"></script>
     <script src="assets/js/components/banner-theme-sync.js"></script>
-    <script src="assets/js/components/banner-zoom-effect.js"></script>
-    <script src="assets/js/components/card-breathe.js"></script>
-    <script src="assets/js/components/push-notifications.js"></script>
-    <script src="assets/js/components/multilingual-complete.js"></script>
-    <script src="assets/js/components/performance-optimizer.js"></script>
-    <script src="assets/js/components/error-handler.js"></script>
-    <script src="assets/js/components/offline-elegant.js"></script>
-    <script src="assets/js/components/weather-premium.js"></script>
     
     <!-- ==================== INITIALISATION ==================== -->
     <script>
-        // Enregistrer le Service Worker (PWA)
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js')
-                .then(() => console.log('✅ Service Worker enregistré'))
-                .catch((err) => console.log('❌ Service Worker:', err));
-        }
-        
         initTheme();
         initAutoTheme();
         initOfflineMode();
         initOfferNotifications();
-        // Remplacer setLanguage(currentLanguage) par :
-const detectedLang = localStorage.getItem('remal_lang') || 'en';
-setLanguage(detectedLang);
+        setLanguage(currentLanguage);
         renderMenuItems();
         renderFaqList();
         renderOneTapServices();
@@ -655,4 +646,4 @@ setLanguage(detectedLang);
         fetchOffers();
     </script>
 </body>
-        </html>
+</html>
