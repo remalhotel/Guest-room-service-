@@ -428,7 +428,7 @@
 
             <!-- Titre -->
             <div class="text-center space-y-1">
-                <h2 class="text-sm font-bold text-stone-100" id="greetingText">Welcome to Guest Hub</h2>
+                <h2 class="text-sm font-bold text-stone-100" id="greetingText" data-i18n="welcomeTitle">Welcome to Guest Hub</h2>
                 <p class="text-[10px] text-stone-400" data-i18n="verifyPrompt">Please verify your identity to access all services</p>
             </div>
 
@@ -438,7 +438,7 @@
                     <label class="block font-bold text-[var(--text-gold,#DCA773)] uppercase tracking-wider text-[10px] mb-1.5">
                         <i class="fas fa-door-open mr-1"></i> <span data-i18n="roomNumber">Room Number</span>
                     </label>
-                    <input type="text" id="lockRoomInput" data-i18n-placeholder="roomNumberPlaceholder" placeholder="e.g., 103"
+                    <input type="text" id="lockRoomInput" placeholder="e.g., 103"
                            class="w-full remal-input rounded-2xl p-4 font-bold text-xl text-[var(--text-gold,#DCA773)] tracking-wide text-center bg-stone-950/60 border border-stone-800 focus:border-amber-500 outline-none"
                            onkeypress="if(event.key==='Enter') verifierIdentiteClient()">
                 </div>
@@ -447,7 +447,7 @@
                     <label class="block font-bold text-[var(--text-gold,#DCA773)] uppercase tracking-wider text-[10px] mb-1.5">
                         <i class="fas fa-user mr-1"></i> <span data-i18n="yourName">Your Name</span>
                     </label>
-                    <input type="text" id="lockNameInput" data-i18n-placeholder="namePlaceholder" placeholder="e.g., SANGARE or ZIDANE"
+                    <input type="text" id="lockNameInput" placeholder="e.g., SANGARE or ZIDANE"
                            class="w-full remal-input rounded-2xl p-4 font-semibold text-sm text-center bg-stone-950/60 border border-stone-800 focus:border-amber-500 outline-none"
                            onkeypress="if(event.key==='Enter') verifierIdentiteClient()">
                     <p class="text-[9px] text-stone-400 text-center mt-1" data-i18n="nameHint">Enter any name on your reservation</p>
@@ -555,7 +555,7 @@
                     <i class="fas fa-tags mr-1"></i> <span data-i18n="offers">Offers</span>
                 </button>
                 <button onclick="showOrderHistory()" id="tabHistory" class="tab-btn flex-1 min-w-[70px] py-3 rounded-xl text-xs font-bold transition">
-                    <i class="fas fa-receipt mr-1"></i> <span data-i18n="history">History</span>
+                    <i class="fas fa-receipt mr-1"></i> History
                 </button>
                 <button onclick="switchTab('faq')" id="tabFaq" class="tab-btn flex-1 min-w-[70px] py-3 rounded-xl text-xs font-bold transition">
                     <i class="fas fa-question-circle mr-1"></i> <span data-i18n="faq">FAQ</span>
@@ -566,12 +566,12 @@
             <div id="servicesSection" class="space-y-4">
                 <div id="oneTapContainer"></div>
                 <div id="servicesList" class="space-y-3">
-                    <p class="text-center text-[10px] text-stone-400 font-bold uppercase tracking-wider" data-i18n="selectService">Select a Service</p>
+                    <p class="text-center text-[10px] text-stone-400 font-bold uppercase tracking-wider">Select a Service</p>
 
                     <div class="service-card p-4 bg-stone-950/60 border border-stone-800 rounded-2xl" onclick="showService('room_service')">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center"><i class="fas fa-utensils"></i></div>
-                            <div><p class="font-bold text-stone-100 text-xs" data-i18n="roomService">Room Service / Order Food</p></div>
+                            <div><p class="font-bold text-stone-100 text-xs">Room Service / Order Food</p></div>
                         </div>
                     </div>
 
@@ -579,8 +579,8 @@
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center"><i class="fas fa-tshirt"></i></div>
                             <div>
-                                <p class="font-bold text-stone-100 text-xs" data-i18n="laundry">🧺 Laundry Service</p>
-                                <p class="text-[9px] text-stone-400" data-i18n="laundryDesc">Wash, dry clean & ironing</p>
+                                <p class="font-bold text-stone-100 text-xs">🧺 Laundry Service</p>
+                                <p class="text-[9px] text-stone-400">Wash, dry clean & ironing</p>
                             </div>
                         </div>
                     </div>
@@ -588,111 +588,111 @@
                     <div class="service-card p-4 bg-stone-950/60 border border-stone-800 rounded-2xl" onclick="showService('table_reservation')">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center"><i class="fas fa-calendar-check"></i></div>
-                            <div><p class="font-bold text-stone-100 text-xs" data-i18n="tableReservation">Table Reservation</p></div>
+                            <div><p class="font-bold text-stone-100 text-xs">Table Reservation</p></div>
                         </div>
                     </div>
 
                     <div class="service-card p-4 bg-stone-950/60 border border-stone-800 rounded-2xl" onclick="showService('wakeup_call')">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center"><i class="fas fa-clock"></i></div>
-                            <div><p class="font-bold text-stone-100 text-xs" data-i18n="wakeupCall">Wake-up Call / Alarm</p></div>
+                            <div><p class="font-bold text-stone-100 text-xs">Wake-up Call / Alarm</p></div>
                         </div>
                     </div>
 
                     <div class="service-card p-4 bg-stone-950/60 border border-stone-800 rounded-2xl" onclick="showService('late_checkout')">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center"><i class="fas fa-hourglass-half"></i></div>
-                            <div><p class="font-bold text-stone-100 text-xs" data-i18n="lateCheckout">Late Check-out / Extension</p></div>
+                            <div><p class="font-bold text-stone-100 text-xs">Late Check-out / Extension</p></div>
                         </div>
                     </div>
 
                     <div class="service-card p-4 bg-stone-950/60 border border-stone-800 rounded-2xl" onclick="showService('housekeeping')">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center"><i class="fas fa-broom"></i></div>
-                            <div><p class="font-bold text-stone-100 text-xs" data-i18n="housekeeping">Housekeeping / Room Cleaning</p></div>
+                            <div><p class="font-bold text-stone-100 text-xs">Housekeeping / Room Cleaning</p></div>
                         </div>
                     </div>
 
                     <div class="service-card p-4 bg-stone-950/60 border border-stone-800 rounded-2xl" onclick="showService('front_desk')">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center"><i class="fas fa-headset"></i></div>
-                            <div><p class="font-bold text-stone-100 text-xs" data-i18n="frontDesk">Front Desk Inquiry</p></div>
+                            <div><p class="font-bold text-stone-100 text-xs">Front Desk Inquiry</p></div>
                         </div>
                     </div>
 
                     <div class="service-card p-4 bg-stone-950/60 border border-stone-800 rounded-2xl" onclick="showService('luggage')">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center"><i class="fas fa-suitcase"></i></div>
-                            <div><p class="font-bold text-stone-100 text-xs" data-i18n="luggage">Luggage Assistance</p></div>
+                            <div><p class="font-bold text-stone-100 text-xs">Luggage Assistance</p></div>
                         </div>
                     </div>
 
                     <div class="service-card p-4 bg-stone-950/60 border border-stone-800 rounded-2xl" onclick="showService('maintenance')">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center"><i class="fas fa-tools"></i></div>
-                            <div><p class="font-bold text-stone-100 text-xs" data-i18n="maintenance">Maintenance / Technical Support</p></div>
+                            <div><p class="font-bold text-stone-100 text-xs">Maintenance / Technical Support</p></div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Section Room Service -->
                 <div id="roomServiceSection" class="hidden space-y-4">
-                    <button onclick="backToServices()" class="text-[10px] text-stone-400 font-bold" data-i18n="backToServices">← Back to Services</button>
+                    <button onclick="backToServices()" class="text-[10px] text-stone-400 font-bold">← Back to Services</button>
 
                     <div id="orderTrackingSection" class="hidden p-4 bg-stone-950/80 border border-amber-500/30 rounded-2xl space-y-3">
                         <div class="flex justify-between">
-                            <span class="text-[10px] font-bold text-[var(--text-gold,#DCA773)]" data-i18n="orderTracking">Order Tracking</span>
+                            <span class="text-[10px] font-bold text-[var(--text-gold,#DCA773)]">Order Tracking</span>
                             <span id="orderStatusText" class="text-[10px] font-bold text-amber-400">---</span>
                         </div>
                         <div class="order-progress">
                             <div class="order-progress-step">
                                 <div class="order-progress-dot active" id="stepReceived"><i class="fas fa-check"></i></div>
-                                <span class="order-progress-label" data-i18n="received">Received</span>
+                                <span class="order-progress-label active">Received</span>
                             </div>
                             <div class="order-progress-line" id="lineReceived"></div>
                             <div class="order-progress-step">
                                 <div class="order-progress-dot" id="stepPreparing"><i class="fas fa-fire"></i></div>
-                                <span class="order-progress-label" data-i18n="preparing">Preparing</span>
+                                <span class="order-progress-label">Preparing</span>
                             </div>
                             <div class="order-progress-line" id="linePreparing"></div>
                             <div class="order-progress-step">
                                 <div class="order-progress-dot" id="stepReady"><i class="fas fa-bell"></i></div>
-                                <span class="order-progress-label" data-i18n="ready">Ready</span>
+                                <span class="order-progress-label">Ready</span>
                             </div>
                             <div class="order-progress-line" id="lineReady"></div>
                             <div class="order-progress-step">
                                 <div class="order-progress-dot" id="stepDelivered"><i class="fas fa-home"></i></div>
-                                <span class="order-progress-label" data-i18n="delivered">Delivered</span>
+                                <span class="order-progress-label">Delivered</span>
                             </div>
                         </div>
                     </div>
 
                     <select id="guestMealType" class="w-full remal-input bg-stone-950 border border-stone-800 rounded-2xl p-3.5 text-xs text-stone-200">
-                        <option value="Breakfast" data-i18n="breakfast">🌅 Breakfast</option>
-                        <option value="Lunch" data-i18n="lunch">☀️ Lunch</option>
-                        <option value="Dinner" data-i18n="dinner">🌙 Dinner</option>
-                        <option value="All Day" data-i18n="allDay">🕐 All Day</option>
+                        <option value="Breakfast">🌅 Breakfast</option>
+                        <option value="Lunch">☀️ Lunch</option>
+                        <option value="Dinner">🌙 Dinner</option>
+                        <option value="All Day">🕐 All Day</option>
                     </select>
 
                     <button onclick="openMenuModal()" class="w-full bg-stone-950/80 text-[var(--text-gold,#DCA773)] border border-amber-500/30 font-bold py-4 rounded-2xl">
-                        <span data-i18n="browseMenu">🍽️ Browse Menu</span> <span id="selectedBadgeCount" class="bg-[var(--text-gold,#DCA773)] text-stone-950 px-3 py-1 rounded-full text-[11px] font-black">0</span>
+                        🍽️ Browse Menu <span id="selectedBadgeCount" class="bg-[var(--text-gold,#DCA773)] text-stone-950 px-3 py-1 rounded-full text-[11px] font-black">0</span>
                     </button>
 
-                    <textarea id="guestSpecialInstructions" data-i18n-placeholder="specialInstructions" placeholder="Special Instructions / Allergies..." class="w-full h-20 bg-stone-950 border border-stone-800 rounded-2xl p-3.5 text-xs text-stone-200"></textarea>
+                    <textarea id="guestSpecialInstructions" placeholder="Special Instructions / Allergies..." class="w-full h-20 bg-stone-950 border border-stone-800 rounded-2xl p-3.5 text-xs text-stone-200"></textarea>
 
                     <select id="deliveryTime" class="w-full bg-stone-950 border border-stone-800 rounded-2xl p-3.5 text-xs text-stone-200">
-                        <option value="As soon as possible" data-i18n="asap">⚡ ASAP (~30 min)</option>
-                        <option value="In 45 minutes" data-i18n="in45min">🕒 45 min</option>
-                        <option value="In 1 hour" data-i18n="in1hour">🕒 1 hour</option>
+                        <option value="As soon as possible">⚡ ASAP (~30 min)</option>
+                        <option value="In 45 minutes">🕒 45 min</option>
+                        <option value="In 1 hour">🕒 1 hour</option>
                     </select>
 
-                    <button onclick="submitRoomServiceOrder('direct')" class="w-full bg-[#DCA773] text-stone-950 font-black py-4 rounded-2xl" data-i18n="directOrder">🛎️ Direct Order to Kitchen</button>
-                    <button onclick="submitRoomServiceOrder('whatsapp')" class="w-full bg-[#10b981] text-stone-950 font-black py-3.5 rounded-2xl" data-i18n="whatsappOrder">📱 Send via WhatsApp</button>
+                    <button onclick="submitRoomServiceOrder('direct')" class="w-full bg-[#DCA773] text-stone-950 font-black py-4 rounded-2xl">🛎️ Direct Order to Kitchen</button>
+                    <button onclick="submitRoomServiceOrder('whatsapp')" class="w-full bg-[#10b981] text-stone-950 font-black py-3.5 rounded-2xl">📱 Send via WhatsApp</button>
                 </div>
 
                 <!-- Section Autres services -->
                 <div id="otherServiceSection" class="hidden space-y-4">
-                    <button onclick="backToServices()" class="text-[10px] text-stone-400 font-bold" data-i18n="backToServices">← Back to Services</button>
+                    <button onclick="backToServices()" class="text-[10px] text-stone-400 font-bold">← Back to Services</button>
                     <div class="p-4 bg-stone-950/60 border border-amber-500/20 rounded-2xl space-y-3">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-xl bg-[var(--text-gold,#DCA773)] text-stone-950 flex items-center justify-center" id="otherServiceIcon"><i class="fas fa-concierge-bell"></i></div>
@@ -702,27 +702,27 @@
                             </div>
                         </div>
                         <div id="otherServiceFields" class="space-y-3"></div>
-                        <textarea id="otherServiceNotes" data-i18n-placeholder="additionalNotes" placeholder="Additional Notes..." class="w-full h-20 bg-stone-950 border border-stone-800 rounded-2xl p-3.5 text-xs text-stone-200"></textarea>
-                        <button onclick="submitOtherService()" class="w-full bg-[#DCA773] text-stone-950 font-black py-4 rounded-2xl" data-i18n="submitRequest">📋 Submit Request</button>
+                        <textarea id="otherServiceNotes" placeholder="Additional Notes..." class="w-full h-20 bg-stone-950 border border-stone-800 rounded-2xl p-3.5 text-xs text-stone-200"></textarea>
+                        <button onclick="submitOtherService()" class="w-full bg-[#DCA773] text-stone-950 font-black py-4 rounded-2xl">📋 Submit Request</button>
                     </div>
                 </div>
             </div>
 
             <!-- Section Offres -->
             <div id="offersSection" class="hidden space-y-4">
-                <p class="text-center text-[10px] text-stone-400 font-bold" data-i18n="exclusiveOffers">⭐ Exclusive Offers</p>
+                <p class="text-center text-[10px] text-stone-400 font-bold">⭐ Exclusive Offers</p>
                 <div id="offersContainer" class="space-y-4"></div>
             </div>
 
             <!-- Section FAQ -->
             <div id="faqSection" class="hidden space-y-4">
-                <p class="text-center text-[10px] text-stone-400 font-bold" data-i18n="faqTitle">❓ Frequently Asked Questions</p>
+                <p class="text-center text-[10px] text-stone-400 font-bold">❓ Frequently Asked Questions</p>
                 <div class="space-y-3" id="faqContainer"></div>
             </div>
 
             <!-- Section Historique -->
             <div id="orderHistorySection" class="hidden space-y-4">
-                <p class="text-center text-[10px] text-stone-400 font-bold" data-i18n="orderHistory">📜 Order History</p>
+                <p class="text-center text-[10px] text-stone-400 font-bold">📜 Order History</p>
                 <div id="orderHistoryContainer" class="space-y-3"></div>
             </div>
         </div>
@@ -734,19 +734,19 @@
     <div id="guestChatModal" class="hidden fixed inset-0 bg-black/80 z-[300] flex items-center justify-center p-4">
         <div class="bg-stone-900 border border-amber-500/30 w-full max-w-md rounded-3xl p-6 space-y-4 max-h-[80vh] flex flex-col">
             <div class="flex justify-between border-b border-stone-800 pb-3">
-                <h3 class="text-xs font-bold text-[var(--text-gold,#DCA773)]" data-i18n="chatTitle">💬 Front Desk Chat</h3>
+                <h3 class="text-xs font-bold text-[var(--text-gold,#DCA773)]">💬 Front Desk Chat</h3>
                 <div class="flex gap-2">
                     <button onclick="toggleChatSound()" id="chatSoundToggle" class="text-stone-400">🔊</button>
                     <button onclick="closeGuestChatModal()" class="text-stone-400">✕</button>
                 </div>
             </div>
-            <div id="staffPresenceStatus" class="text-gray-400 text-[10px]" data-i18n="chatOffline">● Staff offline</div>
+            <div id="staffPresenceStatus" class="text-gray-400 text-[10px]">● Staff offline</div>
             <div id="guestChatContainer" class="flex-1 overflow-y-auto space-y-2"></div>
             <div class="flex gap-2 border-t border-stone-800 pt-2">
-                <input type="text" id="guestChatInput" data-i18n-placeholder="chatPlaceholder" placeholder="Write a message..."
+                <input type="text" id="guestChatInput" placeholder="Write a message..."
                        class="flex-1 bg-stone-950 border border-stone-800 rounded-xl px-3 py-2 text-xs text-stone-100"
                        onkeypress="if(event.key==='Enter') sendGuestChatMessage()">
-                <button onclick="sendGuestChatMessage()" class="bg-[#DCA773] text-stone-950 font-bold px-4 py-2 rounded-xl text-xs" data-i18n="chatSend">Send</button>
+                <button onclick="sendGuestChatMessage()" class="bg-[#DCA773] text-stone-950 font-bold px-4 py-2 rounded-xl text-xs">Send</button>
             </div>
         </div>
     </div>
@@ -757,18 +757,17 @@
     <div id="menuModal" class="hidden fixed inset-0 bg-black/90 z-[100] flex items-center justify-center p-4">
         <div class="bg-stone-900 border border-amber-500/30 w-full max-w-lg rounded-3xl p-6 space-y-4 max-h-[90vh] flex flex-col">
             <div class="flex justify-between border-b border-stone-800 pb-3">
-                <h3 class="text-xs font-bold text-[var(--text-gold,#DCA773)]" data-i18n="restaurantMenu">🍽️ Restaurant Menu</h3>
+                <h3 class="text-xs font-bold text-[var(--text-gold,#DCA773)]">🍽️ Restaurant Menu</h3>
                 <button onclick="closeMenuModal()" class="text-stone-400">✕</button>
             </div>
-            <input type="text" id="menuSearchInput" data-i18n-placeholder="searchDish" placeholder="Search dish..."
-                   oninput="renderMenuItems()"
+            <input type="text" id="menuSearchInput" oninput="renderMenuItems()" placeholder="Search dish..."
                    class="w-full bg-stone-950 border border-stone-800 rounded-xl px-3 py-2 text-xs text-stone-100">
             <div id="menuItemsContainer" class="flex-1 overflow-y-auto space-y-3"></div>
             <div class="flex justify-between text-xs font-bold border-t border-stone-800 pt-2">
-                <span class="text-stone-400" data-i18n="total">Total:</span>
+                <span class="text-stone-400">Total:</span>
                 <span id="modalMenuTotalSummary" class="text-[var(--text-gold,#DCA773)]">0 items · 0.00 AED</span>
             </div>
-            <button onclick="confirmMenuSelection()" class="w-full bg-[#DCA773] text-stone-950 font-bold py-3.5 rounded-2xl" data-i18n="confirmSelection">Confirm Selection</button>
+            <button onclick="confirmMenuSelection()" class="w-full bg-[#DCA773] text-stone-950 font-bold py-3.5 rounded-2xl">Confirm Selection</button>
         </div>
     </div>
 
@@ -787,7 +786,7 @@
 
     <!-- ========== GROUPE 3 : TRADUCTIONS ========== -->
     <script src="assets/js/utils/translations.js"></script>
-
+    
     <!-- ========== GROUPE 4 : CORE + UI ========== -->
     <script src="assets/js/core/state.js"></script>
     <script src="assets/js/ui/theme.js"></script>
@@ -838,6 +837,8 @@
     <script src="assets/js/components/error-handler.js"></script>
     <script src="assets/js/components/offline-elegant.js"></script>
 
+    <!-- ⚠️ weather-premium.js SUPPRIMÉ car redondant avec weather.js corrigé -->
+
     <!-- ============================================================
          INITIALISATION FINALE
          ============================================================ -->
@@ -848,7 +849,11 @@
                 navigator.serviceWorker.register('./sw.js')
                     .then((registration) => {
                         console.log('✅ Service Worker enregistré:', registration.scope);
+
+                        // Vérifier les mises à jour toutes les heures
                         setInterval(() => registration.update(), 60 * 60 * 1000);
+
+                        // Détecter une nouvelle version
                         registration.addEventListener('updatefound', () => {
                             const newWorker = registration.installing;
                             if (newWorker) {
@@ -866,6 +871,7 @@
         }
 
         // ==================== APPEL SÉCURISÉ DE FONCTIONS ====================
+        // Évite les crashs si une fonction n'existe pas
         function safeCall(name, ...args) {
             try {
                 if (typeof window[name] === 'function') {
