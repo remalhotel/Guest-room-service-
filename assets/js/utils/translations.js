@@ -1,5 +1,5 @@
 // ==================== TRANSLATIONS MODULE ====================
-// Multilingue complet avec fonction t(), applyTranslations() et RTL
+// Module unique de traduction — simple et complet
 
 (function () {
     'use strict';
@@ -45,7 +45,7 @@
             maintenance: 'Maintenance / Technical Support',
             maintenanceDesc: 'Repairs & technical help',
             backToServices: 'Back to Services',
-            // Suivi de commande
+            // Suivi commande
             orderTracking: 'Order Tracking',
             received: 'Received',
             preparing: 'Preparing',
@@ -81,16 +81,6 @@
             noOffers: 'No offers available at the moment',
             // FAQ
             faqTitle: 'Frequently Asked Questions',
-            faqQ1: 'What time is check-out?',
-            faqA1: 'Check-out is at 12:00 PM. Late check-out can be requested via the app.',
-            faqQ2: 'How do I order room service?',
-            faqA2: 'Go to Services → Room Service, browse the menu and confirm your order.',
-            faqQ3: 'Is Wi-Fi free?',
-            faqA3: 'Yes, free high-speed Wi-Fi is available throughout the hotel.',
-            faqQ4: 'How can I contact the front desk?',
-            faqA4: 'Use the chat button at the bottom-left, or call +971 52 696 6865.',
-            faqQ5: 'Do you offer laundry service?',
-            faqA5: 'Yes, laundry service is available daily. Access it from the Services menu.',
             // Menu
             restaurantMenu: 'Restaurant Menu',
             total: 'Total:',
@@ -105,7 +95,7 @@
             departure: 'Departure:',
             logout: 'Change Room / Logout',
             confirmLogout: 'Are you sure you want to log out?',
-            // Suivi des services
+            // Suivi services
             serviceRequestsTracking: 'Service Requests Tracking',
             pendingStatus: 'Pending',
             inProgressStatus: 'In Progress',
@@ -135,14 +125,32 @@
             wind: 'Wind',
             weatherUnavailable: 'Weather unavailable',
             weatherLoading: 'Loading weather...',
+            // Notifications
+            notifOrderReady: 'Your order is ready!',
+            notifOrderDelivered: 'Your order has been delivered',
+            notifNewOffer: 'New offer available!',
+            notifLaundryReady: 'Laundry is ready',
+            // Boutons
+            btnExportPDF: 'Export PDF',
+            btnShareWhatsApp: 'Share via WhatsApp',
+            btnCallReception: 'Call Reception',
+            btnViewDetails: 'View Details',
+            // Messages
+            msgWelcome: 'Welcome to Remal Hotel',
+            msgSessionExpired: 'Session expired. Please reconnect.',
+            msgOffline: 'You are offline. Showing cached data.',
+            msgOnline: 'Back online!',
+            // Jours
+            dayMonday: 'Monday', dayTuesday: 'Tuesday', dayWednesday: 'Wednesday',
+            dayThursday: 'Thursday', dayFriday: 'Friday', daySaturday: 'Saturday', daySunday: 'Sunday',
+            // Mois
+            monthJanuary: 'January', monthFebruary: 'February', monthMarch: 'March',
+            monthApril: 'April', monthMay: 'May', monthJune: 'June',
+            monthJuly: 'July', monthAugust: 'August', monthSeptember: 'September',
+            monthOctober: 'October', monthNovember: 'November', monthDecember: 'December',
             // Boutons génériques
-            cancel: 'Cancel',
-            confirm: 'Confirm',
-            close: 'Close',
-            back: 'Back',
-            save: 'Save',
-            yes: 'Yes',
-            no: 'No'
+            cancel: 'Cancel', confirm: 'Confirm', close: 'Close',
+            back: 'Back', save: 'Save', yes: 'Yes', no: 'No'
         },
 
         fr: {
@@ -213,16 +221,6 @@
             featured: 'En vedette',
             noOffers: 'Aucune offre disponible',
             faqTitle: 'Questions fréquentes',
-            faqQ1: 'À quelle heure est le départ ?',
-            faqA1: 'Le départ est à 12h00. Un départ tardif peut être demandé via l\'application.',
-            faqQ2: 'Comment commander le service en chambre ?',
-            faqA2: 'Allez dans Services → Service de chambre, parcourez le menu et confirmez.',
-            faqQ3: 'Le Wi-Fi est-il gratuit ?',
-            faqA3: 'Oui, le Wi-Fi haut débit gratuit est disponible partout dans l\'hôtel.',
-            faqQ4: 'Comment contacter la réception ?',
-            faqA4: 'Utilisez le bouton de chat en bas à gauche, ou appelez le +971 52 696 6865.',
-            faqQ5: 'Proposez-vous un service de blanchisserie ?',
-            faqA5: 'Oui, le service est disponible tous les jours. Accédez-y depuis le menu Services.',
             restaurantMenu: 'Menu du restaurant',
             total: 'Total :',
             confirmSelection: 'Confirmer la sélection',
@@ -258,13 +256,26 @@
             wind: 'Vent',
             weatherUnavailable: 'Météo indisponible',
             weatherLoading: 'Chargement météo...',
-            cancel: 'Annuler',
-            confirm: 'Confirmer',
-            close: 'Fermer',
-            back: 'Retour',
-            save: 'Enregistrer',
-            yes: 'Oui',
-            no: 'Non'
+            notifOrderReady: 'Votre commande est prête !',
+            notifOrderDelivered: 'Votre commande a été livrée',
+            notifNewOffer: 'Nouvelle offre disponible !',
+            notifLaundryReady: 'Le linge est prêt',
+            btnExportPDF: 'Exporter PDF',
+            btnShareWhatsApp: 'Partager WhatsApp',
+            btnCallReception: 'Appeler la réception',
+            btnViewDetails: 'Voir détails',
+            msgWelcome: 'Bienvenue au Remal Hotel',
+            msgSessionExpired: 'Session expirée. Reconnectez-vous.',
+            msgOffline: 'Vous êtes hors ligne. Données en cache.',
+            msgOnline: 'De retour en ligne !',
+            dayMonday: 'Lundi', dayTuesday: 'Mardi', dayWednesday: 'Mercredi',
+            dayThursday: 'Jeudi', dayFriday: 'Vendredi', daySaturday: 'Samedi', daySunday: 'Dimanche',
+            monthJanuary: 'Janvier', monthFebruary: 'Février', monthMarch: 'Mars',
+            monthApril: 'Avril', monthMay: 'Mai', monthJune: 'Juin',
+            monthJuly: 'Juillet', monthAugust: 'Août', monthSeptember: 'Septembre',
+            monthOctober: 'Octobre', monthNovember: 'Novembre', monthDecember: 'Décembre',
+            cancel: 'Annuler', confirm: 'Confirmer', close: 'Fermer',
+            back: 'Retour', save: 'Enregistrer', yes: 'Oui', no: 'Non'
         },
 
         ar: {
@@ -335,16 +346,6 @@
             featured: 'مميز',
             noOffers: 'لا توجد عروض متاحة',
             faqTitle: 'الأسئلة الشائعة',
-            faqQ1: 'ما هو وقت المغادرة؟',
-            faqA1: 'المغادرة الساعة 12:00 ظهراً. يمكن طلب المغادرة المتأخرة عبر التطبيق.',
-            faqQ2: 'كيف أطلب خدمة الغرف؟',
-            faqA2: 'اذهب إلى الخدمات → خدمة الغرف، تصفح القائمة وأكد طلبك.',
-            faqQ3: 'هل الواي فاي مجاني؟',
-            faqA3: 'نعم، الواي فاي عالي السرعة مجاني في جميع أنحاء الفندق.',
-            faqQ4: 'كيف أتواصل مع الاستقبال؟',
-            faqA4: 'استخدم زر الدردشة أسفل اليسار، أو اتصل على 6865 696 52 971+.',
-            faqQ5: 'هل تقدمون خدمة غسيل الملابس؟',
-            faqA5: 'نعم، الخدمة متاحة يومياً. يمكنك الوصول إليها من قائمة الخدمات.',
             restaurantMenu: 'قائمة المطعم',
             total: 'المجموع:',
             confirmSelection: 'تأكيد الاختيار',
@@ -380,13 +381,26 @@
             wind: 'الرياح',
             weatherUnavailable: 'الطقس غير متوفر',
             weatherLoading: 'جارٍ تحميل الطقس...',
-            cancel: 'إلغاء',
-            confirm: 'تأكيد',
-            close: 'إغلاق',
-            back: 'رجوع',
-            save: 'حفظ',
-            yes: 'نعم',
-            no: 'لا'
+            notifOrderReady: 'طلبك جاهز!',
+            notifOrderDelivered: 'تم توصيل طلبك',
+            notifNewOffer: 'عرض جديد متاح!',
+            notifLaundryReady: 'الغسيل جاهز',
+            btnExportPDF: 'تصدير PDF',
+            btnShareWhatsApp: 'مشاركة واتساب',
+            btnCallReception: 'اتصال بالاستقبال',
+            btnViewDetails: 'عرض التفاصيل',
+            msgWelcome: 'مرحباً في فندق رمال',
+            msgSessionExpired: 'انتهت الجلسة. أعد الاتصال.',
+            msgOffline: 'أنت غير متصل. عرض البيانات المخزنة.',
+            msgOnline: 'عاد الاتصال!',
+            dayMonday: 'الاثنين', dayTuesday: 'الثلاثاء', dayWednesday: 'الأربعاء',
+            dayThursday: 'الخميس', dayFriday: 'الجمعة', daySaturday: 'السبت', daySunday: 'الأحد',
+            monthJanuary: 'يناير', monthFebruary: 'فبراير', monthMarch: 'مارس',
+            monthApril: 'أبريل', monthMay: 'مايو', monthJune: 'يونيو',
+            monthJuly: 'يوليو', monthAugust: 'أغسطس', monthSeptember: 'سبتمبر',
+            monthOctober: 'أكتوبر', monthNovember: 'نوفمبر', monthDecember: 'ديسمبر',
+            cancel: 'إلغاء', confirm: 'تأكيد', close: 'إغلاق',
+            back: 'رجوع', save: 'حفظ', yes: 'نعم', no: 'لا'
         },
 
         hi: {
@@ -457,16 +471,6 @@
             featured: 'विशेष',
             noOffers: 'कोई ऑफ़र उपलब्ध नहीं',
             faqTitle: 'अक्सर पूछे जाने वाले प्रश्न',
-            faqQ1: 'चेक-आउट का समय क्या है?',
-            faqA1: 'चेक-आउट दोपहर 12:00 बजे है। ऐप के माध्यम से लेट चेक-आउट का अनुरोध किया जा सकता है।',
-            faqQ2: 'मैं रूम सर्विस कैसे ऑर्डर करूं?',
-            faqA2: 'सेवाएं → रूम सर्विस पर जाएं, मेनू ब्राउज़ करें और ऑर्डर की पुष्टि करें।',
-            faqQ3: 'क्या वाई-फाई मुफ्त है?',
-            faqA3: 'हां, पूरे होटल में मुफ्त हाई-स्पीड वाई-फाई उपलब्ध है।',
-            faqQ4: 'मैं फ्रंट डेस्क से कैसे संपर्क करूं?',
-            faqA4: 'नीचे-बाएं चैट बटन का उपयोग करें, या +971 52 696 6865 पर कॉल करें।',
-            faqQ5: 'क्या आप लॉन्ड्री सेवा प्रदान करते हैं?',
-            faqA5: 'हां, लॉन्ड्री सेवा प्रतिदिन उपलब्ध है। सेवाएं मेनू से एक्सेस करें।',
             restaurantMenu: 'रेस्तरां मेनू',
             total: 'कुल:',
             confirmSelection: 'चयन की पुष्टि करें',
@@ -502,39 +506,60 @@
             wind: 'हवा',
             weatherUnavailable: 'मौसम उपलब्ध नहीं',
             weatherLoading: 'मौसम लोड हो रहा है...',
-            cancel: 'रद्द करें',
-            confirm: 'पुष्टि करें',
-            close: 'बंद करें',
-            back: 'वापस',
-            save: 'सहेजें',
-            yes: 'हाँ',
-            no: 'नहीं'
+            notifOrderReady: 'आपका ऑर्डर तैयार है!',
+            notifOrderDelivered: 'आपका ऑर्डर डिलीवर हो गया',
+            notifNewOffer: 'नया ऑफर उपलब्ध!',
+            notifLaundryReady: 'लॉन्ड्री तैयार है',
+            btnExportPDF: 'PDF निर्यात करें',
+            btnShareWhatsApp: 'व्हाट्सएप पर साझा करें',
+            btnCallReception: 'रिसेप्शन को कॉल करें',
+            btnViewDetails: 'विवरण देखें',
+            msgWelcome: 'रेमल होटल में आपका स्वागत है',
+            msgSessionExpired: 'सत्र समाप्त। कृपया पुनः जुड़ें।',
+            msgOffline: 'आप ऑफ़लाइन हैं। कैश्ड डेटा दिखाया जा रहा है।',
+            msgOnline: 'वापस ऑनलाइन!',
+            dayMonday: 'सोमवार', dayTuesday: 'मंगलवार', dayWednesday: 'बुधवार',
+            dayThursday: 'गुरुवार', dayFriday: 'शुक्रवार', daySaturday: 'शनिवार', daySunday: 'रविवार',
+            monthJanuary: 'जनवरी', monthFebruary: 'फरवरी', monthMarch: 'मार्च',
+            monthApril: 'अप्रैल', monthMay: 'मई', monthJune: 'जून',
+            monthJuly: 'जुलाई', monthAugust: 'अगस्त', monthSeptember: 'सितंबर',
+            monthOctober: 'अक्टूबर', monthNovember: 'नवंबर', monthDecember: 'दिसंबर',
+            cancel: 'रद्द करें', confirm: 'पुष्टि करें', close: 'बंद करें',
+            back: 'वापस', save: 'सहेजें', yes: 'हाँ', no: 'नहीं'
         }
     };
 
-    // ==================== LANGUES SUPPORTÉES ====================
+    // ==================== CONFIGURATION ====================
     const SUPPORTED_LANGS = ['en', 'fr', 'ar', 'hi'];
     const RTL_LANGS = ['ar'];
     const DEFAULT_LANG = 'en';
+    const STORAGE_KEY = 'remal_lang';
 
     // ==================== ÉTAT ====================
     let currentLanguage = DEFAULT_LANG;
 
-    // ==================== DÉTECTION LANGUE ====================
-    function detectLanguage() {
-        try {
-            const saved = localStorage.getItem('remal_lang');
-            if (saved && SUPPORTED_LANGS.includes(saved)) return saved;
+    // ==================== STORAGE SÉCURISÉ ====================
+    function getStoredLang() {
+        try { return localStorage.getItem(STORAGE_KEY); }
+        catch (e) { return null; }
+    }
+    function setStoredLang(lang) {
+        try { localStorage.setItem(STORAGE_KEY, lang); }
+        catch (e) { /* silencieux */ }
+    }
 
-            const browserLang = (navigator.language || 'en').split('-')[0].toLowerCase();
-            if (SUPPORTED_LANGS.includes(browserLang)) return browserLang;
-        } catch (e) {
-            // ignore
-        }
+    // ==================== DÉTECTION ====================
+    function detectLanguage() {
+        const saved = getStoredLang();
+        if (saved && SUPPORTED_LANGS.includes(saved)) return saved;
+
+        const browserLang = (navigator.language || 'en').split('-')[0].toLowerCase();
+        if (SUPPORTED_LANGS.includes(browserLang)) return browserLang;
+
         return DEFAULT_LANG;
     }
 
-    // ==================== FONCTION DE TRADUCTION ====================
+    // ==================== FONCTION t() ====================
     function t(key, params = {}) {
         const dict = TRANSLATIONS[currentLanguage] || TRANSLATIONS[DEFAULT_LANG];
         let value = dict[key];
@@ -544,13 +569,13 @@
             value = TRANSLATIONS[DEFAULT_LANG][key];
         }
 
-        // Fallback final : retourner la clé
+        // Fallback final : clé brute
         if (value === undefined) {
             console.warn('⚠️ Traduction manquante:', key, '(', currentLanguage, ')');
             return key;
         }
 
-        // Remplacer les paramètres {name}, {room}, etc.
+        // Paramètres dynamiques {name}, {room}
         if (typeof value === 'string' && Object.keys(params).length > 0) {
             Object.keys(params).forEach(k => {
                 value = value.replace(new RegExp(`\\{${k}\\}`, 'g'), params[k]);
@@ -560,36 +585,35 @@
         return value;
     }
 
-    // ==================== APPLIQUER LES TRADUCTIONS AU DOM ====================
+    // ==================== APPLIQUER AU DOM ====================
     function applyTranslations() {
-        // 1. Éléments [data-i18n]
+        // [data-i18n] → textContent
         document.querySelectorAll('[data-i18n]').forEach(el => {
             const key = el.getAttribute('data-i18n');
             if (!key) return;
-            const translated = t(key);
-
-            // Support des placeholders et attributs
-            const attr = el.getAttribute('data-i18n-attr');
-            if (attr) {
-                el.setAttribute(attr, translated);
-            } else {
-                el.textContent = translated;
-            }
+            el.textContent = t(key);
         });
 
-        // 2. Attributs [data-i18n-placeholder]
+        // [data-i18n-extra] → textContent (compat avec ancien code)
+        document.querySelectorAll('[data-i18n-extra]').forEach(el => {
+            const key = el.getAttribute('data-i18n-extra');
+            if (!key) return;
+            el.textContent = t(key);
+        });
+
+        // [data-i18n-placeholder] → placeholder
         document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
             const key = el.getAttribute('data-i18n-placeholder');
             if (key) el.setAttribute('placeholder', t(key));
         });
 
-        // 3. Attributs [data-i18n-title]
+        // [data-i18n-title] → title
         document.querySelectorAll('[data-i18n-title]').forEach(el => {
             const key = el.getAttribute('data-i18n-title');
             if (key) el.setAttribute('title', t(key));
         });
 
-        // 4. Attributs [data-i18n-aria-label]
+        // [data-i18n-aria-label] → aria-label
         document.querySelectorAll('[data-i18n-aria-label]').forEach(el => {
             const key = el.getAttribute('data-i18n-aria-label');
             if (key) el.setAttribute('aria-label', t(key));
@@ -604,15 +628,16 @@
         htmlEl.setAttribute('dir', isRTL ? 'rtl' : 'ltr');
         htmlEl.setAttribute('lang', lang);
 
-        // Ajouter une classe pour styles RTL personnalisés
-        document.body.classList.toggle('rtl-mode', isRTL);
-        document.body.classList.toggle('ltr-mode', !isRTL);
+        if (document.body) {
+            document.body.classList.toggle('rtl-mode', isRTL);
+            document.body.classList.toggle('ltr-mode', !isRTL);
+        }
     }
 
     // ==================== CHANGER LA LANGUE ====================
     function setLanguage(lang) {
         if (!SUPPORTED_LANGS.includes(lang)) {
-            console.warn('⚠️ Langue non supportée:', lang);
+            console.warn('⚠️ Langue non supportée:', lang, '→ fallback EN');
             lang = DEFAULT_LANG;
         }
 
@@ -620,31 +645,31 @@
         window.currentLanguage = lang;
 
         // Persister
-        try { localStorage.setItem('remal_lang', lang); } catch (e) {}
+        setStoredLang(lang);
 
-        // Appliquer direction
+        // Direction RTL
         applyDirection(lang);
 
-        // Mettre à jour les boutons actifs
-        document.querySelectorAll('.lang-btn').forEach(btn => {
-            btn.classList.remove('active');
-        });
-        document.querySelectorAll(
-            `#lang${lang.charAt(0).toUpperCase()}${lang.slice(1)}, ` +
-            `#lang${lang.charAt(0).toUpperCase()}${lang.slice(1)}Main`
-        ).forEach(btn => {
-            btn.classList.add('active');
-        });
-
-        // Appliquer les traductions
+        // Traduire le DOM
         applyTranslations();
 
-        // Émettre un événement pour les autres modules
+        // Mettre à jour les boutons de langue
+        SUPPORTED_LANGS.forEach(l => {
+            const cap = l.charAt(0).toUpperCase() + l.slice(1);
+            ['lang' + cap, 'lang' + cap + 'Main'].forEach(id => {
+                const btn = document.getElementById(id);
+                if (!btn) return;
+                if (l === lang) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+        });
+
+        // Émettre un événement (pour les autres modules)
         try {
             window.dispatchEvent(new CustomEvent('languageChanged', {
                 detail: { language: lang }
             }));
-        } catch (e) {}
+        } catch (e) { /* silencieux */ }
 
         console.log('🌐 Langue changée:', lang);
     }
@@ -652,11 +677,19 @@
     // ==================== INITIALISATION ====================
     function init() {
         const lang = detectLanguage();
+        // setLanguage va déclencher applyTranslations
         setLanguage(lang);
     }
 
-    // Exécuter dès que possible (avant DOMContentLoaded pour éviter le flash)
+    // Exécuter immédiatement
     init();
+
+    // Réappliquer après DOMContentLoaded (au cas où le DOM change)
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            applyTranslations();
+        }, { once: true });
+    }
 
     // ==================== API PUBLIQUE ====================
     window.t = t;
@@ -664,251 +697,7 @@
     window.applyTranslations = applyTranslations;
     window.getCurrentLanguage = () => currentLanguage;
     window.TRANSLATIONS = Object.freeze(TRANSLATIONS);
-    window.translations = {
-        t,
-        setLanguage,
-        applyTranslations,
-        getCurrentLanguage: () => currentLanguage,
-        supportedLangs: SUPPORTED_LANGS,
-        rtlLangs: RTL_LANGS
-    };
 
-})();        received: 'Received',
-        preparing: 'Preparing',
-        ready: 'Ready',
-        delivered: 'Delivered',
-        mealPeriod: 'Meal Period',
-        browseMenu: 'Browse Menu',
-        specialInstructions: 'Special Instructions / Allergies',
-        deliveryTime: 'Delivery Time',
-        directOrder: 'Direct Order to Kitchen',
-        whatsappOrder: 'Send via WhatsApp',
-        additionalNotes: 'Additional Notes',
-        submitRequest: 'Submit Request',
-        exclusiveOffers: 'Exclusive Offers',
-        faqTitle: 'Frequently Asked Questions',
-        restaurantMenu: 'Restaurant Menu',
-        total: 'Total:',
-        confirmSelection: 'Confirm Selection',
-        room: 'Room:',
-        roomType: 'Room Type:',
-        departure: 'Departure:',
-        logout: 'Change Room / Logout',
-        orderReceived: 'Order Received',
-        beingPrepared: 'Being Prepared',
-        readyForDelivery: 'Ready for Delivery',
-        orderDelivered: 'Delivered',
-        noOffers: 'No offers available at the moment',
-        featured: 'Featured',
-        serviceRequestsTracking: 'Service Requests Tracking',
-        pendingStatus: 'Pending',
-        inProgressStatus: 'In Progress',
-        completedStatus: 'Completed',
-        submittedAt: 'Submitted',
-        noActiveRequests: 'No active service requests'
-    },
-    fr: {
-        hotelName: 'Remal Hotel & Villas',
-        hotelLocation: 'Remal Hotel & Villas • Al Dhannah City',
-        guestId: '🔒 Identification Client',
-        welcomeTitle: 'Bienvenue au Guest Hub',
-        verifyPrompt: 'Veuillez vérifier votre identité pour accéder aux services',
-        roomNumber: 'Numéro de chambre',
-        yourName: 'Votre nom',
-        nameHint: 'Entrez un nom de votre réservation',
-        verifying: 'Vérification avec les dossiers de l\'hôtel...',
-        notFound: 'Numéro de chambre ou nom introuvable. Veuillez réessayer.',
-        verifyAccess: 'Vérifier & Accéder',
-        services: 'Services',
-        offers: 'Offres',
-        faq: 'FAQ',
-        selectService: 'Sélectionnez un service',
-        roomService: 'Service de chambre / Commander',
-        roomServiceDesc: 'Restauration en chambre',
-        tableReservation: 'Réservation de table',
-        tableReservationDesc: 'Réservation restaurant & lounge',
-        wakeupCall: 'Réveil / Alarme',
-        wakeupCallDesc: 'Service de réveil matinal',
-        lateCheckout: 'Départ tardif / Extension',
-        lateCheckoutDesc: 'Prolongez votre séjour',
-        housekeeping: 'Ménage / Nettoyage',
-        housekeepingDesc: 'Service de nettoyage',
-        frontDesk: 'Réception',
-        frontDeskDesc: 'Assistance générale',
-        luggage: 'Aide bagages',
-        luggageDesc: 'Manutention des bagages',
-        maintenance: 'Maintenance / Support technique',
-        maintenanceDesc: 'Réparations & aide technique',
-        backToServices: 'Retour aux services',
-        orderTracking: 'Suivi de commande',
-        received: 'Reçue',
-        preparing: 'En préparation',
-        ready: 'Prête',
-        delivered: 'Livrée',
-        mealPeriod: 'Période de repas',
-        browseMenu: 'Parcourir le menu',
-        specialInstructions: 'Instructions spéciales / Allergies',
-        deliveryTime: 'Heure de livraison',
-        directOrder: 'Commande directe',
-        whatsappOrder: 'Envoyer via WhatsApp',
-        additionalNotes: 'Notes supplémentaires',
-        submitRequest: 'Envoyer la demande',
-        exclusiveOffers: 'Offres exclusives',
-        faqTitle: 'Questions fréquentes',
-        restaurantMenu: 'Menu du restaurant',
-        total: 'Total :',
-        confirmSelection: 'Confirmer la sélection',
-        room: 'Chambre :',
-        roomType: 'Type de chambre :',
-        departure: 'Départ :',
-        logout: 'Changer de chambre',
-        orderReceived: 'Commande reçue',
-        beingPrepared: 'En préparation',
-        readyForDelivery: 'Prête pour livraison',
-        orderDelivered: 'Livrée',
-        noOffers: 'Aucune offre disponible',
-        featured: 'En vedette',
-        serviceRequestsTracking: 'Suivi des demandes de service',
-        pendingStatus: 'En attente',
-        inProgressStatus: 'En cours',
-        completedStatus: 'Terminé',
-        submittedAt: 'Soumis',
-        noActiveRequests: 'Aucune demande de service active'
-    },
-    ar: {
-        hotelName: 'فندق وفلل رمال',
-        hotelLocation: 'فندق وفلل رمال • مدينة الظنة',
-        guestId: '🔒 تعريف النزيل',
-        welcomeTitle: 'مرحباً بكم في Guest Hub',
-        verifyPrompt: 'يرجى التحقق من هويتك للوصول إلى الخدمات',
-        roomNumber: 'رقم الغرفة',
-        yourName: 'اسمك',
-        nameHint: 'أدخل أي اسم من حجزك',
-        verifying: 'جارٍ التحقق من سجلات الفندق...',
-        notFound: 'رقم الغرفة أو الاسم غير موجود',
-        verifyAccess: 'تحقق وادخل',
-        services: 'الخدمات',
-        offers: 'العروض',
-        faq: 'الأسئلة',
-        selectService: 'اختر خدمة',
-        roomService: 'خدمة الغرف / طلب طعام',
-        roomServiceDesc: 'تناول الطعام في الغرفة',
-        tableReservation: 'حجز طاولة',
-        tableReservationDesc: 'حجز المطعم والصالة',
-        wakeupCall: 'خدمة الإيقاظ',
-        wakeupCallDesc: 'خدمة الاستيقاظ الصباحي',
-        lateCheckout: 'مغادرة متأخرة / تمديد',
-        lateCheckoutDesc: 'تمديد إقاماتك',
-        housekeeping: 'التنظيف / خدمة الغرف',
-        housekeepingDesc: 'خدمة تنظيف الغرف',
-        frontDesk: 'الاستفسار من الاستقبال',
-        frontDeskDesc: 'مساعدة عامة',
-        luggage: 'مساعدة الأمتعة',
-        luggageDesc: 'معالجة الأمتعة',
-        maintenance: 'الصيانة / الدعم الفني',
-        maintenanceDesc: 'إصلاحات ومساعدة فنية',
-        backToServices: 'العودة إلى الخدمات',
-        orderTracking: 'تتبع الطلب',
-        received: 'تم الاستلام',
-        preparing: 'قيد التحضير',
-        ready: 'جاهز',
-        delivered: 'تم التسليم',
-        mealPeriod: 'فترة الوجبة',
-        browseMenu: 'تصفح القائمة',
-        specialInstructions: 'تعليمات خاصة / حساسية',
-        deliveryTime: 'وقت التسليم',
-        directOrder: 'طلب مباشر للمطبخ',
-        whatsappOrder: 'إرسال عبر واتساب',
-        additionalNotes: 'ملاحظات إضافية',
-        submitRequest: 'إرسال الطلب',
-        exclusiveOffers: 'عروض حصرية',
-        faqTitle: 'الأسئلة الشائعة',
-        restaurantMenu: 'قائمة المطعم',
-        total: 'المجموع:',
-        confirmSelection: 'تأكيد الاختيار',
-        room: 'الغرفة:',
-        roomType: 'نوع الغرفة:',
-        departure: 'المغادرة:',
-        logout: 'تغيير الغرفة',
-        orderReceived: 'تم استلام الطلب',
-        beingPrepared: 'قيد التحضير',
-        readyForDelivery: 'جاهز للتسليم',
-        orderDelivered: 'تم التسليم',
-        noOffers: 'لا توجد عروض متاحة',
-        featured: 'مميز',
-        serviceRequestsTracking: 'تتبع طلبات الخدمة',
-        pendingStatus: 'قيد الانتظار',
-        inProgressStatus: 'قيد التنفيذ',
-        completedStatus: 'مكتمل',
-        submittedAt: 'تم الإرسال',
-        noActiveRequests: 'لا توجد طلبات خدمة نشطة'
-    },
-    hi: {
-        hotelName: 'रेमल होटल और विला',
-        hotelLocation: 'रेमल होटल और विला • अल धन्ना सिटी',
-        guestId: '🔒 अतिथि पहचान',
-        welcomeTitle: 'गेस्ट हब में आपका स्वागत है',
-        verifyPrompt: 'सेवाओं तक पहुंचने के लिए कृपया अपनी पहचान सत्यापित करें',
-        roomNumber: 'कमरा संख्या',
-        yourName: 'आपका नाम',
-        nameHint: 'अपने आरक्षण से कोई भी नाम दर्ज करें',
-        verifying: 'होटल रिकॉर्ड से सत्यापित किया जा रहा है...',
-        notFound: 'कमरा संख्या या नाम नहीं मिला',
-        verifyAccess: 'सत्यापित करें और प्रवेश करें',
-        services: 'सेवाएं',
-        offers: 'ऑफ़र',
-        faq: 'प्रश्न',
-        selectService: 'एक सेवा चुनें',
-        roomService: 'रूम सर्विस / खाना ऑर्डर',
-        roomServiceDesc: 'कमरे में भोजन',
-        tableReservation: 'टेबल आरक्षण',
-        tableReservationDesc: 'रेस्तरां बुकिंग',
-        wakeupCall: 'वेक-अप कॉल',
-        wakeupCallDesc: 'सुबह जगाने की सेवा',
-        lateCheckout: 'लेट चेक-आउट',
-        lateCheckoutDesc: 'अपने प्रवास को बढ़ाएं',
-        housekeeping: 'हाउसकीपिंग',
-        housekeepingDesc: 'कमरे की सफाई',
-        frontDesk: 'फ्रंट डेस्क',
-        frontDeskDesc: 'सामान्य सहायता',
-        luggage: 'सामान सहायता',
-        luggageDesc: 'सामान संभालना',
-        maintenance: 'रखरखाव / तकनीकी सहायता',
-        maintenanceDesc: 'मरम्मत और तकनीकी मदद',
-        backToServices: 'सेवाओं पर वापस',
-        orderTracking: 'ऑर्डर ट्रैकिंग',
-        received: 'प्राप्त हुआ',
-        preparing: 'तैयार हो रहा है',
-        ready: 'तैयार',
-        delivered: 'वितरित',
-        mealPeriod: 'भोजन अवधि',
-        browseMenu: 'मेनू ब्राउज़ करें',
-        specialInstructions: 'विशेष निर्देश / एलर्जी',
-        deliveryTime: 'डिलीवरी का समय',
-        directOrder: 'सीधे रसोई में ऑर्डर',
-        whatsappOrder: 'व्हाट्सएप से भेजें',
-        additionalNotes: 'अतिरिक्त नोट्स',
-        submitRequest: 'अनुरोध भेजें',
-        exclusiveOffers: 'विशेष ऑफ़र',
-        faqTitle: 'अक्सर पूछे जाने वाले प्रश्न',
-        restaurantMenu: 'रेस्तरां मेनू',
-        total: 'कुल:',
-        confirmSelection: 'चयन की पुष्टि करें',
-        room: 'कमरा:',
-        roomType: 'कमरे का प्रकार:',
-        departure: 'प्रस्थान:',
-        logout: 'कमरा बदलें',
-        orderReceived: 'ऑर्डर प्राप्त हुआ',
-        beingPrepared: 'तैयार हो रहा है',
-        readyForDelivery: 'डिलीवरी के लिए तैयार',
-        orderDelivered: 'वितरित',
-        noOffers: 'कोई ऑफ़र उपलब्ध नहीं',
-        featured: 'विशेष',
-        serviceRequestsTracking: 'सेवा अनुरोध ट्रैकिंग',
-        pendingStatus: 'लंबित',
-        inProgressStatus: 'प्रगति में',
-        completedStatus: 'पूर्ण',
-        submittedAt: 'प्रस्तुत',
-        noActiveRequests: 'कोई सक्रिय सेवा अनुरोध नहीं'
-    }
-};
+    console.log('✅ Translations module chargé');
+
+})();
